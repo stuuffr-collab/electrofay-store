@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://electrofy-store.com/</loc>
+    <lastmod>2024-07-21</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://electrofy-store.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://electrofy-store.com/en/" />
+  </url>
+  
+  <url>
+    <loc>https://electrofy-store.com/products</loc>
+    <lastmod>2024-07-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://electrofy-store.com/products" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://electrofy-store.com/en/products" />
+  </url>
+  
+  <url>
+    <loc>https://electrofy-store.com/offers</loc>
+    <lastmod>2024-07-21</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://electrofy-store.com/offers" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://electrofy-store.com/en/offers" />
+  </url>
+  
+  <url>
+    <loc>https://electrofy-store.com/about</loc>
+    <lastmod>2024-07-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://electrofy-store.com/about" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://electrofy-store.com/en/about" />
+  </url>
+  
+  <url>
+    <loc>https://electrofy-store.com/contact</loc>
+    <lastmod>2024-07-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://electrofy-store.com/contact" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://electrofy-store.com/en/contact" />
+  </url>
+  
+  <!-- Product Categories -->
+  <url>
+    <loc>https://electrofy-store.com/products?category=gaming</loc>
+    <lastmod>2024-07-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://electrofy-store.com/products?category=electronics</loc>
+    <lastmod>2024-07-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>

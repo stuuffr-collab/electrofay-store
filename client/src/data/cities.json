@@ -1,0 +1,11 @@
+[
+  { "id": "tripoli", "name": "طرابلس", "nameEn": "Tripoli", "deliveryFee": 10 },
+  { "id": "benghazi", "name": "بنغازي", "nameEn": "Benghazi", "deliveryFee": 15 },
+  { "id": "misrata", "name": "مصراتة", "nameEn": "Misrata", "deliveryFee": 12 },
+  { "id": "zawiya", "name": "الزاوية", "nameEn": "Zawiya", "deliveryFee": 8 },
+  { "id": "bayda", "name": "البيضاء", "nameEn": "Al Bayda", "deliveryFee": 18 },
+  { "id": "ajdabiya", "name": "أجدابيا", "nameEn": "Ajdabiya", "deliveryFee": 20 },
+  { "id": "tobruk", "name": "طبرق", "nameEn": "Tobruk", "deliveryFee": 25 },
+  { "id": "sabha", "name": "سبها", "nameEn": "Sabha", "deliveryFee": 30 },
+  { "id": "other", "name": "أخرى", "nameEn": "Other", "deliveryFee": 20 }
+]
