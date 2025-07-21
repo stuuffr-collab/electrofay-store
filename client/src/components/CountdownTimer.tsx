@@ -1,67 +1,84 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
+import { Clock } from 'lucide-react';
 
 interface CountdownTimerProps {
   targetDate: Date;
-  onComplete?: () => void;
+  className?: string;
 }
 
-export function CountdownTimer({ targetDate, onComplete }: CountdownTimerProps) {
-  const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
+interface TimeLeft {
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
+export function CountdownTimer({ targetDate, className = "" }: CountdownTimerProps) {
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>({ hours: 0, minutes: 0, seconds: 0 });
   const [isExpired, setIsExpired] = useState(false);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const timer = setInterval(() => {
       const now = new Date().getTime();
       const distance = targetDate.getTime() - now;
 
       if (distance < 0) {
         setIsExpired(true);
-        onComplete?.();
-        clearInterval(interval);
+        clearInterval(timer);
         return;
       }
 
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
       const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-      setTimeLeft({ days, hours, minutes, seconds });
+      setTimeLeft({ hours, minutes, seconds });
     }, 1000);
 
-    return () => clearInterval(interval);
-  }, [targetDate, onComplete]);
+    return () => clearInterval(timer);
+  }, [targetDate]);
 
   if (isExpired) {
     return (
-      <div className="text-xl font-bold text-red-400">
-        انتهى العرض!
+      <div className={`flex items-center gap-2 text-red-500 ${className}`}>
+        <Clock className="w-4 h-4" />
+        <span className="text-sm font-medium">انتهت الفترة</span>
       </div>
     );
   }
 
   return (
-    <div className="flex justify-center space-x-4 space-x-reverse">
-      <div className="bg-white/20 rounded-lg p-4 min-w-16 text-center">
-        <div className="text-2xl font-bold">{timeLeft.days.toString().padStart(2, '0')}</div>
-        <div className="text-sm">يوم</div>
+    <div className={`flex items-center gap-2 text-orange-500 ${className}`}>
+      <Clock className="w-4 h-4" />
+      <div className="flex items-center gap-1 text-sm font-mono">
+        <span className="bg-orange-100 dark:bg-orange-900 px-1.5 py-1 rounded text-orange-800 dark:text-orange-200 font-bold">
+          {timeLeft.hours.toString().padStart(2, '0')}
+        </span>
+        <span>:</span>
+        <span className="bg-orange-100 dark:bg-orange-900 px-1.5 py-1 rounded text-orange-800 dark:text-orange-200 font-bold">
+          {timeLeft.minutes.toString().padStart(2, '0')}
+        </span>
+        <span>:</span>
+        <span className="bg-orange-100 dark:bg-orange-900 px-1.5 py-1 rounded text-orange-800 dark:text-orange-200 font-bold">
+          {timeLeft.seconds.toString().padStart(2, '0')}
+        </span>
       </div>
-      <div className="bg-white/20 rounded-lg p-4 min-w-16 text-center">
-        <div className="text-2xl font-bold">{timeLeft.hours.toString().padStart(2, '0')}</div>
-        <div className="text-sm">ساعة</div>
-      </div>
-      <div className="bg-white/20 rounded-lg p-4 min-w-16 text-center">
-        <div className="text-2xl font-bold">{timeLeft.minutes.toString().padStart(2, '0')}</div>
-        <div className="text-sm">دقيقة</div>
-      </div>
-      <div className="bg-white/20 rounded-lg p-4 min-w-16 text-center">
-        <div className="text-2xl font-bold">{timeLeft.seconds.toString().padStart(2, '0')}</div>
-        <div className="text-sm">ثانية</div>
+    </div>
+  );
+}
+
+interface OfferCountdownProps {
+  className?: string;
+}
+
+export function OfferCountdown({ className = "" }: OfferCountdownProps) {
+  // Set target to 24 hours from now
+  const targetDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  
+  return (
+    <div className={`bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-2 rounded-lg ${className}`}>
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-semibold">⚡ عرض محدود ⚡</span>
+        <CountdownTimer targetDate={targetDate} className="text-white" />
       </div>
     </div>
   );

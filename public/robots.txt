@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://electrofy-store.vercel.app/sitemap.xml
+
+# Disallow admin areas (if any in future)
+Disallow: /admin/
+Disallow: /api/
+
+# Allow specific important pages
+Allow: /
+Allow: /products
+Allow: /offers
+Allow: /about
+Allow: /contact
+Allow: /testimonials
+
+# Crawl delay
+Crawl-delay: 1

@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { createWhatsAppMessage, openWhatsApp, type OrderData } from "@/lib/whatsapp";
 import { type Product } from "./ProductCard";
 import citiesData from "@/data/cities.json";
+import toast from 'react-hot-toast';
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -25,6 +26,13 @@ interface CustomerData {
   notes: string;
 }
 
+interface ValidationErrors {
+  name?: string;
+  phone?: string;
+  city?: string;
+  address?: string;
+}
+
 export function OrderModal({ isOpen, product, onClose, onOrderSubmit }: OrderModalProps) {
   const [customerData, setCustomerData] = useState<CustomerData>({
     name: "",
@@ -35,14 +43,48 @@ export function OrderModal({ isOpen, product, onClose, onOrderSubmit }: OrderMod
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<ValidationErrors>({});
 
   const handleInputChange = (field: keyof CustomerData, value: string) => {
     setCustomerData(prev => ({ ...prev, [field]: value }));
+    // Clear error when user starts typing
+    if (field in errors && errors[field as keyof ValidationErrors]) {
+      setErrors(prev => ({ ...prev, [field as keyof ValidationErrors]: undefined }));
+    }
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors: ValidationErrors = {};
+    
+    if (!customerData.name.trim()) {
+      newErrors.name = 'الاسم مطلوب';
+    }
+    
+    if (!customerData.phone.trim()) {
+      newErrors.phone = 'رقم الهاتف مطلوب';
+    } else if (!/^09\d{8}$/.test(customerData.phone)) {
+      newErrors.phone = 'رقم الهاتف يجب أن يبدأ بـ 09 ويحتوي على 10 أرقام';
+    }
+    
+    if (!customerData.city) {
+      newErrors.city = 'المدينة مطلوبة';
+    }
+    
+    if (!customerData.address.trim()) {
+      newErrors.address = 'العنوان مطلوب';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!product) return;
+
+    if (!validateForm()) {
+      return;
+    }
 
     setIsSubmitting(true);
 
@@ -59,6 +101,29 @@ export function OrderModal({ isOpen, product, onClose, onOrderSubmit }: OrderMod
       const whatsappMessage = createWhatsAppMessage(orderData);
       openWhatsApp(whatsappMessage);
 
+      // Send order to backend API (non-blocking)
+      try {
+        await fetch('/api/orders', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(orderData),
+        });
+      } catch (error) {
+        console.log('Order logging failed (non-critical):', error);
+      }
+
+      // Show success toast
+      toast.success('📦 تم استلام طلبك – سنتواصل خلال دقائق', {
+        duration: 5000,
+        style: {
+          background: '#10b981',
+          color: 'white',
+          fontWeight: '500',
+        },
+      });
+
       onOrderSubmit(orderData);
       
       // Reset form and close modal
@@ -69,9 +134,11 @@ export function OrderModal({ isOpen, product, onClose, onOrderSubmit }: OrderMod
         address: "",
         notes: "",
       });
+      setErrors({});
       onClose();
     } catch (error) {
       console.error("Error submitting order:", error);
+      toast.error('حدث خطأ، يرجى المحاولة مرة أخرى');
     } finally {
       setIsSubmitting(false);
     }

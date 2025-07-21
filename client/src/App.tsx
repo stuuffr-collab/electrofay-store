@@ -2,6 +2,7 @@ import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
+import { Toaster as HotToaster } from 'react-hot-toast';
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useEffect } from "react";
 import { initGA } from "@/lib/analytics";
@@ -14,7 +15,9 @@ import Products from "@/pages/Products";
 import Offers from "@/pages/Offers";
 import About from "@/pages/About";
 import Contact from "@/pages/Contact";
+import Testimonials from "@/pages/Testimonials";
 import NotFound from "@/pages/not-found";
+import NotFound404 from "@/pages/NotFound404";
 
 function Router() {
   // Track page views when routes change
@@ -27,8 +30,9 @@ function Router() {
       <Route path="/offers" component={Offers} />
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
+      <Route path="/testimonials" component={Testimonials} />
       {/* Fallback to 404 */}
-      <Route component={NotFound} />
+      <Route component={NotFound404} />
     </Switch>
   );
 }
@@ -51,6 +55,24 @@ function App() {
           <Router />
         </Layout>
         <Toaster />
+        <HotToaster 
+          position="top-center"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: '#1f2937',
+              color: '#fff',
+              borderRadius: '0.5rem',
+              fontSize: '14px'
+            },
+            success: {
+              iconTheme: {
+                primary: '#10b981',
+                secondary: '#fff',
+              },
+            },
+          }}
+        />
       </TooltipProvider>
     </QueryClientProvider>
   );

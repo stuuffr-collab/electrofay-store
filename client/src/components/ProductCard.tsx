@@ -36,10 +36,21 @@ export function ProductCard({ product, onOrderClick }: ProductCardProps) {
   const getBadgeColor = (badge: string) => {
     if (badge.includes("خصم") || badge.includes("%")) return "destructive";
     if (badge === "جديد") return "secondary";
-    if (badge.includes("متبقي")) return "outline";
+    if (badge.includes("متبقي") || badge.includes("قطع")) return "outline";
     if (badge === "الأكثر مبيعاً") return "default";
     return "secondary";
   };
+
+  // Generate dynamic stock badge
+  const generateStockBadge = () => {
+    if (product.stockCount <= 5) {
+      return `⚡ متبقّي ${product.stockCount} قطع`;
+    }
+    return null;
+  };
+
+  const dynamicBadge = generateStockBadge();
+  const allBadges = dynamicBadge ? [dynamicBadge, ...product.badges] : product.badges;
 
   return (
     <div className="bg-white dark:bg-dark-bg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group">
@@ -70,8 +81,8 @@ export function ProductCard({ product, onOrderClick }: ProductCardProps) {
 
         {/* Product Badges */}
         <div className="absolute top-3 right-3 flex flex-col gap-2">
-          {product.badges.map((badge, index) => (
-            <Badge key={index} variant={getBadgeColor(badge)} className="text-xs">
+          {allBadges.map((badge, index) => (
+            <Badge key={index} variant={getBadgeColor(badge)} className="text-xs shadow-sm">
               {badge}
             </Badge>
           ))}
@@ -104,7 +115,7 @@ export function ProductCard({ product, onOrderClick }: ProductCardProps) {
         <Button
           onClick={() => onOrderClick(product)}
           disabled={!product.inStock}
-          className="w-full bg-electric-yellow hover:bg-yellow-300 text-black font-semibold mb-2"
+          className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFB300] hover:from-[#FFB300] hover:to-[#FF8C00] text-black font-semibold shadow-lg hover:shadow-xl transition-all duration-300 mb-2"
         >
           <ShoppingCart className="w-4 h-4 ml-1" />
           {product.inStock ? "اطلب الآن" : "غير متوفر"}
