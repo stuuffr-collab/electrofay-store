@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { initGA } from "@/lib/analytics";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { Layout } from "@/components/Layout";
+import { CartProvider } from "@/context/CartContext";
 
 // Pages
 import Home from "@/pages/Home";
@@ -51,28 +52,30 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Layout>
-          <Router />
-        </Layout>
-        <Toaster />
-        <HotToaster 
-          position="top-center"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: '#1f2937',
-              color: '#fff',
-              borderRadius: '0.5rem',
-              fontSize: '14px'
-            },
-            success: {
-              iconTheme: {
-                primary: '#10b981',
-                secondary: '#fff',
+        <CartProvider>
+          <Layout>
+            <Router />
+          </Layout>
+          <Toaster />
+          <HotToaster 
+            position="top-center"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: '#1f2937',
+                color: '#fff',
+                borderRadius: '0.5rem',
+                fontSize: '14px'
               },
-            },
-          }}
-        />
+              success: {
+                iconTheme: {
+                  primary: '#10b981',
+                  secondary: '#fff',
+                },
+              },
+            }}
+          />
+        </CartProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );

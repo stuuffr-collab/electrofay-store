@@ -1,7 +1,7 @@
 import { Minus, Plus, Trash2, X, ShoppingBag, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { CartItem } from "@/hooks/use-cart";
+import { CartItem } from "@/context/CartContext";
 import { Badge } from "@/components/ui/badge";
 
 interface CartSidebarProps {
