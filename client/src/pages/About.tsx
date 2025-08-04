@@ -25,7 +25,7 @@ export default function About() {
       </section>
 
       {/* Our Story */}
-      <section className="py-16 bg-white dark:bg-dark-bg">
+      <section className="py-16 bg-black dark:bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -57,7 +57,7 @@ export default function About() {
       </section>
 
       {/* Our Values */}
-      <section className="py-16 bg-gray-50 dark:bg-dark-card">
+      <section className="py-16 bg-black dark:bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">قيمنا ومبادئنا</h2>

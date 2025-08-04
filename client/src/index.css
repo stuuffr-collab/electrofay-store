@@ -172,8 +172,21 @@
   body {
     @apply antialiased bg-background text-foreground;
     font-family: 'Cairo', 'Rubik', sans-serif;
-    background: var(--dark-bg) !important;
+    background: #000000 !important;
     color: white !important;
+  }
+  
+  /* Force all components to use black background */
+  .bg-white {
+    background-color: #000000 !important;
+  }
+  
+  .dark\:bg-dark-bg {
+    background-color: #000000 !important;
+  }
+  
+  .dark\:bg-dark-card {
+    background-color: #000000 !important;
   }
 
   html {

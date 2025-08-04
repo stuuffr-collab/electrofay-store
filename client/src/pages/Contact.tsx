@@ -158,7 +158,7 @@ ${formData.message}
             </div>
 
             {/* FAQ Section */}
-            <div className="bg-white dark:bg-dark-card rounded-xl p-6 shadow-lg">
+            <div className="bg-black dark:bg-black rounded-xl p-6 shadow-lg">
               <h3 className="text-xl font-bold mb-4">أسئلة شائعة</h3>
               <div className="space-y-4">
                 <div>
@@ -185,7 +185,7 @@ ${formData.message}
 
           {/* Contact Form */}
           <div className="lg:col-span-2">
-            <div className="bg-white dark:bg-dark-card rounded-xl p-8 shadow-lg">
+            <div className="bg-black dark:bg-black rounded-xl p-8 shadow-lg">
               <h2 className="text-2xl font-bold mb-6">إرسال رسالة</h2>
               
               <form onSubmit={handleSubmit} className="space-y-6">

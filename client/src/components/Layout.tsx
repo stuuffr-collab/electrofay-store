@@ -13,7 +13,7 @@ export function Layout({ children, onSearch }: LayoutProps) {
   const cart = useCart();
   
   return (
-    <div className="min-h-screen bg-dark-bg text-white transition-colors duration-300" dir="rtl" style={{ background: 'var(--dark-bg)' }}>
+    <div className="min-h-screen bg-black text-white transition-colors duration-300" dir="rtl" style={{ background: '#000000' }}>
       <PromotionalTicker />
       <Header 
         onSearch={onSearch} 

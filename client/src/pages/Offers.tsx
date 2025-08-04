@@ -101,6 +101,53 @@ export default function Offers() {
           </div>
         </div>
 
+        {/* Special Offers Cards */}
+        <div className="grid md:grid-cols-3 gap-8 mb-16">
+          {/* Card 1: Free Delivery */}
+          <div className="bg-black rounded-2xl p-6 text-white relative overflow-hidden border border-gray-700">
+            <div className="relative z-10 text-center">
+              <div className="w-16 h-16 bg-electric-yellow rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-black text-2xl font-bold">📦</span>
+              </div>
+              <h3 className="text-xl font-bold mb-2 text-electric-yellow">للطلبات أكثر من 200 دينار ليبي</h3>
+              <p className="text-gray-300 mb-4">وفر حتى 30 دينار على رسوم التوصيل</p>
+              <div className="bg-electric-yellow/10 rounded-lg p-3">
+                <p className="text-sm text-electric-yellow font-semibold">توصيل مجاني لجميع أنحاء ليبيا</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 2: VIP Membership */}
+          <div className="bg-black rounded-2xl p-6 text-white relative overflow-hidden border border-gray-700">
+            <div className="relative z-10 text-center">
+              <div className="w-16 h-16 bg-electric-yellow rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-black text-2xl font-bold">👑</span>
+              </div>
+              <h3 className="text-xl font-bold mb-2 text-electric-yellow">عضوية VIP</h3>
+              <p className="text-gray-300 mb-2">خصم إضافي 10% للعملاء المميزين</p>
+              <p className="text-sm text-gray-400 mb-4">اطلب 5 مرات واحصل على العضوية</p>
+              <div className="bg-electric-yellow/10 rounded-lg p-3">
+                <p className="text-sm text-electric-yellow font-semibold">مميزات حصرية + أولوية في الخدمة</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 3: Exchange Program */}
+          <div className="bg-black rounded-2xl p-6 text-white relative overflow-hidden border border-gray-700">
+            <div className="relative z-10 text-center">
+              <div className="w-16 h-16 bg-electric-yellow rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-black text-2xl font-bold">🔄</span>
+              </div>
+              <h3 className="text-xl font-bold mb-2 text-electric-yellow">برنامج الاستبدال</h3>
+              <p className="text-gray-300 mb-2">استبدل منتجك القديم بخصم على الجديد</p>
+              <p className="text-sm text-gray-400 mb-4">خصم يصل إلى 25% عند الاستبدال</p>
+              <div className="bg-electric-yellow/10 rounded-lg p-3">
+                <p className="text-sm text-electric-yellow font-semibold">قيمة عادلة لجهازك القديم</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Flash Sale */}
         <div className="bg-gradient-to-r from-red-600 to-orange-600 rounded-2xl p-8 mb-16 text-white text-center relative overflow-hidden">
           <div className="absolute inset-0 bg-black/10"></div>

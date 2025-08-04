@@ -63,7 +63,7 @@ export default function Products() {
         </div>
 
         {/* Filters and Search */}
-        <div className="bg-white dark:bg-dark-card rounded-lg p-6 mb-8 shadow-lg">
+        <div className="bg-black dark:bg-black rounded-lg p-6 mb-8 shadow-lg">
           <div className="flex flex-col lg:flex-row gap-4 items-center">
             {/* Search */}
             <div className="relative flex-1 max-w-md">
