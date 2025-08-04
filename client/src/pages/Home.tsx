@@ -4,13 +4,13 @@ import { Button } from "@/components/ui/button";
 import { ProductCard, type Product } from "@/components/ProductCard";
 import { OrderModal } from "@/components/OrderModal";
 import { AnnouncementBanner } from "@/components/AnnouncementBanner";
-import { CartSidebar } from "@/components/CartSidebar";
+
 import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
 import { MobileCartButton } from "@/components/MobileCartButton";
 import { CountdownTimer } from "@/components/CountdownTimer";
 import { Toast, useToastManager } from "@/components/Toast";
 import { useCart } from "@/hooks/use-cart";
-import { type OrderData, createWhatsAppMessage } from "@/lib/whatsapp";
+import { type OrderData } from "@/lib/whatsapp";
 import { trackEvent } from "@/lib/analytics";
 import productsData from "@/data/products.json";
 import toast from "react-hot-toast";
@@ -47,35 +47,7 @@ export default function Home() {
     trackEvent('add_to_cart', 'engagement', product.name, product.price);
   };
 
-  const handleCartCheckout = () => {
-    if (cart.items.length === 0) return;
-    
-    const message = createWhatsAppMessage({
-      product: { 
-        id: "cart-checkout",
-        name: `طلب متعدد - ${cart.items.length} منتج`,
-        price: cart.totalPrice 
-      },
-      customer: {
-        name: "عميل",
-        phone: "",
-        city: "طرابلس",
-        address: ""
-      }
-    });
-    
-    // Add cart details to message
-    const cartDetails = cart.items.map(item => 
-      `${item.product.name} × ${item.quantity} = ${item.product.price * item.quantity} د.ل`
-    ).join('\n');
-    
-    const fullMessage = message + '\n\nتفاصيل الطلب:\n' + cartDetails;
-    
-    window.open(`https://wa.me/218922569912?text=${encodeURIComponent(fullMessage)}`, '_blank');
-    cart.clearCart();
-    cart.setIsOpen(false);
-    toast.success("🎉 شكراً! طلبك قيد التنفيذ");
-  };
+
 
   const scrollToProducts = () => {
     document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' });
@@ -83,17 +55,6 @@ export default function Home() {
 
   return (
     <>
-      {/* Cart Sidebar */}
-      <CartSidebar
-        isOpen={cart.isOpen}
-        onClose={() => cart.setIsOpen(false)}
-        items={cart.items}
-        totalPrice={cart.totalPrice}
-        onUpdateQuantity={cart.updateQuantity}
-        onRemoveItem={cart.removeItem}
-        onCheckout={handleCartCheckout}
-      />
-
       {/* Announcement Banner */}
       <AnnouncementBanner />
       
@@ -331,17 +292,6 @@ export default function Home() {
         product={selectedProduct}
         onClose={() => setIsOrderModalOpen(false)}
         onOrderSubmit={handleOrderSubmit}
-      />
-
-      {/* Cart Sidebar */}
-      <CartSidebar
-        isOpen={cart.isOpen}
-        onClose={() => cart.setIsOpen(false)}
-        items={cart.items}
-        totalPrice={cart.totalPrice}
-        onUpdateQuantity={cart.updateQuantity}
-        onRemoveItem={cart.removeItem}
-        onCheckout={handleCartCheckout}
       />
 
       {/* Floating WhatsApp Button */}

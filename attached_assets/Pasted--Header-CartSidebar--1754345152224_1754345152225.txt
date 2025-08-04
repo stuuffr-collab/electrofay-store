@@ -1,0 +1,125 @@
+🎯 المطلوب
+عند النقر على أيقونة السلة 🛒 في الـHeader يجب فتح نافذة السلة الجانبية (CartSidebar).
+
+عند إغلاق النافذة أو الضغط على «متابعة التسوق» تُغلق السلة.
+
+الحل يجب أن يعمل على الهاتف والكمبيوتر.
+
+📂 الملفات المعنيّة
+client/src/components/Header.tsx (أو المكان الذي توجد فيه أيقونة السلة)
+
+client/src/components/CartSidebar.tsx
+
+client/src/hooks/use-cart.ts (أو إنشاء Hook جديد لإدارة فتح-إغلاق السلة)
+
+🔧 خطوات التنفيذ بدقة
+إنشاء هوك لإدارة حالة فتح السلة (إن لم يكن موجودًا):
+
+ts
+Copy
+Edit
+// client/src/hooks/use-cart-sidebar.ts
+import { useState } from "react";
+
+export const useCartSidebar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const open  = () => setIsOpen(true);
+  const close = () => setIsOpen(false);
+  return { isOpen, open, close };
+};
+تعديل الـHeader ليفتح السلة:
+
+tsx
+Copy
+Edit
+// Header.tsx
+import { ShoppingCart } from "lucide-react";
+import { useCartSidebar } from "@/hooks/use-cart-sidebar";
+
+export default function Header() {
+  const { open } = useCartSidebar();   // ⚠️ تأكد أنه داخل مزوِّد (انظر الخطوة 3)
+
+  return (
+    <header className="...">
+      {/* بقية الهيدر */}
+      <button onClick={open} className="relative">
+        <ShoppingCart />
+        {/* عداد المنتجات */}
+      </button>
+    </header>
+  );
+}
+لفّ التطبيق كلّه بمزوِّد (Provider) كي يشترك كل المكوّنات في الحالة:
+
+tsx
+Copy
+Edit
+// client/src/components/Layout.tsx أو App.tsx
+import { useCartSidebar } from "@/hooks/use-cart-sidebar";
+import CartSidebar from "@/components/CartSidebar";
+
+export default function Layout({ children }) {
+  const cartSidebar = useCartSidebar();
+
+  return (
+    <CartSidebarContext.Provider value={cartSidebar}>
+      {/* بقية التخطيط */}
+      {children}
+      <CartSidebar
+        isOpen={cartSidebar.isOpen}
+        onClose={cartSidebar.close}
+        {/* مرّر items, totalPrice, إلخ من use-cart */}
+      />
+    </CartSidebarContext.Provider>
+  );
+}
+إذا استخدمت React Context جاهز (مثل Zustand/Context API) استبدل الكود بما يلزم.
+
+ربط CartSidebar بخصائص الفتح/الإغلاق التي أنشأتها:
+
+tsx
+Copy
+Edit
+// CartSidebar.tsx
+import { Sheet } from "@/components/ui/sheet";
+
+export default function CartSidebar(props: CartSidebarProps) {
+  const {
+    isOpen,
+    onClose,
+    items,
+    totalPrice,
+    onUpdateQuantity,
+    onRemoveItem,
+    onCheckout,
+  } = props;
+
+  return (
+    <Sheet open={isOpen} onOpenChange={onClose}>
+      {/* ... محتوى السلة ... */}
+    </Sheet>
+  );
+}
+تأكّد من تمرير items, totalPrice, إلخ من هوك use-cart.ts:
+
+tsx
+Copy
+Edit
+<CartSidebar
+  isOpen={cartSidebar.isOpen}
+  onClose={cartSidebar.close}
+  items={cart.items}
+  totalPrice={cart.total}
+  onUpdateQuantity={cart.updateQuantity}
+  onRemoveItem={cart.removeItem}
+  onCheckout={cart.checkout}
+/>
+اختبارات سريعة:
+
+أضف منتجًا ثم اضغط 🛒 → يجب أن تَظهر النافذة مع المنتج.
+
+غيّر الكمية أو احذف المنتج → يُحدّث الإجمالي فورًا.
+
+اضغط «متابعة التسوق» أو الـ❌ → تُغلق النافذة.
+
+ملاحظة: إذا كنت تستعمل Zustand أو Redux أصلاً لإدارة السلة، أضف ببساطة حقل isSidebarOpen مع أفعال openSidebar / closeSidebar بدل الهوك أعلاه
