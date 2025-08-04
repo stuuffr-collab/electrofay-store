@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Search, Sun, Moon, Menu, Zap } from "lucide-react";
+import { Search, Sun, Moon, Menu, Zap, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -8,9 +8,11 @@ import { useDarkMode } from "@/hooks/use-dark-mode";
 
 interface HeaderProps {
   onSearch?: (query: string) => void;
+  cartItemsCount?: number;
+  onCartClick?: () => void;
 }
 
-export function Header({ onSearch }: HeaderProps) {
+export function Header({ onSearch, cartItemsCount = 0, onCartClick }: HeaderProps) {
   const [location] = useLocation();
   const { isDark, toggle } = useDarkMode();
   const [searchQuery, setSearchQuery] = useState("");
@@ -30,7 +32,7 @@ export function Header({ onSearch }: HeaderProps) {
   ];
 
   return (
-    <header className="bg-white dark:bg-dark-card shadow-lg sticky top-0 z-50 transition-colors duration-300">
+    <header className="bg-white/95 dark:bg-dark-card/95 backdrop-blur-md shadow-lg sticky top-0 z-50 transition-all duration-300 border-b border-gray-200 dark:border-gray-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -72,6 +74,21 @@ export function Header({ onSearch }: HeaderProps) {
               />
               <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
             </form>
+
+            {/* Cart Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onCartClick}
+              className="relative rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"
+            >
+              <ShoppingCart className="w-5 h-5" />
+              {cartItemsCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-electric-yellow text-black text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center shadow-lg animate-pulse">
+                  {cartItemsCount > 99 ? '99+' : cartItemsCount}
+                </span>
+              )}
+            </Button>
 
             {/* Dark Mode Toggle */}
             <Button

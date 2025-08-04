@@ -23,9 +23,10 @@ export interface Product {
 interface ProductCardProps {
   product: Product;
   onOrderClick: (product: Product) => void;
+  onAddToCart?: (product: Product) => void;
 }
 
-export function ProductCard({ product, onOrderClick }: ProductCardProps) {
+export function ProductCard({ product, onOrderClick, onAddToCart }: ProductCardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -53,7 +54,7 @@ export function ProductCard({ product, onOrderClick }: ProductCardProps) {
   const allBadges = dynamicBadge ? [dynamicBadge, ...product.badges] : product.badges;
 
   return (
-    <div className="bg-white dark:bg-dark-bg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group">
+    <div className="bg-white dark:bg-dark-bg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group hover:scale-105 transform animate-fadeIn">
       <div className="relative">
         {/* Product Image */}
         <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 relative overflow-hidden">
@@ -112,14 +113,24 @@ export function ProductCard({ product, onOrderClick }: ProductCardProps) {
           </div>
         </div>
 
-        <Button
-          onClick={() => onOrderClick(product)}
-          disabled={!product.inStock}
-          className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFB300] hover:from-[#FFB300] hover:to-[#FF8C00] text-black font-semibold shadow-lg hover:shadow-xl transition-all duration-300 mb-2"
-        >
-          <ShoppingCart className="w-4 h-4 ml-1" />
-          {product.inStock ? "اطلب الآن" : "غير متوفر"}
-        </Button>
+        <div className="flex gap-2 mb-2">
+          <Button
+            onClick={() => onAddToCart?.(product)}
+            disabled={!product.inStock}
+            className="flex-1 bg-gradient-to-r from-[#FFD700] to-[#FFB300] hover:from-[#FFB300] hover:to-[#FF8C00] text-black font-semibold shadow-lg hover:shadow-xl transition-all duration-300 animate-pulse-glow"
+          >
+            <ShoppingCart className="w-4 h-4 ml-1" />
+            {product.inStock ? "أضف للسلة" : "غير متوفر"}
+          </Button>
+          <Button
+            onClick={() => onOrderClick(product)}
+            disabled={!product.inStock}
+            variant="outline"
+            className="px-3 border-electric-yellow text-electric-yellow hover:bg-electric-yellow hover:text-black"
+          >
+            اطلب مباشرة
+          </Button>
+        </div>
 
         {/* Share Buttons */}
         <div className="flex justify-center space-x-2 space-x-reverse">

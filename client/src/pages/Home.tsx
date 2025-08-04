@@ -3,18 +3,22 @@ import { Gamepad2, Smartphone, ArrowLeft, Percent, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductCard, type Product } from "@/components/ProductCard";
 import { OrderModal } from "@/components/OrderModal";
-
+import { AnnouncementBanner } from "@/components/AnnouncementBanner";
+import { CartSidebar } from "@/components/CartSidebar";
 import { CountdownTimer } from "@/components/CountdownTimer";
 import { Toast, useToastManager } from "@/components/Toast";
-import { type OrderData } from "@/lib/whatsapp";
+import { useCart } from "@/hooks/use-cart";
+import { type OrderData, createWhatsAppMessage } from "@/lib/whatsapp";
 import { trackEvent } from "@/lib/analytics";
 import productsData from "@/data/products.json";
+import toast from "react-hot-toast";
 
 export default function Home() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [filter, setFilter] = useState<"all" | "gaming" | "electronics">("all");
   const { toasts, showSuccess } = useToastManager();
+  const cart = useCart();
 
   // Get offer end date (7 days from now)
   const offerEndDate = new Date();
@@ -35,14 +39,53 @@ export default function Home() {
     trackEvent('order_submitted', 'conversion', orderData.product.name, orderData.product.price);
   };
 
+  const handleAddToCart = (product: Product) => {
+    cart.addItem(product);
+    toast.success(`✅ تمت إضافة ${product.name} للسلة`);
+    trackEvent('add_to_cart', 'engagement', product.name, product.price);
+  };
+
+  const handleCartCheckout = () => {
+    if (cart.items.length === 0) return;
+    
+    const message = createWhatsAppMessage({
+      product: { 
+        id: "cart-checkout",
+        name: `طلب متعدد - ${cart.items.length} منتج`,
+        price: cart.totalPrice 
+      },
+      customer: {
+        name: "عميل",
+        phone: "",
+        city: "طرابلس",
+        address: ""
+      }
+    });
+    
+    // Add cart details to message
+    const cartDetails = cart.items.map(item => 
+      `${item.product.name} × ${item.quantity} = ${item.product.price * item.quantity} د.ل`
+    ).join('\n');
+    
+    const fullMessage = message + '\n\nتفاصيل الطلب:\n' + cartDetails;
+    
+    window.open(`https://wa.me/218922569912?text=${encodeURIComponent(fullMessage)}`, '_blank');
+    cart.clearCart();
+    cart.setIsOpen(false);
+    toast.success("🎉 شكراً! طلبك قيد التنفيذ");
+  };
+
   const scrollToProducts = () => {
     document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
     <>
+      {/* Announcement Banner */}
+      <AnnouncementBanner />
+      
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-gray-800 via-gray-700 to-gray-800 text-white py-20 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white py-20 overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(250,255,0,0.1) 2px, rgba(250,255,0,0.1) 4px)' }}></div>
@@ -184,13 +227,19 @@ export default function Home() {
           </div>
 
           {/* Products Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredProducts.map((product) => (
-              <ProductCard
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {filteredProducts.map((product, index) => (
+              <div 
                 key={product.id}
-                product={product as Product}
-                onOrderClick={handleOrderClick}
-              />
+                style={{ animationDelay: `${index * 0.1}s` }}
+                className="animate-fadeIn"
+              >
+                <ProductCard
+                  product={product as Product}
+                  onOrderClick={handleOrderClick}
+                  onAddToCart={handleAddToCart}
+                />
+              </div>
             ))}
           </div>
 
@@ -269,6 +318,17 @@ export default function Home() {
         product={selectedProduct}
         onClose={() => setIsOrderModalOpen(false)}
         onOrderSubmit={handleOrderSubmit}
+      />
+
+      {/* Cart Sidebar */}
+      <CartSidebar
+        isOpen={cart.isOpen}
+        onClose={() => cart.setIsOpen(false)}
+        items={cart.items}
+        totalPrice={cart.totalPrice}
+        onUpdateQuantity={cart.updateQuantity}
+        onRemoveItem={cart.removeItem}
+        onCheckout={handleCartCheckout}
       />
 
       {/* Toast Notifications */}
