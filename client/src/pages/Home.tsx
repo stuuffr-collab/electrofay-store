@@ -107,7 +107,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="text-center md:text-right">
-              <h2 className="text-4xl md:text-6xl font-bold mb-6 animate-fade-in">
+              <h2 className="text-4xl md:text-6xl font-tajawal-extrabold mb-6 animate-fade-in">
                 أفضل متجر
                 <span className="text-electric-yellow drop-shadow-glow"> إكسسوارات قيمنج</span>
                 <br />في ليبيا
@@ -245,7 +245,7 @@ export default function Home() {
               <div 
                 key={product.id}
                 style={{ animationDelay: `${index * 0.1}s` }}
-                className="animate-fadeIn"
+                className="animate-zoom-in transform hover:scale-105 transition-all duration-300"
               >
                 <ProductCard
                   product={product as Product}
@@ -349,8 +349,8 @@ export default function Home() {
 
       {/* Mobile Cart Button */}
       <MobileCartButton 
-        cartItemsCount={cart.totalItems}
-        onCartClick={() => cart.setIsOpen(true)}
+        itemCount={cart.totalItems}
+        onClick={() => cart.setIsOpen(true)}
       />
 
       {/* Toast Notifications */}

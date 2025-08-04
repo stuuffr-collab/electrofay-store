@@ -20,6 +20,16 @@ export function Footer() {
             <p className="text-gray-300 mb-4">
               أفضل متجر لإكسسوارات القيمنج والمنتجات الكهرومنزلية في ليبيا
             </p>
+            
+            {/* Payment Methods */}
+            <div className="mb-4">
+              <h4 className="text-white font-semibold mb-2">طرق الدفع المتاحة:</h4>
+              <div className="flex items-center space-x-4 space-x-reverse">
+                <div className="bg-blue-600 text-white px-3 py-1 rounded text-sm font-bold">VISA</div>
+                <div className="bg-red-600 text-white px-3 py-1 rounded text-sm font-bold">MasterCard</div>
+                <div className="bg-green-600 text-white px-3 py-1 rounded text-sm font-bold">💵 دفع عند الاستلام</div>
+              </div>
+            </div>
             <div className="flex space-x-4 space-x-reverse">
               <a
                 href="https://wa.me/218922569912"
@@ -71,6 +81,16 @@ export function Footer() {
               <li>
                 <Link href="/contact" className="text-gray-300 hover:text-electric-yellow transition-colors">
                   تواصل معنا
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacy" className="text-gray-300 hover:text-electric-yellow transition-colors">
+                  سياسة الخصوصية
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms" className="text-gray-300 hover:text-electric-yellow transition-colors">
+                  الشروط والأحكام
                 </Link>
               </li>
             </ul>
