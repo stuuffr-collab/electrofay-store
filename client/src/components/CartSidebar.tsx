@@ -35,10 +35,10 @@ export function CartSidebar({
           <div className="flex flex-col items-center justify-center h-full text-center">
             <ShoppingBag className="w-16 h-16 text-gray-400 mb-4" />
             <h3 className="text-lg font-semibold text-gray-300 mb-2">
-              سلة التسوق فارغة
+              🛒 لا توجد منتجات حالياً
             </h3>
             <p className="text-gray-400 mb-6">
-              ابدأ بإضافة المنتجات للمتابعة
+              أضف منتجات لبدء الشراء
             </p>
             <Button onClick={onClose} className="bg-electric-yellow text-black hover:bg-yellow-300">
               متابعة التسوق

@@ -5,16 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useDarkMode } from "@/hooks/use-dark-mode";
+import { useCart } from "@/hooks/use-cart";
 
 interface HeaderProps {
   onSearch?: (query: string) => void;
-  cartItemsCount?: number;
-  onCartClick?: () => void;
 }
 
-export function Header({ onSearch, cartItemsCount = 0, onCartClick }: HeaderProps) {
+export function Header({ onSearch }: HeaderProps) {
   const [location] = useLocation();
   const { isDark, toggle } = useDarkMode();
+  const cart = useCart();
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -79,13 +79,13 @@ export function Header({ onSearch, cartItemsCount = 0, onCartClick }: HeaderProp
             <Button
               variant="ghost"
               size="icon"
-              onClick={onCartClick}
+              onClick={() => cart.setIsOpen(true)}
               className="relative rounded-lg hover:bg-gray-700 text-white"
             >
               <ShoppingCart className="w-5 h-5" />
-              {cartItemsCount > 0 && (
+              {cart.totalItems > 0 && (
                 <span className="absolute -top-2 -right-2 bg-electric-yellow text-black text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center shadow-lg animate-pulse">
-                  {cartItemsCount > 99 ? '99+' : cartItemsCount}
+                  {cart.totalItems > 99 ? '99+' : cart.totalItems}
                 </span>
               )}
             </Button>

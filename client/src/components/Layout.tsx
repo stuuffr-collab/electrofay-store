@@ -17,8 +17,6 @@ export function Layout({ children, onSearch }: LayoutProps) {
       <PromotionalTicker />
       <Header 
         onSearch={onSearch} 
-        cartItemsCount={cart.totalItems}
-        onCartClick={() => cart.setIsOpen(true)}
       />
       <main className="flex-1">
         {children}
