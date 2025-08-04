@@ -32,7 +32,7 @@ export function Header({ onSearch, cartItemsCount = 0, onCartClick }: HeaderProp
   ];
 
   return (
-    <header className="bg-white/95 dark:bg-dark-card/95 backdrop-blur-md shadow-lg sticky top-0 z-50 transition-all duration-300 border-b border-gray-200 dark:border-gray-700">
+    <header className="bg-dark-card/95 backdrop-blur-md shadow-lg sticky top-0 z-50 transition-all duration-300 border-b border-dark-border" style={{ background: 'rgba(26, 26, 26, 0.95)' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -41,8 +41,8 @@ export function Header({ onSearch, cartItemsCount = 0, onCartClick }: HeaderProp
               <Zap className="w-6 h-6 text-electric-yellow" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gradient">إلكتروفاي</h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Electrofy Store</p>
+              <h1 className="text-xl font-bold text-white">إلكتروفاي</h1>
+              <p className="text-xs text-gray-300">Electrofy Store</p>
             </div>
           </Link>
 
@@ -52,7 +52,7 @@ export function Header({ onSearch, cartItemsCount = 0, onCartClick }: HeaderProp
               <Link
                 key={item.href}
                 href={item.href}
-                className={`text-gray-700 dark:text-gray-300 hover:text-electric-yellow transition-colors ${
+                className={`text-gray-300 hover:text-electric-yellow transition-colors ${
                   location === item.href ? "text-electric-yellow font-medium" : ""
                 }`}
               >
@@ -70,7 +70,7 @@ export function Header({ onSearch, cartItemsCount = 0, onCartClick }: HeaderProp
                 placeholder="ابحث عن المنتجات..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-64 pl-10 text-right"
+                className="w-64 pl-10 text-right bg-gray-700 border-gray-600 text-white placeholder-gray-400"
               />
               <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
             </form>
@@ -80,7 +80,7 @@ export function Header({ onSearch, cartItemsCount = 0, onCartClick }: HeaderProp
               variant="ghost"
               size="icon"
               onClick={onCartClick}
-              className="relative rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"
+              className="relative rounded-lg hover:bg-gray-700 text-white"
             >
               <ShoppingCart className="w-5 h-5" />
               {cartItemsCount > 0 && (
@@ -95,7 +95,7 @@ export function Header({ onSearch, cartItemsCount = 0, onCartClick }: HeaderProp
               variant="ghost"
               size="icon"
               onClick={toggle}
-              className="rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"
+              className="rounded-lg hover:bg-gray-700 text-white"
             >
               {isDark ? (
                 <Sun className="w-5 h-5" />
@@ -111,7 +111,7 @@ export function Header({ onSearch, cartItemsCount = 0, onCartClick }: HeaderProp
                   <Menu className="w-5 h-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[300px]">
+              <SheetContent side="right" className="w-[300px] bg-dark-bg border-l border-dark-border" style={{ background: 'var(--dark-bg)' }}>
                 <div className="flex flex-col space-y-4 mt-8">
                   {/* Mobile Search */}
                   <form onSubmit={handleSearch} className="relative sm:hidden">
@@ -120,7 +120,7 @@ export function Header({ onSearch, cartItemsCount = 0, onCartClick }: HeaderProp
                       placeholder="ابحث عن المنتجات..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 text-right"
+                      className="pl-10 text-right bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                     />
                     <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
                   </form>
@@ -133,7 +133,7 @@ export function Header({ onSearch, cartItemsCount = 0, onCartClick }: HeaderProp
                       className={`text-lg py-2 px-4 rounded-lg transition-colors ${
                         location === item.href
                           ? "bg-electric-yellow text-black font-medium"
-                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                          : "text-gray-300 hover:bg-gray-700"
                       }`}
                       onClick={() => setIsMobileMenuOpen(false)}
                     >

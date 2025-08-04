@@ -54,10 +54,10 @@ export function ProductCard({ product, onOrderClick, onAddToCart }: ProductCardP
   const allBadges = dynamicBadge ? [dynamicBadge, ...product.badges] : product.badges;
 
   return (
-    <div className="bg-white dark:bg-dark-bg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group hover:scale-105 transform animate-fadeIn">
+    <div className="bg-dark-card rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group hover:scale-105 transform animate-fadeIn border border-dark-border" style={{ background: 'var(--dark-card)' }}>
       <div className="relative">
         {/* Product Image */}
-        <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 relative overflow-hidden">
+        <div className="w-full h-48 bg-gray-700 relative overflow-hidden">
           {!imageError ? (
             <img
               src={product.image}
@@ -70,13 +70,13 @@ export function ProductCard({ product, onOrderClick, onAddToCart }: ProductCardP
               loading="lazy"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500">
+            <div className="w-full h-full flex items-center justify-center text-gray-400">
               <span className="text-sm">صورة غير متاحة</span>
             </div>
           )}
           
           {!imageLoaded && !imageError && (
-            <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 animate-pulse" />
+            <div className="absolute inset-0 bg-gray-700 animate-pulse" />
           )}
         </div>
 
@@ -91,8 +91,8 @@ export function ProductCard({ product, onOrderClick, onAddToCart }: ProductCardP
       </div>
 
       <div className="p-4">
-        <h4 className="font-bold text-lg mb-2 line-clamp-2">{product.name}</h4>
-        <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">
+        <h4 className="font-bold text-lg mb-2 line-clamp-2 text-white">{product.name}</h4>
+        <p className="text-gray-300 text-sm mb-3 line-clamp-2">
           {product.description}
         </p>
 
@@ -102,15 +102,26 @@ export function ProductCard({ product, onOrderClick, onAddToCart }: ProductCardP
               {product.price} د.ل
             </span>
             {product.originalPrice && (
-              <span className="text-sm text-gray-500 line-through">
+              <span className="text-sm text-gray-400 line-through">
                 {product.originalPrice} د.ل
               </span>
             )}
           </div>
-          <div className="flex items-center text-yellow-500">
-            <Star className="w-4 h-4 fill-current" />
-            <span className="text-sm mr-1">{product.rating}</span>
-          </div>
+        </div>
+
+        {/* Star Rating */}
+        <div className="flex items-center justify-center mb-4">
+          {[...Array(5)].map((_, index) => (
+            <Star 
+              key={index} 
+              className={`w-4 h-4 ${
+                index < Math.floor(product.rating) 
+                  ? 'text-yellow-400 fill-current' 
+                  : 'text-gray-500'
+              }`} 
+            />
+          ))}
+          <span className="text-sm text-gray-300 mr-2">({product.rating})</span>
         </div>
 
         <div className="flex gap-2 mb-2">

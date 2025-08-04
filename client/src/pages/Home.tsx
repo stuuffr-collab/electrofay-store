@@ -5,6 +5,8 @@ import { ProductCard, type Product } from "@/components/ProductCard";
 import { OrderModal } from "@/components/OrderModal";
 import { AnnouncementBanner } from "@/components/AnnouncementBanner";
 import { CartSidebar } from "@/components/CartSidebar";
+import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
+import { MobileCartButton } from "@/components/MobileCartButton";
 import { CountdownTimer } from "@/components/CountdownTimer";
 import { Toast, useToastManager } from "@/components/Toast";
 import { useCart } from "@/hooks/use-cart";
@@ -85,7 +87,7 @@ export default function Home() {
       <AnnouncementBanner />
       
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white py-20 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white py-20 overflow-hidden" style={{ background: 'var(--hero-gradient)' }}>
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(250,255,0,0.1) 2px, rgba(250,255,0,0.1) 4px)' }}></div>
@@ -133,11 +135,11 @@ export default function Home() {
       </section>
 
       {/* Categories Section */}
-      <section className="py-16 bg-white dark:bg-dark-bg transition-colors duration-300">
+      <section className="py-16 bg-dark-bg transition-colors duration-300" style={{ background: 'var(--dark-bg)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold mb-4">تسوق حسب الفئة</h3>
-            <p className="text-gray-600 dark:text-gray-400">اختر من مجموعة واسعة من المنتجات عالية الجودة</p>
+            <h3 className="text-3xl font-bold mb-4 text-white">تسوق حسب الفئة</h3>
+            <p className="text-gray-300">اختر من مجموعة واسعة من المنتجات عالية الجودة</p>
           </div>
           
           <div className="grid md:grid-cols-2 gap-8">
@@ -189,16 +191,16 @@ export default function Home() {
       </section>
 
       {/* Featured Products */}
-      <section id="products" className="py-16 bg-gray-50 dark:bg-dark-card transition-colors duration-300">
+      <section id="products" className="py-16 bg-dark-card transition-colors duration-300" style={{ background: 'var(--dark-card)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center mb-12">
             <div>
-              <h3 className="text-3xl font-bold mb-2">المنتجات المميزة</h3>
-              <p className="text-gray-600 dark:text-gray-400">أحدث المنتجات وأكثرها مبيعاً</p>
+              <h3 className="text-3xl font-bold mb-2 text-white">المنتجات المميزة</h3>
+              <p className="text-gray-300">أحدث المنتجات وأكثرها مبيعاً</p>
             </div>
             
             {/* Filter Buttons */}
-            <div className="hidden md:flex bg-white dark:bg-dark-bg rounded-lg p-1 border dark:border-dark-border">
+            <div className="hidden md:flex bg-dark-bg rounded-lg p-1 border border-dark-border" style={{ background: 'var(--dark-bg)' }}>
               <Button
                 variant={filter === "all" ? "default" : "ghost"}
                 size="sm"
@@ -329,6 +331,15 @@ export default function Home() {
         onUpdateQuantity={cart.updateQuantity}
         onRemoveItem={cart.removeItem}
         onCheckout={handleCartCheckout}
+      />
+
+      {/* Floating WhatsApp Button */}
+      <FloatingWhatsApp />
+
+      {/* Mobile Cart Button */}
+      <MobileCartButton 
+        cartItemsCount={cart.totalItems}
+        onCartClick={() => cart.setIsOpen(true)}
       />
 
       {/* Toast Notifications */}

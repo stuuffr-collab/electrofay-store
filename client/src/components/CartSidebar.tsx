@@ -28,16 +28,16 @@ export function CartSidebar({
   if (items.length === 0) {
     return (
       <Sheet open={isOpen} onOpenChange={onClose}>
-        <SheetContent side="right" className="w-full sm:w-96">
+        <SheetContent side="right" className="w-full sm:w-96 bg-dark-bg border-l border-dark-border" style={{ background: 'var(--dark-bg)' }}>
           <SheetHeader>
-            <SheetTitle className="text-right">🛒 سلة التسوق</SheetTitle>
+            <SheetTitle className="text-right text-white">🛒 سلة التسوق</SheetTitle>
           </SheetHeader>
           <div className="flex flex-col items-center justify-center h-full text-center">
             <ShoppingBag className="w-16 h-16 text-gray-400 mb-4" />
-            <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-400 mb-2">
+            <h3 className="text-lg font-semibold text-gray-300 mb-2">
               سلة التسوق فارغة
             </h3>
-            <p className="text-gray-500 dark:text-gray-500 mb-6">
+            <p className="text-gray-400 mb-6">
               ابدأ بإضافة المنتجات للمتابعة
             </p>
             <Button onClick={onClose} className="bg-electric-yellow text-black hover:bg-yellow-300">
@@ -51,11 +51,11 @@ export function CartSidebar({
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent side="right" className="w-full sm:w-96 flex flex-col">
+      <SheetContent side="right" className="w-full sm:w-96 flex flex-col bg-dark-bg border-l border-dark-border" style={{ background: 'var(--dark-bg)' }}>
         <SheetHeader>
-          <SheetTitle className="text-right flex items-center justify-between">
+          <SheetTitle className="text-right flex items-center justify-between text-white">
             <span>🛒 سلة التسوق</span>
-            <Badge variant="secondary">{items.length} منتج</Badge>
+            <Badge variant="secondary" className="bg-electric-yellow text-black">{items.length} منتج</Badge>
           </SheetTitle>
         </SheetHeader>
         
@@ -63,7 +63,7 @@ export function CartSidebar({
         <div className="flex-1 overflow-y-auto py-4">
           <div className="space-y-4">
             {items.map((item) => (
-              <div key={item.product.id} className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+              <div key={item.product.id} className="bg-dark-card rounded-lg p-4 border border-dark-border" style={{ background: 'var(--dark-card)' }}>
                 <div className="flex gap-3">
                   <img
                     src={item.product.image}
@@ -71,7 +71,7 @@ export function CartSidebar({
                     className="w-16 h-16 object-cover rounded-lg"
                   />
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-medium text-sm line-clamp-2 text-right">
+                    <h4 className="font-medium text-sm line-clamp-2 text-right text-white">
                       {item.product.name}
                     </h4>
                     <p className="text-electric-yellow font-bold text-lg mt-1">
@@ -89,7 +89,7 @@ export function CartSidebar({
                         <Trash2 className="w-4 h-4" />
                       </Button>
                       
-                      <div className="flex items-center gap-2 bg-white dark:bg-gray-700 rounded-lg p-1">
+                      <div className="flex items-center gap-2 bg-gray-700 rounded-lg p-1">
                         <Button
                           variant="ghost"
                           size="icon"
@@ -119,13 +119,13 @@ export function CartSidebar({
         </div>
         
         {/* Cart Footer */}
-        <div className="border-t pt-4 space-y-4">
+        <div className="border-t border-dark-border pt-4 space-y-4">
           <div className="flex justify-between items-center text-lg font-bold">
             <span className="text-electric-yellow">{formatPrice(totalPrice)}</span>
-            <span>المجموع:</span>
+            <span className="text-white">المجموع:</span>
           </div>
           
-          <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
+          <p className="text-sm text-gray-400 text-center">
             * السعر يشمل التوصيل داخل طرابلس
           </p>
           
