@@ -83,6 +83,17 @@ export default function Home() {
 
   return (
     <>
+      {/* Cart Sidebar */}
+      <CartSidebar
+        isOpen={cart.isOpen}
+        onClose={() => cart.setIsOpen(false)}
+        items={cart.items}
+        totalPrice={cart.totalPrice}
+        onUpdateQuantity={cart.updateQuantity}
+        onRemoveItem={cart.removeItem}
+        onCheckout={handleCartCheckout}
+      />
+
       {/* Announcement Banner */}
       <AnnouncementBanner />
       
@@ -96,18 +107,18 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="text-center md:text-right">
-              <h2 className="text-4xl md:text-6xl font-bold mb-6">
+              <h2 className="text-4xl md:text-6xl font-bold mb-6 animate-fade-in">
                 أفضل متجر
-                <span className="text-electric-yellow"> إكسسوارات قيمنج</span>
+                <span className="text-electric-yellow drop-shadow-glow"> إكسسوارات قيمنج</span>
                 <br />في ليبيا
               </h2>
-              <p className="text-xl mb-8 text-gray-200">
+              <p className="text-xl mb-8 text-gray-200 animate-slide-up animation-delay-200">
                 اكتشف أحدث المنتجات الكهرومنزلية وإكسسوارات الألعاب مع توصيل سريع لجميع أنحاء ليبيا
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start animate-slide-up animation-delay-400">
                 <Button 
                   onClick={scrollToProducts}
-                  className="bg-electric-yellow hover:bg-yellow-300 text-black px-8 py-3 font-semibold shadow-electric hover:shadow-electric-hover"
+                  className="bg-electric-yellow hover:bg-yellow-300 text-black px-8 py-4 font-bold text-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 animate-pulse-glow"
                 >
                   تسوق الآن
                 </Button>

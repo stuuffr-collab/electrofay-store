@@ -32,7 +32,7 @@ export function Header({ onSearch }: HeaderProps) {
   ];
 
   return (
-    <header className="bg-dark-card/95 backdrop-blur-md shadow-lg sticky top-0 z-50 transition-all duration-300 border-b border-dark-border" style={{ background: 'rgba(26, 26, 26, 0.95)' }}>
+    <header className="bg-dark-card/95 backdrop-blur-md shadow-2xl sticky top-0 z-50 transition-all duration-300 border-b border-dark-border" style={{ background: 'rgba(18, 18, 18, 0.98)', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
