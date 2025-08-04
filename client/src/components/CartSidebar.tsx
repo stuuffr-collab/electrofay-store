@@ -116,7 +116,7 @@ ${cartDetails}
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent side="right" className="w-full sm:w-96 flex flex-col bg-dark-bg border-l border-dark-border" style={{ background: 'var(--dark-bg)' }}>
+      <SheetContent side="right" className="w-full sm:w-[420px] flex flex-col bg-dark-bg border-l border-dark-border max-h-screen" style={{ background: 'var(--dark-bg)' }}>
         <SheetHeader>
           <SheetTitle className="text-right flex items-center justify-between text-white">
             <span>🛒 سلة التسوق</span>
@@ -205,100 +205,162 @@ ${cartDetails}
               متابعة عملية الشراء
             </Button>
           ) : (
-            <div className="space-y-4">
-              {/* Customer Form */}
-              <div className="bg-dark-card rounded-lg p-4 border border-dark-border">
-                <h3 className="text-lg font-bold text-white mb-4 text-center">
-                  📝 بيانات العميل
+            <div className="flex flex-col h-full">
+              {/* Back Button */}
+              <div className="flex items-center justify-between mb-4 pb-3 border-b border-dark-border">
+                <Button
+                  onClick={() => setShowCheckoutForm(false)}
+                  variant="ghost"
+                  className="text-gray-300 hover:text-white hover:bg-gray-700 p-2"
+                >
+                  <X className="w-5 h-5 ml-2" />
+                  رجوع للسلة
+                </Button>
+                <h3 className="text-lg font-bold text-white">
+                  📝 إتمام الطلب
                 </h3>
-                
-                <div className="space-y-3">
-                  {/* Name Field */}
-                  <div>
-                    <Label htmlFor="name" className="text-white flex items-center gap-2">
+              </div>
+
+              {/* Scrollable Form Container */}
+              <div className="flex-1 overflow-y-auto">
+                <div className="space-y-6 pb-6">
+                  {/* Order Summary Card */}
+                  <div className="bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg p-4 border border-dark-border">
+                    <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
+                      <ShoppingCart className="w-4 h-4" />
+                      ملخص الطلب
+                    </h4>
+                    <div className="space-y-2">
+                      {items.map((item) => (
+                        <div key={item.product.id} className="flex justify-between items-center text-sm">
+                          <span className="text-electric-yellow font-medium">
+                            {formatPrice(item.product.price * item.quantity)}
+                          </span>
+                          <span className="text-gray-200">
+                            {item.product.name} × {item.quantity}
+                          </span>
+                        </div>
+                      ))}
+                      <div className="border-t border-gray-600 pt-2 mt-2">
+                        <div className="flex justify-between items-center font-bold">
+                          <span className="text-electric-yellow text-lg">
+                            {formatPrice(totalPrice)}
+                          </span>
+                          <span className="text-white">المجموع الكلي:</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Customer Information Form */}
+                  <div className="bg-dark-card rounded-lg p-5 border border-dark-border">
+                    <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
                       <User className="w-4 h-4" />
-                      الاسم الكامل *
-                    </Label>
-                    <Input
-                      id="name"
-                      type="text"
-                      placeholder="أدخل اسمك الكامل"
-                      value={customerData.name}
-                      onChange={(e) => handleCustomerDataChange('name', e.target.value)}
-                      className="mt-1 text-right bg-gray-700 border-gray-600 text-white"
-                    />
+                      بيانات العميل
+                    </h4>
+                    
+                    <div className="space-y-4">
+                      {/* Name Field */}
+                      <div>
+                        <Label htmlFor="name" className="text-white text-sm font-medium mb-2 block">
+                          الاسم الكامل *
+                        </Label>
+                        <Input
+                          id="name"
+                          type="text"
+                          placeholder="أدخل اسمك الكامل"
+                          value={customerData.name}
+                          onChange={(e) => handleCustomerDataChange('name', e.target.value)}
+                          className="text-right bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-electric-yellow focus:ring-electric-yellow transition-colors"
+                        />
+                      </div>
+
+                      {/* Phone Field */}
+                      <div>
+                        <Label htmlFor="phone" className="text-white text-sm font-medium mb-2 block">
+                          رقم الهاتف *
+                        </Label>
+                        <Input
+                          id="phone"
+                          type="tel"
+                          placeholder="مثال: 0911234567"
+                          value={customerData.phone}
+                          onChange={(e) => handleCustomerDataChange('phone', e.target.value)}
+                          className="text-right bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-electric-yellow focus:ring-electric-yellow transition-colors"
+                        />
+                        <p className="text-xs text-gray-400 mt-1">
+                          سنتواصل معك عبر هذا الرقم لتأكيد الطلب
+                        </p>
+                      </div>
+
+                      {/* City Field */}
+                      <div>
+                        <Label htmlFor="city" className="text-white text-sm font-medium mb-2 block">
+                          المدينة *
+                        </Label>
+                        <Select value={customerData.city} onValueChange={(value) => handleCustomerDataChange('city', value)}>
+                          <SelectTrigger className="text-right bg-gray-700 border-gray-600 text-white focus:border-electric-yellow">
+                            <SelectValue placeholder="اختر مدينتك" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-gray-800 border-gray-600 max-h-48">
+                            {libyanCities.map((city) => (
+                              <SelectItem key={city} value={city} className="text-white hover:bg-gray-700 cursor-pointer">
+                                {city}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Address Field */}
+                      <div>
+                        <Label htmlFor="address" className="text-white text-sm font-medium mb-2 block">
+                          العنوان التفصيلي
+                        </Label>
+                        <Input
+                          id="address"
+                          type="text"
+                          placeholder="المنطقة، اسم الشارع، رقم المنزل (اختياري)"
+                          value={customerData.address}
+                          onChange={(e) => handleCustomerDataChange('address', e.target.value)}
+                          className="text-right bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-electric-yellow focus:ring-electric-yellow transition-colors"
+                        />
+                        <p className="text-xs text-gray-400 mt-1">
+                          عنوان تفصيلي يساعد مندوب التوصيل
+                        </p>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Phone Field */}
-                  <div>
-                    <Label htmlFor="phone" className="text-white flex items-center gap-2">
-                      <Phone className="w-4 h-4" />
-                      رقم الهاتف *
-                    </Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      placeholder="مثال: 0911234567"
-                      value={customerData.phone}
-                      onChange={(e) => handleCustomerDataChange('phone', e.target.value)}
-                      className="mt-1 text-right bg-gray-700 border-gray-600 text-white"
-                    />
-                  </div>
-
-                  {/* City Field */}
-                  <div>
-                    <Label htmlFor="city" className="text-white flex items-center gap-2">
+                  {/* Delivery Information */}
+                  <div className="bg-blue-900/30 rounded-lg p-4 border border-blue-700/50">
+                    <h4 className="text-blue-200 font-semibold mb-2 flex items-center gap-2">
                       <MapPin className="w-4 h-4" />
-                      المدينة *
-                    </Label>
-                    <Select value={customerData.city} onValueChange={(value) => handleCustomerDataChange('city', value)}>
-                      <SelectTrigger className="mt-1 text-right bg-gray-700 border-gray-600 text-white">
-                        <SelectValue placeholder="اختر مدينتك" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-700 border-gray-600">
-                        {libyanCities.map((city) => (
-                          <SelectItem key={city} value={city} className="text-white hover:bg-gray-600">
-                            {city}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Address Field */}
-                  <div>
-                    <Label htmlFor="address" className="text-white flex items-center gap-2">
-                      <MapPin className="w-4 h-4" />
-                      العنوان التفصيلي
-                    </Label>
-                    <Input
-                      id="address"
-                      type="text"
-                      placeholder="المنطقة، اسم الشارع، رقم المنزل (اختياري)"
-                      value={customerData.address}
-                      onChange={(e) => handleCustomerDataChange('address', e.target.value)}
-                      className="mt-1 text-right bg-gray-700 border-gray-600 text-white"
-                    />
+                      معلومات التوصيل
+                    </h4>
+                    <ul className="text-sm text-blue-100 space-y-1">
+                      <li>• التوصيل مجاني داخل طرابلس</li>
+                      <li>• رسوم توصيل للمدن الأخرى حسب المسافة</li>
+                      <li>• مدة التوصيل: 1-3 أيام عمل</li>
+                      <li>• الدفع عند الاستلام متاح</li>
+                    </ul>
                   </div>
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex gap-2">
-                <Button
-                  onClick={() => setShowCheckoutForm(false)}
-                  variant="outline"
-                  className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700"
-                >
-                  رجوع
-                </Button>
+              {/* Fixed Bottom Action Button */}
+              <div className="border-t border-dark-border pt-4 mt-4">
                 <Button
                   onClick={handleCompleteOrder}
-                  className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold"
+                  disabled={!customerData.name || !customerData.phone || !customerData.city}
+                  className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-600 disabled:to-gray-700 text-white font-bold py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:scale-100"
                 >
-                  <MessageCircle className="w-4 h-4 ml-2" />
-                  إرسال الطلب
+                  <MessageCircle className="w-5 h-5 ml-3" />
+                  إرسال الطلب عبر واتساب
                 </Button>
+                <p className="text-xs text-gray-400 text-center mt-2">
+                  بالضغط على إرسال الطلب، ستفتح رسالة واتساب جاهزة للإرسال
+                </p>
               </div>
             </div>
           )}
