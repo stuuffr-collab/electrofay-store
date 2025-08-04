@@ -3,7 +3,7 @@ import { Gamepad2, Smartphone, ArrowLeft, Percent, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductCard, type Product } from "@/components/ProductCard";
 import { OrderModal } from "@/components/OrderModal";
-import { TestimonialsSection } from "@/components/TestimonialsSection";
+
 import { CountdownTimer } from "@/components/CountdownTimer";
 import { Toast, useToastManager } from "@/components/Toast";
 import { type OrderData } from "@/lib/whatsapp";
@@ -261,8 +261,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Customer Testimonials */}
-      <TestimonialsSection />
+
 
       {/* Order Modal */}
       <OrderModal

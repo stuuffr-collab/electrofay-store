@@ -27,7 +27,6 @@ export function Header({ onSearch }: HeaderProps) {
     { href: "/offers", label: "العروض" },
     { href: "/about", label: "من نحن" },
     { href: "/contact", label: "تواصل معنا" },
-    { href: "/testimonials", label: "آراء العملاء" },
   ];
 
   return (

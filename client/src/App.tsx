@@ -15,7 +15,7 @@ import Products from "@/pages/Products";
 import Offers from "@/pages/Offers";
 import About from "@/pages/About";
 import Contact from "@/pages/Contact";
-import Testimonials from "@/pages/Testimonials";
+
 import NotFound from "@/pages/not-found";
 import NotFound404 from "@/pages/NotFound404";
 
@@ -30,7 +30,7 @@ function Router() {
       <Route path="/offers" component={Offers} />
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
-      <Route path="/testimonials" component={Testimonials} />
+
       {/* Fallback to 404 */}
       <Route component={NotFound404} />
     </Switch>
