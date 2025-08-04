@@ -79,10 +79,7 @@ export function Header({ onSearch }: HeaderProps) {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => {
-                console.log('Cart button clicked, isOpen:', cart.isOpen, 'totalItems:', cart.totalItems);
-                cart.setIsOpen(true);
-              }}
+              onClick={() => cart.setIsOpen(true)}
               className="relative rounded-lg hover:bg-gray-700 text-white"
             >
               <ShoppingCart className="w-5 h-5" />

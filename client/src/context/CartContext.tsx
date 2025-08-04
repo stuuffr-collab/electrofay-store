@@ -42,23 +42,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [items]);
 
   const addItem = (product: Product, quantity: number = 1) => {
-    console.log('Adding item to cart:', product.name, 'quantity:', quantity);
     setItems(currentItems => {
       const existingItem = currentItems.find(item => item.product.id === product.id);
       
       if (existingItem) {
-        const updatedItems = currentItems.map(item =>
+        return currentItems.map(item =>
           item.product.id === product.id
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
-        console.log('Updated existing item, new cart:', updatedItems);
-        return updatedItems;
       }
       
-      const newItems = [...currentItems, { product, quantity }];
-      console.log('Added new item, new cart:', newItems);
-      return newItems;
+      return [...currentItems, { product, quantity }];
     });
   };
 
@@ -93,10 +88,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     totalItems,
     totalPrice,
     isOpen,
-    setIsOpen: (open: boolean) => {
-      console.log('Setting cart open:', open);
-      setIsOpen(open);
-    },
+    setIsOpen,
     addItem,
     removeItem,
     updateQuantity,

@@ -16,33 +16,9 @@ export function Layout({ children, onSearch }: LayoutProps) {
   const cart = useCart();
 
   const handleCartCheckout = () => {
-    if (cart.items.length === 0) return;
-    
-    const message = createWhatsAppMessage({
-      product: { 
-        id: "cart-checkout",
-        name: `طلب متعدد - ${cart.items.length} منتج`,
-        price: cart.totalPrice 
-      },
-      customer: {
-        name: "عميل",
-        phone: "",
-        city: "طرابلس",
-        address: ""
-      }
-    });
-    
-    // Add cart details to message
-    const cartDetails = cart.items.map(item => 
-      `${item.product.name} × ${item.quantity} = ${item.product.price * item.quantity} د.ل`
-    ).join('\n');
-    
-    const fullMessage = message + '\n\nتفاصيل الطلب:\n' + cartDetails;
-    
-    window.open(`https://wa.me/218922569912?text=${encodeURIComponent(fullMessage)}`, '_blank');
+    // This function is now handled inside CartSidebar component
     cart.clearCart();
     cart.setIsOpen(false);
-    toast.success("🎉 شكراً! طلبك قيد التنفيذ");
   };
   
   return (
