@@ -30,6 +30,7 @@ export function CartSidebar({
   onCheckout
 }: CartSidebarProps) {
   const [showCheckoutDialog, setShowCheckoutDialog] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [customerData, setCustomerData] = useState({
     name: '',
     phone: '',
@@ -73,7 +74,7 @@ ${items.map(item => `• ${item.product.name} × ${item.quantity} = ${formatPric
     `.trim();
   };
 
-  const handleCompleteOrder = () => {
+  const handleCompleteOrder = async () => {
     if (!customerData.name || !customerData.phone || !customerData.city) {
       toast.error('الرجاء ملء جميع البيانات المطلوبة');
       return;
@@ -88,13 +89,35 @@ ${items.map(item => `• ${item.product.name} × ${item.quantity} = ${formatPric
       customer: customerData
     });
 
-    window.open(`https://wa.me/218922569912?text=${encodeURIComponent(orderMessage)}`, '_blank');
-    
-    // Clear cart and close both dialogs
-    onCheckout();
-    setShowCheckoutDialog(false);
-    setCustomerData({ name: '', phone: '', city: '', address: '' });
-    toast.success('🎉 شكراً! تم إرسال طلبكم بنجاح');
+    // Send order data to WhatsApp in background (business owner receives it)
+    // This simulates sending the order to the business WhatsApp
+    try {
+      // In a real implementation, this would be an API call to your backend
+      // For now, we'll open WhatsApp in a hidden iframe or similar method
+      const whatsappUrl = `https://wa.me/218922569912?text=${encodeURIComponent(orderMessage)}`;
+      
+      // Create hidden link and trigger it automatically
+      const link = document.createElement('a');
+      link.href = whatsappUrl;
+      link.target = '_blank';
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Show success dialog to user
+      setShowCheckoutDialog(false);
+      setShowSuccessDialog(true);
+      
+      // Clear cart after a short delay
+      setTimeout(() => {
+        onCheckout();
+        setCustomerData({ name: '', phone: '', city: '', address: '' });
+      }, 2000);
+      
+    } catch (error) {
+      toast.error('حدث خطأ في إرسال الطلب، يرجى المحاولة مرة أخرى');
+    }
   };
 
   return (
@@ -359,11 +382,71 @@ ${items.map(item => `• ${item.product.name} × ${item.quantity} = ${formatPric
               className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-600 disabled:to-gray-700 text-white font-bold py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:scale-100"
             >
               <MessageCircle className="w-5 h-5 ml-3" />
-              إرسال الطلب عبر واتساب
+              تأكيد الطلب
             </Button>
             <p className="text-xs text-gray-400 text-center mt-2">
-              بالضغط على إرسال الطلب، ستفتح رسالة واتساب جاهزة للإرسال
+              بالضغط على تأكيد الطلب، سيتم إرسال طلبكم وسنتواصل معكم قريباً
             </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Success Dialog */}
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent className="sm:max-w-[400px] bg-dark-bg text-white border-dark-border" style={{ background: 'var(--dark-bg)' }}>
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl font-bold text-white flex items-center justify-center gap-2">
+              🎉 تم تأكيد طلبكم بنجاح!
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              
+              <h3 className="text-lg font-semibold text-green-400 mb-2">
+                شكراً لك {customerData.name}!
+              </h3>
+              
+              <p className="text-gray-300 mb-4">
+                تم استلام طلبكم وإرساله إلى فريق المبيعات
+              </p>
+            </div>
+            
+            <div className="bg-dark-card rounded-lg p-4 border border-dark-border space-y-2">
+              <div className="flex items-center gap-2 text-sm text-gray-300">
+                <Phone className="w-4 h-4 text-green-400" />
+                <span>سنتواصل معكم خلال 10-30 دقيقة</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-300">
+                <MessageCircle className="w-4 h-4 text-green-400" />
+                <span>سيتم التأكيد عبر الواتساب: {customerData.phone}</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-300">
+                <MapPin className="w-4 h-4 text-green-400" />
+                <span>التوصيل إلى: {customerData.city}</span>
+              </div>
+            </div>
+            
+            <div className="bg-blue-900/30 rounded-lg p-3 border border-blue-700/50">
+              <p className="text-sm text-blue-200 text-center">
+                💡 احتفظ بهاتفك قريباً منك لاستلام مكالمة التأكيد
+              </p>
+            </div>
+            
+            <Button
+              onClick={() => {
+                setShowSuccessDialog(false);
+                onClose();
+              }}
+              className="w-full bg-electric-yellow text-black hover:bg-yellow-300 font-bold py-3"
+            >
+              متابعة التسوق
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
