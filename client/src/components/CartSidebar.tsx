@@ -40,6 +40,11 @@ export function CartSidebar({
             <p className="text-gray-400 mb-6">
               أضف منتجات لبدء الشراء
             </p>
+            <div className="bg-dark-card rounded-lg p-4 border border-dark-border mb-4">
+              <p className="text-gray-300 text-sm text-center">
+                💡 اضغط على "أضف للسلة" لأي منتج لتبدأ تسوقك
+              </p>
+            </div>
             <Button onClick={onClose} className="bg-electric-yellow text-black hover:bg-yellow-300">
               متابعة التسوق
             </Button>
@@ -120,9 +125,11 @@ export function CartSidebar({
         
         {/* Cart Footer */}
         <div className="border-t border-dark-border pt-4 space-y-4">
-          <div className="flex justify-between items-center text-lg font-bold">
-            <span className="text-electric-yellow">{formatPrice(totalPrice)}</span>
-            <span className="text-white">المجموع:</span>
+          <div className="bg-dark-card rounded-lg p-3 border border-dark-border">
+            <div className="flex justify-between items-center text-lg font-bold">
+              <span className="text-electric-yellow text-xl">{formatPrice(totalPrice)}</span>
+              <span className="text-white">المجموع:</span>
+            </div>
           </div>
           
           <p className="text-sm text-gray-400 text-center">
@@ -131,7 +138,7 @@ export function CartSidebar({
           
           <Button
             onClick={onCheckout}
-            className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 rounded-lg shadow-lg"
+            className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
           >
             <MessageCircle className="w-5 h-5 ml-2" />
             اطلب الآن عبر واتساب
