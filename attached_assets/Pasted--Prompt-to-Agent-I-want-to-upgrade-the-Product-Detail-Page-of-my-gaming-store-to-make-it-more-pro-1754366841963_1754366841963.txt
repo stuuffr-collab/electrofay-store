@@ -1,0 +1,70 @@
+📌 Prompt to Agent:
+I want to upgrade the Product Detail Page of my gaming store to make it more professional and user-friendly.
+
+Please implement the following UI/UX enhancements in a clean and responsive design:
+
+✅ 1. Enhance Product Order Flow:
+Replace the current "Order Now via WhatsApp" button with a normal “Order Now” button.
+
+When the user clicks “Order Now”, show a confirmation modal or toast notification saying:
+“✅ Product added to your cart successfully.”
+
+Optionally, navigate user to the cart or keep shopping.
+
+✅ 2. Improve Product Rating Display:
+Show stars rating (e.g., ⭐⭐⭐⭐⭐) and next to it the rating number (e.g., 4.9).
+
+Add (123 reviews) next to the stars for realism.
+
+✅ 3. Upgrade Product Specifications Section:
+Display key specs with icons. Example:
+
+🎧 Stereo Sound
+
+🔋 Battery: 20,000mAh
+
+📦 Includes case and charger
+
+Alternatively, organize details into tabs:
+
+“Description | Specifications | Shipping”
+
+✅ 4. Improve Similar Products Display:
+Make the Similar Products section a horizontal scroll carousel (Slider).
+
+Add small tags like “New” or “Top Rated” on similar products.
+
+Show 4 products at a time, scrollable on mobile.
+
+✅ 5. Product Image Zoom:
+Allow hover zoom on product image (or click to zoom in full view).
+
+Add gallery with thumbnails for multiple product images.
+
+✅ 6. Typography and Layout Enhancements:
+Increase font size for product name and price slightly.
+
+Add spacing between “Product Specs” and “Similar Products” sections.
+
+Use Cairo Bold or Tajawal ExtraBold for product title.
+
+✅ 7. Performance Optimization:
+Make sure product images are compressed and served in WebP format for fast loading.
+
+Optimize lazy loading for similar products.
+
+✅ All changes should maintain a dark theme with gaming vibes, electric yellow for CTAs, and responsive design for both desktop and mobile.
+
+Do not include any references to home appliances or unrelated categories – the store is 100% focused on gaming electronics only.
+
+📢 After completing the changes, test mobile and desktop views. Let me know when done so I can review.
+
+
+
+
+
+
+
+
+
+Ask ChatGPT

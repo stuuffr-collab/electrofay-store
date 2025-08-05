@@ -1,12 +1,17 @@
 import { useState, useEffect } from "react";
 import { useParams, useLocation } from "wouter";
-import { Star, Minus, Plus, ShoppingCart, Truck, Shield, ArrowRight, Heart } from "lucide-react";
+import { Minus, Plus, ShoppingCart, Truck, Shield, ArrowRight, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/context/CartContext";
 import { useProducts } from "@/hooks/useProducts";
-import { ProductCard, Product } from "@/components/ProductCard";
+import { Product } from "@/components/ProductCard";
 import { useToast } from "@/hooks/use-toast";
+import { ProductImageZoom } from "@/components/ProductImageZoom";
+import { StarRating } from "@/components/StarRating";
+import { ProductTabs } from "@/components/ProductTabs";
+import { SimilarProductsCarousel } from "@/components/SimilarProductsCarousel";
+
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -56,7 +61,7 @@ export default function ProductDetail() {
       cart.addItem(product);
     }
     toast({
-      title: "✅ تمت الإضافة للسلة",
+      title: "✅ تم إضافة للسلة",
       description: `تم إضافة ${quantity} من ${product.name} للسلة بنجاح`,
     });
   };
@@ -66,6 +71,10 @@ export default function ProductDetail() {
     for (let i = 0; i < quantity; i++) {
       cart.addItem(product);
     }
+    toast({
+      title: "✅ تم إضافة للسلة",
+      description: `تم إضافة ${product.name} للسلة بنجاح`,
+    });
     // Navigate to checkout
     setLocation('/checkout');
   };
@@ -91,6 +100,14 @@ export default function ProductDetail() {
   const discountPercentage = product.originalPrice 
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
+
+  // Create multiple product images (for demo purposes, using the same image with different query params)
+  const productImages = [
+    product.image,
+    `${product.image}&variant=angle1`,
+    `${product.image}&variant=angle2`,
+    `${product.image}&variant=detail`
+  ];
 
   return (
     <div className="min-h-screen bg-dark-bg text-white">
@@ -122,49 +139,40 @@ export default function ProductDetail() {
       {/* Product Detail Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid lg:grid-cols-2 gap-12">
-          {/* Product Images */}
+          {/* Enhanced Product Images with Zoom */}
           <div className="space-y-4">
-            {/* Main Image */}
-            <div className="relative bg-dark-card rounded-2xl p-4 border border-dark-border">
-              <div className="aspect-square overflow-hidden rounded-xl">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                />
-              </div>
+            <div className="relative">
               {/* Wishlist Button */}
               <button
                 onClick={() => setIsWishlist(!isWishlist)}
-                className={`absolute top-6 left-6 p-2 rounded-full transition-colors ${
-                  isWishlist ? 'bg-red-500 text-white' : 'bg-white/20 text-white hover:bg-white/30'
+                className={`absolute top-6 left-6 p-3 rounded-full transition-all duration-300 z-20 ${
+                  isWishlist ? 'bg-red-500 text-white shadow-lg' : 'bg-white/20 backdrop-blur-sm text-white hover:bg-white/30'
                 }`}
               >
                 <Heart className={`w-5 h-5 ${isWishlist ? 'fill-current' : ''}`} />
               </button>
               
-              {/* Discount Badge */}
-              {discountPercentage > 0 && (
-                <div className="absolute top-6 right-6 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-                  خصم {discountPercentage}%
-                </div>
-              )}
+              <ProductImageZoom 
+                images={productImages}
+                alt={product.name}
+                discountPercentage={discountPercentage}
+              />
             </div>
 
-            {/* Product Features */}
+            {/* Enhanced Product Features */}
             <div className="bg-dark-card rounded-xl p-6 border border-dark-border">
               <h4 className="text-lg font-bold mb-4 text-electric-yellow">مميزات المنتج</h4>
               <div className="space-y-3">
                 <div className="flex items-center">
                   <Shield className="w-5 h-5 text-green-500 ml-3" />
-                  <span>ضمان شامل</span>
+                  <span>ضمان شامل سنة كاملة</span>
                 </div>
                 <div className="flex items-center">
                   <Truck className="w-5 h-5 text-blue-500 ml-3" />
                   <span>توصيل مجاني للطلبات أكثر من 500 د.ل</span>
                 </div>
                 <div className="flex items-center">
-                  <Star className="w-5 h-5 text-electric-yellow ml-3" />
+                  <ShoppingCart className="w-5 h-5 text-electric-yellow ml-3" />
                   <span>جودة عالية مضمونة</span>
                 </div>
               </div>
@@ -185,46 +193,37 @@ export default function ProductDetail() {
                   </Badge>
                 ))}
               </div>
-              <h1 className="text-3xl lg:text-4xl font-tajawal-extrabold mb-2">{product.name}</h1>
-              <p className="text-gray-400 text-lg">{product.nameEn}</p>
+              <h1 className="text-4xl lg:text-5xl font-extrabold mb-3 leading-tight" style={{ fontFamily: 'Cairo, Tajawal, sans-serif' }}>
+                {product.name}
+              </h1>
+              <p className="text-gray-400 text-xl">{product.nameEn}</p>
             </div>
 
-            {/* Rating */}
-            <div className="flex items-center gap-2">
-              <div className="flex">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`w-5 h-5 ${
-                      i < Math.floor(product.rating) ? 'fill-electric-yellow text-electric-yellow' : 'text-gray-600'
-                    }`}
-                  />
-                ))}
-              </div>
-              <span className="text-electric-yellow font-bold">{product.rating}</span>
-              <span className="text-gray-400">(127 تقييم)</span>
-            </div>
+            {/* Enhanced Rating */}
+            <StarRating 
+              rating={product.rating} 
+              reviewCount={127} 
+              size="lg" 
+            />
 
-            {/* Price */}
-            <div className="space-y-2">
+            {/* Enhanced Price Display */}
+            <div className="space-y-3 p-6 bg-gradient-to-r from-dark-card to-dark-card/50 rounded-xl border border-dark-border">
               <div className="flex items-center gap-4">
-                <span className="text-4xl font-bold text-electric-yellow">{product.price} د.ل</span>
+                <span className="text-5xl font-extrabold text-electric-yellow">{product.price} د.ل</span>
                 {product.originalPrice && (
-                  <span className="text-2xl text-gray-500 line-through">{product.originalPrice} د.ل</span>
+                  <span className="text-3xl text-gray-500 line-through">{product.originalPrice} د.ل</span>
                 )}
               </div>
               {discountPercentage > 0 && (
-                <p className="text-green-500 font-semibold">
-                  توفر {product.originalPrice! - product.price} د.ل ({discountPercentage}% خصم)
-                </p>
+                <div className="flex items-center gap-3">
+                  <Badge variant="destructive" className="px-3 py-1 text-sm font-bold">
+                    وفر {product.originalPrice! - product.price} د.ل
+                  </Badge>
+                  <Badge variant="outline" className="border-green-500 text-green-400 px-3 py-1 text-sm">
+                    خصم {discountPercentage}%
+                  </Badge>
+                </div>
               )}
-            </div>
-
-            {/* Description */}
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold">وصف المنتج</h3>
-              <p className="text-gray-300 leading-relaxed">{product.description}</p>
-              <p className="text-gray-400 text-sm">{product.descriptionEn}</p>
             </div>
 
             {/* Stock Status */}
@@ -263,19 +262,19 @@ export default function ProductDetail() {
                   </span>
                 </div>
 
-                {/* Action Buttons */}
+                {/* Enhanced Action Buttons */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Button
                     onClick={handleAddToCart}
                     variant="outline"
-                    className="h-14 text-lg font-bold border-2 border-electric-yellow text-electric-yellow hover:bg-electric-yellow hover:text-black transition-all duration-300"
+                    className="h-16 text-xl font-bold border-2 border-electric-yellow text-electric-yellow hover:bg-electric-yellow hover:text-black transition-all duration-300 shadow-lg hover:shadow-xl"
                   >
-                    <ShoppingCart className="w-5 h-5 ml-2" />
+                    <ShoppingCart className="w-6 h-6 ml-2" />
                     أضف للسلة
                   </Button>
                   <Button
                     onClick={handleOrderNow}
-                    className="h-14 text-lg font-bold bg-electric-yellow hover:bg-yellow-300 text-black shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                    className="h-16 text-xl font-bold bg-gradient-to-r from-electric-yellow to-yellow-300 hover:from-yellow-300 hover:to-electric-yellow text-black shadow-xl hover:shadow-2xl transform hover:scale-[1.02] transition-all duration-300"
                   >
                     اطلب الآن
                   </Button>
@@ -283,54 +282,32 @@ export default function ProductDetail() {
               </div>
             )}
 
-            {/* Shipping Info */}
-            <div className="bg-dark-card rounded-xl p-6 border border-dark-border">
-              <h4 className="text-lg font-bold mb-4 flex items-center">
-                <Truck className="w-5 h-5 ml-2 text-electric-yellow" />
-                معلومات التوصيل
-              </h4>
-              <div className="space-y-3 text-sm">
-                <div className="flex justify-between">
-                  <span>التوصيل داخل طرابلس:</span>
-                  <span className="text-electric-yellow font-semibold">15 د.ل</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>التوصيل للمدن الأخرى:</span>
-                  <span className="text-electric-yellow font-semibold">25-35 د.ل</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>توصيل مجاني:</span>
-                  <span className="text-green-500 font-semibold">للطلبات أكثر من 500 د.ل</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>مدة التوصيل:</span>
-                  <span className="text-electric-yellow font-semibold">2-5 أيام عمل</span>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        {/* Similar Products */}
+        {/* Enhanced Product Tabs Section */}
+        <div className="mt-16">
+          <ProductTabs 
+            description={product.description}
+            descriptionEn={product.descriptionEn}
+            category={product.category}
+          />
+        </div>
+
+        {/* Enhanced Similar Products Carousel */}
         {similarProducts.length > 0 && (
-          <div className="mt-16">
-            <h3 className="text-2xl font-bold mb-8 text-center">منتجات مشابهة</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {similarProducts.map((similarProduct) => (
-                <ProductCard
-                  key={similarProduct.id}
-                  product={similarProduct}
-                  onOrderClick={() => setLocation(`/product/${similarProduct.id}`)}
-                  onAddToCart={(product) => {
-                    cart.addItem(product);
-                    toast({
-                      title: "✅ تمت الإضافة للسلة",
-                      description: `تم إضافة ${product.name} للسلة`,
-                    });
-                  }}
-                />
-              ))}
-            </div>
+          <div className="mt-20">
+            <SimilarProductsCarousel
+              products={similarProducts}
+              onProductClick={(productId) => setLocation(`/product/${productId}`)}
+              onAddToCart={(product) => {
+                cart.addItem(product);
+                toast({
+                  title: "✅ تم إضافة للسلة",
+                  description: `تم إضافة ${product.name} للسلة`,
+                });
+              }}
+            />
           </div>
         )}
       </div>
