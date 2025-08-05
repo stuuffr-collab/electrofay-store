@@ -7,11 +7,9 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useDarkMode } from "@/hooks/use-dark-mode";
 import { useCart } from "@/hooks/use-cart";
 
-interface HeaderProps {
-  onSearch?: (query: string) => void;
-}
+interface HeaderProps {}
 
-export function Header({ onSearch }: HeaderProps) {
+export function Header({}: HeaderProps) {
   const [location] = useLocation();
   const { isDark, toggle } = useDarkMode();
   const cart = useCart();
@@ -20,13 +18,16 @@ export function Header({ onSearch }: HeaderProps) {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    onSearch?.(searchQuery);
+    if (searchQuery.trim()) {
+      // Navigate to products page with search query
+      window.scrollTo(0, 0);
+      window.location.href = `/products?search=${encodeURIComponent(searchQuery)}`;
+    }
   };
 
   const navigationItems = [
     { href: "/", label: "الرئيسية" },
     { href: "/products", label: "المنتجات" },
-    { href: "/new-products", label: "أحدث المنتجات" },
     { href: "/offers", label: "العروض" },
     { href: "/about", label: "من نحن" },
     { href: "/contact", label: "تواصل معنا" },

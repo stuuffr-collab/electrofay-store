@@ -10,10 +10,9 @@ import toast from "react-hot-toast";
 
 interface LayoutProps {
   children: ReactNode;
-  onSearch?: (query: string) => void;
 }
 
-export function Layout({ children, onSearch }: LayoutProps) {
+export function Layout({ children }: LayoutProps) {
   const cart = useCart();
 
   const handleCartCheckout = () => {
@@ -36,9 +35,7 @@ export function Layout({ children, onSearch }: LayoutProps) {
       />
       
       <PromotionalTicker />
-      <Header 
-        onSearch={onSearch} 
-      />
+      <Header />
       <main className="flex-1">
         {children}
       </main>
