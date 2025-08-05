@@ -3,6 +3,7 @@ import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { PromotionalTicker } from "./PromotionalTicker";
 import { CartSidebar } from "./CartSidebar";
+import { ScrollToTop } from "./ScrollToTop";
 import { useCart } from "@/hooks/use-cart";
 import { createWhatsAppMessage } from "@/lib/whatsapp";
 import toast from "react-hot-toast";
@@ -42,6 +43,7 @@ export function Layout({ children, onSearch }: LayoutProps) {
         {children}
       </main>
       <Footer />
+      <ScrollToTop />
     </div>
   );
 }

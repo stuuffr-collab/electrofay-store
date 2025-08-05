@@ -106,10 +106,31 @@ export function ProductCard({ product, onOrderClick, onAddToCart }: ProductCardP
               {product.price} د.ل
             </span>
             {product.originalPrice && (
-              <span className="text-sm text-gray-400 line-through">
-                {product.originalPrice} د.ل
-              </span>
+              <>
+                <span className="text-sm text-gray-400 line-through">
+                  {product.originalPrice} د.ل
+                </span>
+                <span className="text-xs bg-red-500 text-white px-2 py-1 rounded-full">
+                  -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+                </span>
+              </>
             )}
+          </div>
+        </div>
+
+        {/* Trust Icons */}
+        <div className="flex items-center justify-center space-x-4 space-x-reverse mb-3 text-xs text-gray-400">
+          <div className="flex items-center">
+            <span className="text-sm ml-1">🔒</span>
+            <span>ضمان</span>
+          </div>
+          <div className="flex items-center">
+            <span className="text-sm ml-1">🚚</span>
+            <span>توصيل</span>
+          </div>
+          <div className="flex items-center">
+            <span className="text-sm ml-1">⭐</span>
+            <span>جودة</span>
           </div>
         </div>
 

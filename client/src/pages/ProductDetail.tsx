@@ -11,6 +11,8 @@ import { ProductImageZoom } from "@/components/ProductImageZoom";
 import { StarRating } from "@/components/StarRating";
 import { ProductTabs } from "@/components/ProductTabs";
 import { SimilarProductsCarousel } from "@/components/SimilarProductsCarousel";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { ProductImageGallery } from "@/components/ProductImageGallery";
 
 
 export default function ProductDetail() {
@@ -109,35 +111,27 @@ export default function ProductDetail() {
     `${product.image}&variant=detail`
   ];
 
+  // Technical specifications for the product
+  const technicalSpecs = {
+    "الوزن": "150 جرام",
+    "النوع": "لاسلكي", 
+    "التوافق": "PC, PS4, PS5, Xbox",
+    "البطارية": "50 ساعة",
+    "الاتصال": "Bluetooth 5.0"
+  };
+
   return (
     <div className="min-h-screen bg-dark-bg text-white">
-      {/* Breadcrumb */}
-      <div className="bg-dark-card border-b border-dark-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <nav className="flex items-center space-x-2 text-sm text-gray-400">
-            <button 
-              onClick={() => setLocation('/')}
-              className="hover:text-electric-yellow transition-colors"
-            >
-              الرئيسية
-            </button>
-            <ArrowRight className="w-4 h-4" />
-            <button 
-              onClick={() => setLocation('/products')}
-              className="hover:text-electric-yellow transition-colors"
-            >
-              المنتجات
-            </button>
-            <ArrowRight className="w-4 h-4" />
-            <span className="text-electric-yellow">{getCategoryDisplayName(product.category)}</span>
-            <ArrowRight className="w-4 h-4" />
-            <span className="text-white">{product.name}</span>
-          </nav>
-        </div>
-      </div>
-
-      {/* Product Detail Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Breadcrumbs 
+          items={[
+            { label: "المنتجات", href: "/products" },
+            { label: getCategoryDisplayName(product.category) },
+            { label: product.name }
+          ]} 
+        />
+
+        {/* Product Detail Section */}
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Enhanced Product Images with Zoom */}
           <div className="space-y-4">

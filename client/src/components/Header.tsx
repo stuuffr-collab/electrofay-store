@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Search, Sun, Moon, Menu, Zap, ShoppingCart } from "lucide-react";
+import { Search, Sun, Moon, Menu, Zap, ShoppingCart, Gamepad2, Languages } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -26,6 +26,7 @@ export function Header({ onSearch }: HeaderProps) {
   const navigationItems = [
     { href: "/", label: "الرئيسية" },
     { href: "/products", label: "المنتجات" },
+    { href: "/new-products", label: "أحدث المنتجات" },
     { href: "/offers", label: "العروض" },
     { href: "/about", label: "من نحن" },
     { href: "/contact", label: "تواصل معنا" },
@@ -37,8 +38,8 @@ export function Header({ onSearch }: HeaderProps) {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-4 space-x-reverse">
-            <div className="w-10 h-10 bg-gradient-to-br from-gray-800 to-gray-600 rounded-lg flex items-center justify-center">
-              <Zap className="w-6 h-6 text-electric-yellow" />
+            <div className="w-10 h-10 bg-gradient-to-br from-electric-yellow to-yellow-500 rounded-lg flex items-center justify-center shadow-lg">
+              <Gamepad2 className="w-6 h-6 text-black" />
             </div>
             <div>
               <h1 className="text-xl font-bold text-white">إلكتروفاي</h1>
@@ -88,6 +89,16 @@ export function Header({ onSearch }: HeaderProps) {
                   {cart.totalItems > 99 ? '99+' : cart.totalItems}
                 </span>
               )}
+            </Button>
+
+            {/* Language Toggle */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-lg hover:bg-gray-700 text-white"
+              title="التبديل للإنجليزية"
+            >
+              <Languages className="w-5 h-5" />
             </Button>
 
             {/* Dark Mode Toggle */}
