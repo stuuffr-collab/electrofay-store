@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Star, ShoppingCart, MessageCircle, Facebook } from "lucide-react";
+import { Star, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { shareProduct } from "@/lib/whatsapp";
+
 import { useLocation } from "wouter";
 
 export interface Product {
@@ -32,9 +32,7 @@ export function ProductCard({ product, onOrderClick, onAddToCart }: ProductCardP
   const [imageError, setImageError] = useState(false);
   const [, setLocation] = useLocation();
 
-  const handleShare = (platform: 'whatsapp' | 'facebook' | 'twitter') => {
-    shareProduct(platform, product.name, product.price);
-  };
+
 
   const getBadgeColor = (badge: string) => {
     if (badge.includes("خصم") || badge.includes("%")) return "destructive";
@@ -155,31 +153,7 @@ export function ProductCard({ product, onOrderClick, onAddToCart }: ProductCardP
           </Button>
         </div>
 
-        {/* Share Buttons */}
-        <div className="flex justify-center space-x-2 space-x-reverse">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleShare('whatsapp');
-            }}
-            className="p-2 bg-green-500 hover:bg-green-600 text-white border-green-500"
-          >
-            <MessageCircle className="w-4 h-4" />
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleShare('facebook');
-            }}
-            className="p-2 bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
-          >
-            <Facebook className="w-4 h-4" />
-          </Button>
-        </div>
+
       </div>
     </div>
   );
