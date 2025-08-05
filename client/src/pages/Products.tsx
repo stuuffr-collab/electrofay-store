@@ -79,7 +79,7 @@ export default function Products() {
             </div>
 
             {/* Category Filter */}
-            <div className="flex bg-gray-100 dark:bg-dark-bg rounded-lg p-1">
+            <div className="flex bg-black dark:bg-black rounded-lg p-1">
               <Button
                 variant={filter === "all" ? "default" : "ghost"}
                 size="sm"
