@@ -12,7 +12,7 @@ import { useProducts } from "@/hooks/useProducts";
 export default function Products() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
-  const [filter, setFilter] = useState<"all" | "gaming" | "electronics">("all");
+  const [filter, setFilter] = useState<"all" | "gaming_accessory" | "gaming_pc" | "gaming_console" | "streaming_gear">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<"name" | "price" | "rating">("name");
   const { toasts, showSuccess } = useToastManager();
@@ -79,30 +79,46 @@ export default function Products() {
             </div>
 
             {/* Category Filter */}
-            <div className="flex bg-black dark:bg-black rounded-lg p-1">
+            <div className="flex flex-wrap gap-1 bg-black dark:bg-black rounded-lg p-1">
               <Button
                 variant={filter === "all" ? "default" : "ghost"}
                 size="sm"
                 onClick={() => setFilter("all")}
-                className={filter === "all" ? "bg-electric-yellow text-black" : ""}
+                className={filter === "all" ? "bg-electric-yellow text-black" : "text-white hover:text-black"}
               >
                 الكل
               </Button>
               <Button
-                variant={filter === "gaming" ? "default" : "ghost"}
+                variant={filter === "gaming_accessory" ? "default" : "ghost"}
                 size="sm"
-                onClick={() => setFilter("gaming")}
-                className={filter === "gaming" ? "bg-electric-yellow text-black" : ""}
+                onClick={() => setFilter("gaming_accessory")}
+                className={filter === "gaming_accessory" ? "bg-electric-yellow text-black" : "text-white hover:text-black"}
               >
-                قيمنج
+                اكسسوارات
               </Button>
               <Button
-                variant={filter === "electronics" ? "default" : "ghost"}
+                variant={filter === "gaming_pc" ? "default" : "ghost"}
                 size="sm"
-                onClick={() => setFilter("electronics")}
-                className={filter === "electronics" ? "bg-electric-yellow text-black" : ""}
+                onClick={() => setFilter("gaming_pc")}
+                className={filter === "gaming_pc" ? "bg-electric-yellow text-black" : "text-white hover:text-black"}
               >
-                كهرومنزلية
+                أجهزة PC
+              </Button>
+              <Button
+                variant={filter === "gaming_console" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setFilter("gaming_console")}
+                className={filter === "gaming_console" ? "bg-electric-yellow text-black" : "text-white hover:text-black"}
+              >
+                أجهزة التحكم
+              </Button>
+              <Button
+                variant={filter === "streaming_gear" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setFilter("streaming_gear")}
+                className={filter === "streaming_gear" ? "bg-electric-yellow text-black" : "text-white hover:text-black"}
+              >
+                أدوات الستريمر
               </Button>
             </div>
 
@@ -124,7 +140,12 @@ export default function Products() {
           <p className="text-gray-600 dark:text-gray-400">
             عرض {filteredAndSortedProducts.length} منتج
             {searchQuery && ` من البحث عن "${searchQuery}"`}
-            {filter !== "all" && ` في فئة ${filter === "gaming" ? "القيمنج" : "الكهرومنزلية"}`}
+            {filter !== "all" && ` في فئة ${
+              filter === "gaming_accessory" ? "الاكسسوارات" :
+              filter === "gaming_pc" ? "أجهزة PC" :
+              filter === "gaming_console" ? "أجهزة التحكم" :
+              filter === "streaming_gear" ? "أدوات الستريمر" : ""
+            }`}
           </p>
         </div>
 

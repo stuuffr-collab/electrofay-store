@@ -18,7 +18,7 @@ import toast from "react-hot-toast";
 export default function Home() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
-  const [filter, setFilter] = useState<"all" | "gaming" | "electronics">("all");
+  const [filter, setFilter] = useState<"all" | "gaming_accessory" | "gaming_pc" | "gaming_console" | "streaming_gear">("all");
   const { toasts, showSuccess } = useToastManager();
   const cart = useCart();
   const { data: products = [], isLoading, error } = useProducts();
@@ -69,13 +69,13 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="text-center md:text-right">
-              <h2 className="text-4xl md:text-6xl font-tajawal-extrabold mb-6 animate-fade-in">
-                أفضل متجر
-                <span className="text-electric-yellow drop-shadow-glow"> إكسسوارات قيمنج</span>
-                <br />في ليبيا
-              </h2>
+              <h1 className="text-4xl md:text-6xl font-tajawal-extrabold mb-6 animate-fade-in">
+                إلكتروفاي قيمنج
+                <span className="text-electric-yellow drop-shadow-glow"> الوجهة الأولى</span>
+                <br />لعالم الألعاب في ليبيا
+              </h1>
               <p className="text-xl mb-8 text-gray-200 animate-slide-up animation-delay-200">
-                اكتشف أحدث المنتجات الكهرومنزلية وإكسسوارات الألعاب مع توصيل سريع لجميع أنحاء ليبيا
+                متجرك المتخصص في أجهزة القيمنج الاحترافية وأدوات الستريمر مع توصيل سريع لجميع أنحاء ليبيا
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start animate-slide-up animation-delay-400">
                 <Button 
@@ -112,20 +112,20 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h3 className="text-3xl font-bold mb-4 text-white">تسوق حسب الفئة</h3>
-            <p className="text-gray-300">اختر من مجموعة واسعة من المنتجات عالية الجودة</p>
+            <p className="text-gray-300">اختر من أفضل منتجات القيمنج والستريمنج الاحترافية</p>
           </div>
           
           <div className="grid md:grid-cols-2 gap-8">
-            {/* Gaming Category */}
+            {/* Gaming Accessories Category */}
             <div 
-              onClick={() => setFilter('gaming')}
+              onClick={() => setFilter('gaming_accessory')}
               className="group relative bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl p-8 text-white overflow-hidden cursor-pointer transform hover:scale-105 transition-all duration-300"
             >
               <div className="absolute inset-0 bg-black/20"></div>
               <div className="relative z-10">
                 <Gamepad2 className="w-12 h-12 mb-4 text-electric-yellow" />
                 <h4 className="text-2xl font-bold mb-2">إكسسوارات قيمنج</h4>
-                <p className="text-purple-100 mb-6">لوحات مفاتيح، فأرة، سماعات، وإكسسوارات ألعاب احترافية</p>
+                <p className="text-purple-100 mb-6">لوحات مفاتيح، فأرة، سماعات، كراسي وإكسسوارات ألعاب احترافية</p>
                 <div className="flex items-center text-electric-yellow">
                   <span className="font-semibold">تسوق الآن</span>
                   <ArrowLeft className="w-5 h-5 mr-2 group-hover:translate-x-2 transition-transform" />
@@ -138,24 +138,24 @@ export default function Home() {
               />
             </div>
 
-            {/* Electronics Category */}
+            {/* Gaming PC & Streaming Category */}
             <div 
-              onClick={() => setFilter('electronics')}
+              onClick={() => setFilter('gaming_pc')}
               className="group relative bg-gradient-to-br from-blue-500 to-teal-500 rounded-2xl p-8 text-white overflow-hidden cursor-pointer transform hover:scale-105 transition-all duration-300"
             >
               <div className="absolute inset-0 bg-black/20"></div>
               <div className="relative z-10">
                 <Smartphone className="w-12 h-12 mb-4 text-electric-yellow" />
-                <h4 className="text-2xl font-bold mb-2">منتجات كهرومنزلية</h4>
-                <p className="text-blue-100 mb-6">أجهزة ذكية، إكسسوارات هواتف، وحلول تقنية للمنزل</p>
+                <h4 className="text-2xl font-bold mb-2">أجهزة PC وستريمنج</h4>
+                <p className="text-blue-100 mb-6">شاشات قيمنج، لابتوبات، تجميعات PC وأدوات الستريمر</p>
                 <div className="flex items-center text-electric-yellow">
                   <span className="font-semibold">تسوق الآن</span>
                   <ArrowLeft className="w-5 h-5 mr-2 group-hover:translate-x-2 transition-transform" />
                 </div>
               </div>
               <img 
-                src="https://images.unsplash.com/photo-1498049794561-7780e7231661?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300" 
-                alt="Smart home electronics and devices" 
+                src="https://images.unsplash.com/photo-1587831990711-23ca6441447b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300" 
+                alt="Gaming PC and streaming setup" 
                 className="absolute top-0 right-0 w-32 h-32 object-cover opacity-30 group-hover:opacity-50 transition-opacity"
               />
             </div>
@@ -169,7 +169,7 @@ export default function Home() {
           <div className="flex justify-between items-center mb-12">
             <div>
               <h3 className="text-3xl font-bold mb-2 text-white">المنتجات المميزة</h3>
-              <p className="text-gray-300">أحدث المنتجات وأكثرها مبيعاً</p>
+              <p className="text-gray-300">أحدث منتجات القيمنج وأكثرها مبيعاً</p>
             </div>
             
             {/* Filter Buttons */}
@@ -183,20 +183,28 @@ export default function Home() {
                 الكل
               </Button>
               <Button
-                variant={filter === "gaming" ? "default" : "ghost"}
+                variant={filter === "gaming_accessory" ? "default" : "ghost"}
                 size="sm"
-                onClick={() => setFilter("gaming")}
-                className={filter === "gaming" ? "bg-electric-yellow text-black" : ""}
+                onClick={() => setFilter("gaming_accessory")}
+                className={filter === "gaming_accessory" ? "bg-electric-yellow text-black" : ""}
               >
-                قيمنج
+                اكسسوارات
               </Button>
               <Button
-                variant={filter === "electronics" ? "default" : "ghost"}
+                variant={filter === "gaming_pc" ? "default" : "ghost"}
                 size="sm"
-                onClick={() => setFilter("electronics")}
-                className={filter === "electronics" ? "bg-electric-yellow text-black" : ""}
+                onClick={() => setFilter("gaming_pc")}
+                className={filter === "gaming_pc" ? "bg-electric-yellow text-black" : ""}
               >
-                كهرومنزلية
+                أجهزة PC
+              </Button>
+              <Button
+                variant={filter === "streaming_gear" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setFilter("streaming_gear")}
+                className={filter === "streaming_gear" ? "bg-electric-yellow text-black" : ""}
+              >
+                ستريمنج
               </Button>
             </div>
           </div>

@@ -12,7 +12,7 @@ export interface Product {
   descriptionEn: string;
   price: number;
   originalPrice: number | null;
-  category: "gaming" | "electronics";
+  category: "gaming_accessory" | "gaming_pc" | "gaming_console" | "streaming_gear";
   image: string;
   rating: number;
   badges: string[];
