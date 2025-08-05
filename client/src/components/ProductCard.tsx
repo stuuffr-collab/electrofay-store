@@ -53,11 +53,16 @@ export function ProductCard({ product, onOrderClick, onAddToCart }: ProductCardP
   const dynamicBadge = generateStockBadge();
   const allBadges = dynamicBadge ? [dynamicBadge, ...product.badges] : product.badges;
 
+  const handleProductClick = () => {
+    window.scrollTo(0, 0);
+    setLocation(`/product/${product.id}`);
+  };
+
   return (
     <div 
       className="bg-dark-card rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group hover:scale-105 transform animate-fadeIn border border-dark-border cursor-pointer" 
       style={{ background: 'var(--dark-card)' }}
-      onClick={() => setLocation(`/product/${product.id}`)}
+      onClick={handleProductClick}
     >
       <div className="relative">
         {/* Product Image */}

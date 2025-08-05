@@ -249,7 +249,10 @@ export default function Home() {
           <div className="text-center mt-12">
             <Button 
               variant="outline"
-              onClick={() => setLocation('/products')}
+              onClick={() => {
+                window.scrollTo(0, 0);
+                setLocation('/products');
+              }}
               className="border-2 border-electric-yellow text-electric-yellow hover:bg-electric-yellow hover:text-black font-semibold py-3 px-8"
             >
               عرض المزيد من المنتجات

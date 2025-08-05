@@ -28,6 +28,11 @@ function Router() {
   // Track page views when routes change
   useAnalytics();
   
+  // Scroll to top on route changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  });
+  
   return (
     <Switch>
       <Route path="/" component={Home} />
