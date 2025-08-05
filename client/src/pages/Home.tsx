@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { Gamepad2, Smartphone, ArrowLeft, Percent, Truck, Search } from "lucide-react";
+import { Gamepad2, Smartphone, ArrowLeft, Percent, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ProductCard, type Product } from "@/components/ProductCard";
+import { SmartSearch } from "@/components/SmartSearch";
 import { OrderModal } from "@/components/OrderModal";
 import { AnnouncementBanner } from "@/components/AnnouncementBanner";
 
@@ -23,6 +23,7 @@ export default function Home() {
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [filter, setFilter] = useState<"all" | "gaming_accessory" | "gaming_pc" | "gaming_console" | "streaming_gear">("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [filteredBySearch, setFilteredBySearch] = useState<Product[]>([]);
   const { toasts, showSuccess } = useToastManager();
   const cart = useCart();
   const { data: products = [], isLoading, error } = useProducts();
@@ -31,16 +32,16 @@ export default function Home() {
   const offerEndDate = new Date();
   offerEndDate.setDate(offerEndDate.getDate() + 7);
 
-  const filteredProducts = products.filter(product => {
-    const matchesCategory = filter === "all" || product.category === filter;
-    const matchesSearch = searchQuery === "" || 
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  }).slice(0, 8); // Show first 8 products
+  const filteredProducts = (() => {
+    const searchResults = searchQuery ? filteredBySearch : products;
+    return searchResults.filter(product => 
+      filter === "all" || product.category === filter
+    ).slice(0, 8); // Show first 8 products
+  })();
 
-  const handleSearch = (query: string) => {
+  const handleSearchChange = (query: string, searchResults: Product[]) => {
     setSearchQuery(query);
+    setFilteredBySearch(searchResults);
   };
 
   const handleOrderClick = (product: Product) => {
@@ -183,23 +184,24 @@ export default function Home() {
             <p className="text-gray-300">أحدث منتجات القيمنج وأكثرها مبيعاً</p>
           </div>
 
-          {/* Search Bar */}
-          <div className="max-w-md mx-auto mb-8">
-            <form onSubmit={(e) => { e.preventDefault(); }} className="relative">
-              <Input
-                type="text"
-                placeholder="ابحث عن منتجات..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 text-right bg-dark-bg border-dark-border text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-electric-yellow focus:border-electric-yellow"
-              />
-              <Search className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
-            </form>
+          {/* Smart Search */}
+          <div className="mb-8">
+            <SmartSearch 
+              products={products}
+              onSearchChange={handleSearchChange}
+              placeholder="ابحث عن منتجات قيمنج، إكسسوارات، PC..."
+            />
           </div>
 
           <div className="flex justify-between items-center mb-8">
             <div className="text-sm text-gray-300">
-              {searchQuery ? `نتائج البحث: "${searchQuery}"` : ""}
+              {searchQuery ? (
+                <span className="bg-electric-yellow/10 text-electric-yellow px-3 py-1 rounded-full">
+                  نتائج البحث: "{searchQuery}" ({filteredProducts.length} منتج)
+                </span>
+              ) : (
+                "اختر فئة أو استخدم البحث الذكي أعلاه"
+              )}
             </div>
             
             {/* Filter Buttons */}
