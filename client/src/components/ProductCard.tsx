@@ -118,22 +118,6 @@ export function ProductCard({ product, onOrderClick, onAddToCart }: ProductCardP
           </div>
         </div>
 
-        {/* Trust Icons */}
-        <div className="flex items-center justify-center space-x-4 space-x-reverse mb-3 text-xs text-gray-400">
-          <div className="flex items-center">
-            <span className="text-sm ml-1">🔒</span>
-            <span>ضمان</span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-sm ml-1">🚚</span>
-            <span>توصيل</span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-sm ml-1">⭐</span>
-            <span>جودة</span>
-          </div>
-        </div>
-
         {/* Star Rating */}
         <div className="flex items-center justify-center mb-4">
           {[...Array(5)].map((_, index) => (

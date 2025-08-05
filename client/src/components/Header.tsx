@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Search, Sun, Moon, Menu, Zap, ShoppingCart, Gamepad2, Languages } from "lucide-react";
+import { Search, Sun, Moon, Menu, Zap, ShoppingCart, Gamepad2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -89,16 +89,6 @@ export function Header({ onSearch }: HeaderProps) {
                   {cart.totalItems > 99 ? '99+' : cart.totalItems}
                 </span>
               )}
-            </Button>
-
-            {/* Language Toggle */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-lg hover:bg-gray-700 text-white"
-              title="التبديل للإنجليزية"
-            >
-              <Languages className="w-5 h-5" />
             </Button>
 
             {/* Dark Mode Toggle */}
