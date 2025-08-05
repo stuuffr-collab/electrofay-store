@@ -161,19 +161,27 @@ export default function ProductDetail() {
 
             {/* Enhanced Product Features */}
             <div className="bg-dark-card rounded-xl p-6 border border-dark-border">
-              <h4 className="text-lg font-bold mb-4 text-electric-yellow">مميزات المنتج</h4>
+              <h4 className="text-lg font-bold mb-4 text-electric-yellow">✅ مميزات المنتج (مختصر):</h4>
               <div className="space-y-3">
                 <div className="flex items-center">
-                  <Shield className="w-5 h-5 text-green-500 ml-3" />
-                  <span>ضمان شامل سنة كاملة</span>
+                  <span className="text-lg ml-3">🔒</span>
+                  <span>ضمان شامل لمدة 6 شهور</span>
                 </div>
                 <div className="flex items-center">
-                  <Truck className="w-5 h-5 text-blue-500 ml-3" />
-                  <span>توصيل مجاني للطلبات أكثر من 500 د.ل</span>
+                  <span className="text-lg ml-3">⚡</span>
+                  <span>أداء عالي وكفاءة ممتازة</span>
                 </div>
                 <div className="flex items-center">
-                  <ShoppingCart className="w-5 h-5 text-electric-yellow ml-3" />
-                  <span>جودة عالية مضمونة</span>
+                  <span className="text-lg ml-3">🎮</span>
+                  <span>تصميم مريح ومناسب للاستخدام الطويل</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="text-lg ml-3">⭐</span>
+                  <span>جودة تصنيع عالية ومجربة</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="text-lg ml-3">🚚</span>
+                  <span>توصيل سريع وآمن داخل ليبيا</span>
                 </div>
               </div>
             </div>
