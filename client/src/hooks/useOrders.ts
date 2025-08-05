@@ -5,12 +5,14 @@ import { CartItem } from '@/context/CartContext';
 export interface OrderData {
   customerName: string;
   customerPhone: string;
+  customerEmail?: string;
   customerCity: string;
   customerAddress: string;
-  orderNotes?: string;
+  customerNotes?: string;
   items: CartItem[];
   totalAmount: number;
   deliveryFee?: number;
+  status?: string;
 }
 
 export async function saveOrder(orderData: OrderData) {
@@ -29,13 +31,14 @@ export async function saveOrder(orderData: OrderData) {
       .insert({
         customer_name: orderData.customerName,
         customer_phone: orderData.customerPhone,
+        customer_email: orderData.customerEmail || null,
         customer_city: orderData.customerCity,
         customer_address: orderData.customerAddress,
-        order_notes: orderData.orderNotes || null,
+        order_notes: orderData.customerNotes || null,
         items: itemsJson,
         total_amount: orderData.totalAmount.toString(),
         delivery_fee: (orderData.deliveryFee || 0).toString(),
-        status: 'pending'
+        status: orderData.status || 'pending'
       })
       .select()
       .single();

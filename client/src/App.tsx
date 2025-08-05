@@ -13,6 +13,8 @@ import { CartProvider } from "@/context/CartContext";
 // Pages
 import Home from "@/pages/Home";
 import Products from "@/pages/Products";
+import ProductDetail from "@/pages/ProductDetail";
+import Checkout from "@/pages/Checkout";
 import Offers from "@/pages/Offers";
 import About from "@/pages/About";
 import Contact from "@/pages/Contact";
@@ -29,6 +31,8 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/products" component={Products} />
+      <Route path="/product/:id" component={ProductDetail} />
+      <Route path="/checkout" component={Checkout} />
       <Route path="/offers" component={Offers} />
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />

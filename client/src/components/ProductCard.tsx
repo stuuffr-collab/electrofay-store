@@ -3,6 +3,7 @@ import { Star, ShoppingCart, MessageCircle, Facebook } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { shareProduct } from "@/lib/whatsapp";
+import { useLocation } from "wouter";
 
 export interface Product {
   id: string;
@@ -29,6 +30,7 @@ interface ProductCardProps {
 export function ProductCard({ product, onOrderClick, onAddToCart }: ProductCardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [, setLocation] = useLocation();
 
   const handleShare = (platform: 'whatsapp' | 'facebook' | 'twitter') => {
     shareProduct(platform, product.name, product.price);
@@ -54,7 +56,11 @@ export function ProductCard({ product, onOrderClick, onAddToCart }: ProductCardP
   const allBadges = dynamicBadge ? [dynamicBadge, ...product.badges] : product.badges;
 
   return (
-    <div className="bg-dark-card rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group hover:scale-105 transform animate-fadeIn border border-dark-border" style={{ background: 'var(--dark-card)' }}>
+    <div 
+      className="bg-dark-card rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group hover:scale-105 transform animate-fadeIn border border-dark-border cursor-pointer" 
+      style={{ background: 'var(--dark-card)' }}
+      onClick={() => setLocation(`/product/${product.id}`)}
+    >
       <div className="relative">
         {/* Product Image */}
         <div className="w-full h-48 bg-gray-700 relative overflow-hidden">
@@ -126,7 +132,10 @@ export function ProductCard({ product, onOrderClick, onAddToCart }: ProductCardP
 
         <div className="flex gap-2 mb-2">
           <Button
-            onClick={() => onAddToCart?.(product)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onAddToCart?.(product);
+            }}
             disabled={!product.inStock}
             className="flex-1 bg-gradient-to-r from-[#FFD700] to-[#FFB300] hover:from-[#FFB300] hover:to-[#FF8C00] text-black font-semibold shadow-lg hover:shadow-xl transition-all duration-300 animate-pulse-glow"
           >
@@ -134,12 +143,15 @@ export function ProductCard({ product, onOrderClick, onAddToCart }: ProductCardP
             {product.inStock ? "أضف للسلة" : "غير متوفر"}
           </Button>
           <Button
-            onClick={() => onOrderClick(product)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setLocation(`/product/${product.id}`);
+            }}
             disabled={!product.inStock}
             variant="outline"
             className="px-3 border-electric-yellow text-electric-yellow hover:bg-electric-yellow hover:text-black"
           >
-            اطلب مباشرة
+            عرض التفاصيل
           </Button>
         </div>
 
@@ -148,7 +160,10 @@ export function ProductCard({ product, onOrderClick, onAddToCart }: ProductCardP
           <Button
             size="sm"
             variant="outline"
-            onClick={() => handleShare('whatsapp')}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleShare('whatsapp');
+            }}
             className="p-2 bg-green-500 hover:bg-green-600 text-white border-green-500"
           >
             <MessageCircle className="w-4 h-4" />
@@ -156,7 +171,10 @@ export function ProductCard({ product, onOrderClick, onAddToCart }: ProductCardP
           <Button
             size="sm"
             variant="outline"
-            onClick={() => handleShare('facebook')}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleShare('facebook');
+            }}
             className="p-2 bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
           >
             <Facebook className="w-4 h-4" />
