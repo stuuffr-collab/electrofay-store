@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useSaveOrder } from "@/hooks/useOrders";
 import toast from "react-hot-toast";
 
 interface CartSidebarProps {
@@ -74,6 +75,8 @@ ${items.map(item => `• ${item.product.name} × ${item.quantity} = ${formatPric
     `.trim();
   };
 
+  const saveOrderMutation = useSaveOrder();
+
   const handleCompleteOrder = async () => {
     if (!customerData.name || !customerData.phone || !customerData.city) {
       toast.error('الرجاء ملء جميع البيانات المطلوبة');
@@ -89,46 +92,27 @@ ${items.map(item => `• ${item.product.name} × ${item.quantity} = ${formatPric
       customer: customerData
     });
 
-    // Send order data to backend/WhatsApp in background (business owner receives it)
     try {
-      // Simulate sending to backend API (in real implementation, this would send to your server)
-      // For now, we'll just prepare the message and send it via a backend endpoint
-      
       const orderData = {
         customerName: customerData.name,
         customerPhone: customerData.phone,
         customerCity: customerData.city,
         customerAddress: customerData.address,
-        items: items.map(item => ({
-          name: item.product.name,
-          quantity: item.quantity,
-          price: item.product.price,
-          total: item.product.price * item.quantity
-        })),
-        totalPrice: totalPrice,
-        orderDate: new Date().toLocaleDateString('ar-EG')
+        items: items,
+        totalAmount: totalPrice,
+        deliveryFee: 0
       };
 
-      // In a real application, this would be a fetch() call to your backend
-      // The backend would then send the WhatsApp message to the business
       console.log('Order sent to backend:', orderData);
-      
-      // Send notification to business owner through email/SMS/backend service
-      // This completely avoids opening WhatsApp for the customer
-      
-      // Option 1: Send to backend API (recommended for production)
-      // await fetch('/api/orders', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(orderData)
-      // });
-      
-      // Option 2: For now, just log the order (you can implement backend later)
       console.log('📋 طلب جديد:', orderData);
       console.log('📱 رسالة واتساب للتاجر:', orderMessage);
       
-      // Option 3: You can manually copy this message and send it to the business WhatsApp
-      // Store order in localStorage for business owner to retrieve
+      // Save order to Supabase database
+      await saveOrderMutation.mutateAsync(orderData);
+      
+      console.log('💾 تم حفظ الطلب في قاعدة البيانات بنجاح!');
+      
+      // Also store in localStorage as backup for business owner
       const orders = JSON.parse(localStorage.getItem('businessOrders') || '[]');
       orders.push({
         ...orderData,
@@ -137,8 +121,6 @@ ${items.map(item => `• ${item.product.name} × ${item.quantity} = ${formatPric
         whatsappMessage: orderMessage
       });
       localStorage.setItem('businessOrders', JSON.stringify(orders));
-      
-      console.log('💾 تم حفظ الطلب في النظام. يمكن للتاجر مراجعة الطلبات في وحة التحكم.');
       
       // Show success dialog to user immediately
       setShowCheckoutDialog(false);
@@ -152,7 +134,9 @@ ${items.map(item => `• ${item.product.name} × ${item.quantity} = ${formatPric
       
     } catch (error) {
       console.error('Error processing order:', error);
-      // Still show success to user since the order data is captured
+      toast.error('حدث خطأ في حفظ الطلب، لكن تم تسجيله محلياً');
+      
+      // Still show success to user since the order data is captured locally
       setShowCheckoutDialog(false);
       setShowSuccessDialog(true);
       

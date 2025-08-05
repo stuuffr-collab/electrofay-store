@@ -9,7 +9,7 @@ export const users = pgTable("users", {
 });
 
 export const products = pgTable("products", {
-  id: serial("id").primaryKey(),
+  id: text("id").primaryKey(), // Changed to text to match current product IDs like "kb001"
   name: text("name").notNull(),
   nameEn: text("name_en").notNull(),
   description: text("description").notNull(),
@@ -22,13 +22,13 @@ export const products = pgTable("products", {
   badges: text("badges").array().default([]),
   inStock: boolean("in_stock").notNull().default(true),
   stockCount: integer("stock_count").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const orders = pgTable("orders", {
   id: serial("id").primaryKey(),
-  productId: integer("product_id").notNull().references(() => products.id),
   customerName: text("customer_name").notNull(),
   customerPhone: text("customer_phone").notNull(),
   customerCity: text("customer_city").notNull(),
@@ -37,6 +37,7 @@ export const orders = pgTable("orders", {
   status: text("status").notNull().default("pending"), // 'pending', 'confirmed', 'delivered', 'cancelled'
   totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
   deliveryFee: decimal("delivery_fee", { precision: 10, scale: 2 }).notNull().default("0"),
+  items: text("items").notNull(), // JSON string containing cart items
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

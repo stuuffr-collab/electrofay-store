@@ -1,0 +1,103 @@
+🎯 المطلوب:
+ربط الموقع الإلكتروني (الذي أصبح يعمل بالكامل) مع قاعدة بيانات Supabase التي تم تثبيت مكتبتها @supabase/supabase-js بنجاح.
+تنفيذ الاتصال ثم البدء بـ جلب المنتجات من Supabase و حفظ الطلبات الجديدة و تحميل الصور.
+
+✅ المهام المحددة المطلوبة الآن (مرتبة خطوة بخطوة):
+1️⃣ إعداد الاتصال مع Supabase:
+أنشئ ملف supabaseClient.ts داخل مجلد lib أو utils.
+
+الكود المطلوب:
+
+ts
+Copy
+Edit
+import { createClient } from '@supabase/supabase-js';
+
+export const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+أضف المفاتيح داخل .env.local:
+
+ini
+Copy
+Edit
+NEXT_PUBLIC_SUPABASE_URL=https://xyz.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOi...
+2️⃣ جلب المنتجات من Supabase (بدلاً من بيانات JSON أو ثابتة):
+أنشئ دالة fetchProducts في ملف جديد أو داخل hook:
+
+ts
+Copy
+Edit
+export async function fetchProducts() {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('is_active', true);
+
+  if (error) {
+    console.error('خطأ أثناء جلب المنتجات:', error);
+    return [];
+  }
+
+  return data;
+}
+في الصفحة الرئيسية أو المنتجات، استخدم useEffect أو React Query لجلب المنتجات.
+
+3️⃣ حفظ الطلبات في جدول Supabase عند الشراء:
+بعد إتمام الطلب عبر السلة، أضف:
+
+ts
+Copy
+Edit
+await supabase.from('orders').insert({
+  customer_name: form.name,
+  phone: form.phone,
+  total_price: cart.totalPrice,
+  items: cart.items.map(item => ({
+    product_id: item.product.id,
+    quantity: item.quantity
+  }))
+});
+4️⃣ تخزين صور المنتجات في Supabase Storage:
+بعد رفع الصورة عبر input:
+
+ts
+Copy
+Edit
+const { data, error } = await supabase.storage
+  .from('product-images')
+  .upload(`products/${file.name}`, file);
+
+const imageUrl = supabase.storage
+  .from('product-images')
+  .getPublicUrl(`products/${file.name}`).data.publicUrl;
+استخدم imageUrl لحفظه في قاعدة البيانات مع المنتج.
+
+5️⃣ التحقق من التكامل:
+عند فتح الموقع → تُعرض المنتجات من Supabase.
+
+عند الطلب → يُحفظ الطلب داخل Supabase Table.
+
+عند رفع صورة → تُرفع وتظهر بشكل مباشر.
+
+📌 المعايير المطلوبة للتنفيذ:
+استخدام TypeScript لجميع الدوال.
+
+التعامل مع الأخطاء بشكل آمن (log + fallback).
+
+عدم كشف مفاتيح API داخل الكود، كلها من .env.
+
+كتابة الكود داخل ملفات منظمة (lib/supabaseClient.ts, hooks/useProducts.ts, إلخ).
+
+اختبار كل خطوة عبر console أو UI.
+
+✅ بعد إتمام الربط، أريد تأكيد أن:
+
+الموقع يجلب المنتجات من Supabase.
+
+الطلبات تُحفظ داخل Supabase.
+
+الصور تُرفع وتظهر بشكل مباشر.
+

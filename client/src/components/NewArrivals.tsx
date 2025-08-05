@@ -1,10 +1,11 @@
 import { Badge } from '@/components/ui/badge';
 import { Clock, Sparkles } from 'lucide-react';
-import productsData from '@/data/products.json';
+import { useProducts } from '@/hooks/useProducts';
 
 export function NewArrivalsBanner() {
+  const { data: products = [] } = useProducts();
   // Get newest products (last 3 products)
-  const newProducts = productsData.slice(-3);
+  const newProducts = products.slice(-3);
   
   return (
     <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 overflow-hidden">

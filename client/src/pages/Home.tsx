@@ -12,7 +12,7 @@ import { Toast, useToastManager } from "@/components/Toast";
 import { useCart } from "@/hooks/use-cart";
 import { type OrderData } from "@/lib/whatsapp";
 import { trackEvent } from "@/lib/analytics";
-import productsData from "@/data/products.json";
+import { useProducts } from "@/hooks/useProducts";
 import toast from "react-hot-toast";
 
 export default function Home() {
@@ -21,12 +21,13 @@ export default function Home() {
   const [filter, setFilter] = useState<"all" | "gaming" | "electronics">("all");
   const { toasts, showSuccess } = useToastManager();
   const cart = useCart();
+  const { data: products = [], isLoading, error } = useProducts();
 
   // Get offer end date (7 days from now)
   const offerEndDate = new Date();
   offerEndDate.setDate(offerEndDate.getDate() + 7);
 
-  const filteredProducts = productsData.filter(product => 
+  const filteredProducts = products.filter(product => 
     filter === "all" || product.category === filter
   ).slice(0, 8); // Show first 8 products
 
@@ -201,21 +202,38 @@ export default function Home() {
           </div>
 
           {/* Products Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {filteredProducts.map((product, index) => (
-              <div 
-                key={product.id}
-                style={{ animationDelay: `${index * 0.1}s` }}
-                className="animate-zoom-in transform hover:scale-105 transition-all duration-300"
-              >
-                <ProductCard
-                  product={product as Product}
-                  onOrderClick={handleOrderClick}
-                  onAddToCart={handleAddToCart}
-                />
-              </div>
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              {[...Array(8)].map((_, index) => (
+                <div key={index} className="animate-pulse">
+                  <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-64 mb-4"></div>
+                  <div className="bg-gray-300 dark:bg-gray-700 rounded h-4 mb-2"></div>
+                  <div className="bg-gray-300 dark:bg-gray-700 rounded h-4 w-3/4"></div>
+                </div>
+              ))}
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <p className="text-red-500 mb-4">خطأ في تحميل المنتجات</p>
+              <p className="text-gray-600 dark:text-gray-400">سيتم استخدام البيانات المؤقتة</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              {filteredProducts.map((product, index) => (
+                <div 
+                  key={product.id}
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                  className="animate-zoom-in transform hover:scale-105 transition-all duration-300"
+                >
+                  <ProductCard
+                    product={product as Product}
+                    onOrderClick={handleOrderClick}
+                    onAddToCart={handleAddToCart}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Load More Button */}
           <div className="text-center mt-12">

@@ -7,7 +7,7 @@ import { OrderModal } from "@/components/OrderModal";
 import { Toast, useToastManager } from "@/components/Toast";
 import { type OrderData } from "@/lib/whatsapp";
 import { trackEvent } from "@/lib/analytics";
-import productsData from "@/data/products.json";
+import { useProducts } from "@/hooks/useProducts";
 
 export default function Products() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -16,8 +16,9 @@ export default function Products() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<"name" | "price" | "rating">("name");
   const { toasts, showSuccess } = useToastManager();
+  const { data: products = [], isLoading, error } = useProducts();
 
-  const filteredAndSortedProducts = productsData
+  const filteredAndSortedProducts = products
     .filter(product => {
       const matchesCategory = filter === "all" || product.category === filter;
       const matchesSearch = searchQuery === "" || 
@@ -128,7 +129,22 @@ export default function Products() {
         </div>
 
         {/* Products Grid */}
-        {filteredAndSortedProducts.length > 0 ? (
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[...Array(12)].map((_, index) => (
+              <div key={index} className="animate-pulse">
+                <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-64 mb-4"></div>
+                <div className="bg-gray-300 dark:bg-gray-700 rounded h-4 mb-2"></div>
+                <div className="bg-gray-300 dark:bg-gray-700 rounded h-4 w-3/4"></div>
+              </div>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <p className="text-red-500 mb-4">خطأ في تحميل المنتجات</p>
+            <p className="text-gray-600 dark:text-gray-400">سيتم استخدام البيانات المؤقتة</p>
+          </div>
+        ) : filteredAndSortedProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredAndSortedProducts.map((product) => (
               <ProductCard
