@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { Gamepad2, Smartphone, ArrowLeft, Percent, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductCard, type Product } from "@/components/ProductCard";
@@ -16,6 +17,7 @@ import { useProducts } from "@/hooks/useProducts";
 import toast from "react-hot-toast";
 
 export default function Home() {
+  const [, setLocation] = useLocation();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [filter, setFilter] = useState<"all" | "gaming_accessory" | "gaming_pc" | "gaming_console" | "streaming_gear">("all");
@@ -247,6 +249,7 @@ export default function Home() {
           <div className="text-center mt-12">
             <Button 
               variant="outline"
+              onClick={() => setLocation('/products')}
               className="border-2 border-electric-yellow text-electric-yellow hover:bg-electric-yellow hover:text-black font-semibold py-3 px-8"
             >
               عرض المزيد من المنتجات
