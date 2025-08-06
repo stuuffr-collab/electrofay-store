@@ -13,6 +13,8 @@ This is a **production-ready** Arabic e-commerce store called "إلكتروفا�
 - Fixed SmartSearch component React warning (maximum update depth exceeded)
 - Added 5 MSI gaming products (MSI001-MSI005) including motherboard, graphics card, PSU, SSD, and liquid cooler
 - Fixed TypeScript errors in useProducts hook
+- **Fixed Supabase Environment Variables** - Corrected swapped URL/key with automatic detection and trimming
+- **Enhanced Product Specifications** - Clean professional format (Size: 24.5 inches, Resolution: FHD, etc.)
 
 ### ✅ **Product Detail Page Enhancement Complete**
 - **Enhanced Order Flow** - Professional "Order Now" button with success notifications

@@ -12,40 +12,57 @@ export function ProductTabs({ description, descriptionEn, category }: ProductTab
   const getSpecifications = (category: string) => {
     switch (category) {
       case 'gaming_accessory':
-        return [
-          { icon: <Headphones className="w-5 h-5" />, label: "صوت ستيريو عالي الجودة", value: "Hi-Fi Stereo" },
-          { icon: <Battery className="w-5 h-5" />, label: "البطارية", value: "20 ساعة تشغيل" },
-          { icon: <Shield className="w-5 h-5" />, label: "مقاومة", value: "IPX4 مقاوم للماء" },
-          { icon: <Cpu className="w-5 h-5" />, label: "التوافق", value: "PC, PS5, Xbox, Mobile" }
-        ];
+        return {
+          "الحجم": "24.5 inches",
+          "الدقة": "FHD (1920×1080)",
+          "نوع الشاشة": "IPS",
+          "معدل التحديث": "100Hz",
+          "زمن الاستجابة": "1ms (MPRT) / 4ms (GTG)",
+          "السطوع": "300 nits",
+          "المنافذ": "1x DisplayPort 1.2a, 1x HDMI 1.4b, Headphone Jack",
+          "دعم VESA": "Yes (100x100mm)",
+          "مميزات إضافية": "HDR, Blue Light Reduction, Anti-Flicker, Frameless Design, Adjustable Tilt Stand"
+        };
       case 'gaming_pc':
-        return [
-          { icon: <Monitor className="w-5 h-5" />, label: "الدقة", value: "2560×1440 QHD" },
-          { icon: <Cpu className="w-5 h-5" />, label: "معدل التحديث", value: "144Hz" },
-          { icon: <Shield className="w-5 h-5" />, label: "تقنية", value: "FreeSync Premium" },
-          { icon: <Battery className="w-5 h-5" />, label: "استهلاك الطاقة", value: "65W" }
-        ];
+        return {
+          "المعالج": "Intel Core i7-12700K",
+          "كرت الرسوميات": "NVIDIA RTX 4070",
+          "الذاكرة": "16GB DDR4 3200MHz",
+          "التخزين": "1TB NVMe SSD",
+          "اللوحة الأم": "MSI B660M PRO-VDH",
+          "مزود الطاقة": "650W 80+ Gold",
+          "التبريد": "RGB Air Cooler",
+          "الصندوق": "Mid Tower RGB Case"
+        };
       case 'gaming_console':
-        return [
-          { icon: <Cpu className="w-5 h-5" />, label: "الاتصال", value: "Bluetooth 5.0" },
-          { icon: <Battery className="w-5 h-5" />, label: "البطارية", value: "40 ساعة تشغيل" },
-          { icon: <Shield className="w-5 h-5" />, label: "التوافق", value: "PC, PS5, Xbox" },
-          { icon: <Headphones className="w-5 h-5" />, label: "الاهتزاز", value: "HD Rumble" }
-        ];
+        return {
+          "الاتصال": "Bluetooth 5.0",
+          "البطارية": "40 ساعة تشغيل",
+          "التوافق": "PC, PS5, Xbox Series X/S",
+          "الاهتزاز": "HD Rumble Technology",
+          "المقاومة": "IPX4 Water Resistant",
+          "الأزرار": "16 Programmable Buttons",
+          "الوزن": "280g",
+          "الضمان": "سنتان"
+        };
       case 'streaming_gear':
-        return [
-          { icon: <Headphones className="w-5 h-5" />, label: "جودة الصوت", value: "48kHz/16-bit" },
-          { icon: <Cpu className="w-5 h-5" />, label: "الاتصال", value: "USB-C & XLR" },
-          { icon: <Shield className="w-5 h-5" />, label: "إلغاء الضوضاء", value: "AI Noise Reduction" },
-          { icon: <Monitor className="w-5 h-5" />, label: "التطبيقات", value: "OBS, Streamlabs" }
-        ];
+        return {
+          "جودة الصوت": "48kHz/16-bit Audio",
+          "الاتصال": "USB-C & XLR Output",
+          "إلغاء الضوضاء": "AI Noise Reduction",
+          "التطبيقات": "OBS, Streamlabs Compatible",
+          "النمط": "Cardioid Pickup Pattern",
+          "الحساسية": "-34dB ±2dB",
+          "نطاق التردد": "20Hz - 20kHz",
+          "التوافق": "Windows, Mac, Linux"
+        };
       default:
-        return [
-          { icon: <Shield className="w-5 h-5" />, label: "الضمان", value: "سنة كاملة" },
-          { icon: <Truck className="w-5 h-5" />, label: "التوصيل", value: "2-5 أيام عمل" },
-          { icon: <Cpu className="w-5 h-5" />, label: "الجودة", value: "معايير عالمية" },
-          { icon: <Battery className="w-5 h-5" />, label: "الأداء", value: "احترافي" }
-        ];
+        return {
+          "الضمان": "سنة كاملة",
+          "التوصيل": "2-5 أيام عمل",
+          "الجودة": "معايير عالمية",
+          "الدعم الفني": "24/7"
+        };
     }
   };
 
@@ -85,16 +102,11 @@ export function ProductTabs({ description, descriptionEn, category }: ProductTab
       <TabsContent value="specifications" className="mt-6">
         <div className="bg-dark-card rounded-xl p-6 border border-dark-border">
           <h4 className="text-lg font-bold mb-6 text-electric-yellow">المواصفات التقنية</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {specifications.map((spec, index) => (
-              <div key={index} className="flex items-center p-4 bg-dark-bg rounded-lg border border-dark-border">
-                <div className="text-electric-yellow ml-3">
-                  {spec.icon}
-                </div>
-                <div className="flex-1">
-                  <div className="font-semibold text-white">{spec.label}</div>
-                  <div className="text-gray-400 text-sm">{spec.value}</div>
-                </div>
+          <div className="space-y-3">
+            {Object.entries(specifications).map(([key, value], index) => (
+              <div key={index} className="flex justify-between items-center py-3 border-b border-dark-border/50 last:border-b-0">
+                <span className="font-semibold text-white">{key}:</span>
+                <span className="text-gray-300 text-right max-w-md">{value}</span>
               </div>
             ))}
           </div>

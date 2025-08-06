@@ -11,8 +11,8 @@ const isValidUrl = (url: string): boolean => {
 };
 
 // Temporary fix for swapped environment variables
-let supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-let supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+let supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim();
+let supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim();
 
 // Check if values are swapped and fix them
 if (supabaseUrl && supabaseUrl.startsWith('eyJ')) {
