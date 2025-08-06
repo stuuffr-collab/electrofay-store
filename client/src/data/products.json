@@ -170,5 +170,115 @@
     "badges": ["خصم 21%"],
     "inStock": true,
     "stockCount": 4
+  },
+  {
+    "id": "MSI001",
+    "name": "لوحة أم MSI Z790 Gaming WiFi",
+    "nameEn": "MSI Z790 Gaming WiFi Motherboard",
+    "description": "لوحة أم MSI Z790 للقيمنج مع WiFi 6E ودعم DDR5 وتقنية RGB",
+    "descriptionEn": "MSI Z790 gaming motherboard with WiFi 6E, DDR5 support and RGB technology",
+    "price": 950,
+    "originalPrice": 1200,
+    "category": "gaming_pc",
+    "image": "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
+    "rating": 4.8,
+    "badges": ["خصم 21%", "MSI"],
+    "inStock": true,
+    "stockCount": 8,
+    "features": [
+      "🔒 ضمان شامل لمدة 3 سنوات",
+      "⚡ دعم DDR5 وتقنيات جديدة", 
+      "🎮 مصممة خصيصاً للقيمنج",
+      "⭐ جودة MSI الأصلية",
+      "🚚 توصيل سريع وآمن داخل ليبيا"
+    ]
+  },
+  {
+    "id": "MSI002",
+    "name": "كرت شاشة MSI RTX 4070 Gaming X",
+    "nameEn": "MSI RTX 4070 Gaming X Graphics Card",
+    "description": "كرت شاشة MSI RTX 4070 Gaming X مع تبريد ثلاثي وأداء عالي للقيمنج",
+    "descriptionEn": "MSI RTX 4070 Gaming X graphics card with triple cooling and high gaming performance",
+    "price": 1850,
+    "originalPrice": 2200,
+    "category": "gaming_pc",
+    "image": "https://images.unsplash.com/photo-1591488320449-011701bb6704?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
+    "rating": 4.9,
+    "badges": ["خصم 16%", "MSI", "الأكثر مبيعاً"],
+    "inStock": true,
+    "stockCount": 5,
+    "features": [
+      "🔒 ضمان شامل لمدة 3 سنوات",
+      "⚡ أداء RTX 4070 المميز", 
+      "🎮 تبريد ثلاثي متقدم",
+      "⭐ تقنية Ray Tracing وDLSS 3",
+      "🚚 توصيل سريع وآمن داخل ليبيا"
+    ]
+  },
+  {
+    "id": "MSI003",
+    "name": "مزود طاقة MSI MPG 750W Gold",
+    "nameEn": "MSI MPG 750W Gold Power Supply",
+    "description": "مزود طاقة MSI MPG 750W شهادة 80+ Gold مع كابلات معيارية وضمان 10 سنوات",
+    "descriptionEn": "MSI MPG 750W power supply with 80+ Gold certification, modular cables and 10-year warranty",
+    "price": 420,
+    "originalPrice": 550,
+    "category": "gaming_pc",
+    "image": "https://images.unsplash.com/photo-1518444065439-e933c06ce9cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
+    "rating": 4.7,
+    "badges": ["خصم 24%", "MSI", "ضمان 10 سنوات"],
+    "inStock": true,
+    "stockCount": 12,
+    "features": [
+      "🔒 ضمان شامل لمدة 10 سنوات",
+      "⚡ شهادة 80+ Gold للكفاءة", 
+      "🎮 كابلات معيارية مرنة",
+      "⭐ حماية متقدمة ضد التيار الزائد",
+      "🚚 توصيل سريع وآمن داخل ليبيا"
+    ]
+  },
+  {
+    "id": "MSI004",
+    "name": "ذاكرة تخزين MSI SSD 1TB NVMe",
+    "nameEn": "MSI SSD 1TB NVMe Storage",
+    "description": "ذاكرة تخزين MSI SSD بحجم 1TB وتقنية NVMe للسرعة الفائقة في التحميل",
+    "descriptionEn": "MSI SSD 1TB with NVMe technology for ultra-fast loading speeds",
+    "price": 380,
+    "originalPrice": 480,
+    "category": "gaming_pc",
+    "image": "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
+    "rating": 4.6,
+    "badges": ["خصم 21%", "MSI", "NVMe"],
+    "inStock": true,
+    "stockCount": 15,
+    "features": [
+      "🔒 ضمان شامل لمدة 5 سنوات",
+      "⚡ سرعة قراءة تصل إلى 7000 MB/s", 
+      "🎮 تحميل فوري للألعاب",
+      "⭐ تقنية NVMe الأحدث",
+      "🚚 توصيل سريع وآمن داخل ليبيا"
+    ]
+  },
+  {
+    "id": "MSI005",
+    "name": "مبرد MSI Liquid Cooler 240mm",
+    "nameEn": "MSI Liquid Cooler 240mm AIO",
+    "description": "مبرد مائي MSI بحجم 240mm مع إضاءة RGB ومراوح هادئة للمعالج",
+    "descriptionEn": "MSI 240mm liquid cooler with RGB lighting and silent fans for CPU cooling",
+    "price": 520,
+    "originalPrice": 650,
+    "category": "gaming_pc",
+    "image": "https://images.unsplash.com/photo-1555617981-dac3880eac6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
+    "rating": 4.8,
+    "badges": ["خصم 20%", "MSI", "RGB"],
+    "inStock": true,
+    "stockCount": 6,
+    "features": [
+      "🔒 ضمان شامل لمدة 6 سنوات",
+      "⚡ تبريد مائي فعال ومتقدم", 
+      "🎮 مراوح هادئة ومضاءة RGB",
+      "⭐ سهولة التركيب والصيانة",
+      "🚚 توصيل سريع وآمن داخل ليبيا"
+    ]
   }
 ]

@@ -18,7 +18,7 @@ export async function fetchProducts(): Promise<Product[]> {
     }
 
     // Transform Supabase data to match the Product interface
-    return data.map(item => ({
+    return data.map((item: any) => ({
       id: item.id,
       name: item.name,
       nameEn: item.name_en,

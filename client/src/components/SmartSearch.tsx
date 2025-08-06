@@ -122,7 +122,7 @@ export function SmartSearch({ products, onSearchChange, placeholder = "ابحث 
       setShowSuggestions(false);
     }
     setSelectedIndex(-1);
-  }, [query, products]);
+  }, [query, products, onSearchChange]);
 
   // Handle keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
