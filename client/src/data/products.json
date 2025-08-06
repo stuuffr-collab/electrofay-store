@@ -280,5 +280,115 @@
       "⭐ سهولة التركيب والصيانة",
       "🚚 توصيل سريع وآمن داخل ليبيا"
     ]
+  },
+  {
+    "id": "MSIM001",
+    "name": "شاشة MSI G274F 24 بوصة",
+    "nameEn": "MSI G274F 24-inch Monitor",
+    "description": "شاشة قيمنج MSI مقاس 27 بوصة بدقة FHD ومعدل تحديث 180Hz مع تقنية IPS وإضاءة RGB",
+    "descriptionEn": "MSI 27-inch gaming monitor with FHD resolution, 180Hz refresh rate, IPS technology and RGB lighting",
+    "price": 1575,
+    "originalPrice": null,
+    "category": "gaming_pc",
+    "image": "https://static.cazasouq.com/image/cache/catalog/01-Random/Fixes/MSI%20new/MSI%20G274F%2027-1000x1000w.jpg",
+    "rating": 4.9,
+    "badges": ["MSI", "180Hz", "IPS"],
+    "inStock": true,
+    "stockCount": 5,
+    "features": [
+      "🔒 ضمان شامل لمدة 3 سنوات",
+      "⚡ معدل تحديث 180Hz للألعاب السريعة", 
+      "🎮 تقنية IPS للألوان الدقيقة",
+      "⭐ دعم G-SYNC و FreeSync",
+      "🚚 توصيل سريع وآمن داخل ليبيا"
+    ]
+  },
+  {
+    "id": "MSIM002",
+    "name": "شاشة MSI MAG275PFW 27 بوصة",
+    "nameEn": "MSI MAG275PFW 27-inch Monitor",
+    "description": "شاشة قيمنج MSI مقاس 27 بوصة بدقة FHD ومعدل تحديث 180Hz مع تقنية Rapid IPS",
+    "descriptionEn": "MSI 27-inch gaming monitor with FHD resolution, 180Hz refresh rate and Rapid IPS technology",
+    "price": 1700,
+    "originalPrice": null,
+    "category": "gaming_pc",
+    "image": "https://asset-us-store.msi.com/image/cache/catalog/Pd_page/Monitor/2024/MAG275F/MAG275F-1-1024x1024.png",
+    "rating": 4.8,
+    "badges": ["MSI", "Rapid IPS", "180Hz"],
+    "inStock": true,
+    "stockCount": 5,
+    "features": [
+      "🔒 ضمان شامل لمدة 3 سنوات",
+      "⚡ تقنية Rapid IPS المتطورة", 
+      "🎮 زمن استجابة 0.5ms فائق السرعة",
+      "⭐ تغطية لونية 115% sRGB",
+      "🚚 توصيل سريع وآمن داخل ليبيا"
+    ]
+  },
+  {
+    "id": "MSIM003",
+    "name": "شاشة MSI MAG274QRF 27 بوصة QHD",
+    "nameEn": "MSI MAG274QRF 27-inch QHD Monitor",
+    "description": "شاشة قيمنج MSI مقاس 27 بوصة بدقة QHD ومعدل تحديث 180Hz مع تقنية Quantum Dot",
+    "descriptionEn": "MSI 27-inch gaming monitor with QHD resolution, 180Hz refresh rate and Quantum Dot technology",
+    "price": 2330,
+    "originalPrice": null,
+    "category": "gaming_pc",
+    "image": "https://asset.msi.com/resize/image/global/product/product_1609380485465e07f5a2b6d0df06835ad024a32e73.png62405b38c58fe0f07fcef2367d8a9ba1/1024.png",
+    "rating": 4.9,
+    "badges": ["MSI", "QHD", "Quantum Dot"],
+    "inStock": true,
+    "stockCount": 5,
+    "features": [
+      "🔒 ضمان شامل لمدة 3 سنوات",
+      "⚡ دقة QHD عالية الوضوح", 
+      "🎮 تقنية Quantum Dot للألوان الزاهية",
+      "⭐ دعم HDR400 المتقدم",
+      "🚚 توصيل سريع وآمن داخل ليبيا"
+    ]
+  },
+  {
+    "id": "MSIM004",
+    "name": "شاشة MSI PRO MP252L 24.5 بوصة",
+    "nameEn": "MSI PRO MP252L 24.5-inch Monitor",
+    "description": "شاشة MSI احترافية مقاس 24.5 بوصة بدقة FHD ومعدل تحديث 100Hz مع تقنية IPS",
+    "descriptionEn": "MSI professional 24.5-inch monitor with FHD resolution, 100Hz refresh rate and IPS technology",
+    "price": 850,
+    "originalPrice": null,
+    "category": "gaming_pc",
+    "image": "https://asset.msi.com/resize/image/global/product/product_1705374309115d7eb9fcaa2942ad463e9b5b801c3d.png62405b38c58fe0f07fcef2367d8a9ba1/1024.png",
+    "rating": 4.7,
+    "badges": ["MSI", "IPS", "احترافي"],
+    "inStock": true,
+    "stockCount": 8,
+    "features": [
+      "🔒 ضمان شامل لمدة 3 سنوات",
+      "⚡ تصميم احترافي أنيق", 
+      "🎮 تقنية HDR للصورة المتقدمة",
+      "⭐ حامل قابل للتعديل بالكامل",
+      "🚚 توصيل سريع وآمن داخل ليبيا"
+    ]
+  },
+  {
+    "id": "MSIM005",
+    "name": "شاشة MSI MAG 274URFW 4K بوصة",
+    "nameEn": "MSI MAG 274URFW 4K Monitor",
+    "description": "شاشة قيمنج MSI مقاس 27 بوصة بدقة 4K UHD ومعدل تحديث 160Hz مع إضاءة RGB",
+    "descriptionEn": "MSI 27-inch gaming monitor with 4K UHD resolution, 160Hz refresh rate and RGB lighting",
+    "price": 3100,
+    "originalPrice": null,
+    "category": "gaming_pc",
+    "image": "https://www.stormforcegaming.co.uk/wp-content/uploads/2024/10/274URFW.jpg",
+    "rating": 5.0,
+    "badges": ["MSI", "4K UHD", "RGB"],
+    "inStock": true,
+    "stockCount": 5,
+    "features": [
+      "🔒 ضمان شامل لمدة 3 سنوات",
+      "⚡ دقة 4K UHD فائقة الوضوح", 
+      "🎮 إضاءة RGB قابلة للتخصيص",
+      "⭐ معدل تحديث 160Hz للألعاب",
+      "🚚 توصيل سريع وآمن داخل ليبيا"
+    ]
   }
 ]

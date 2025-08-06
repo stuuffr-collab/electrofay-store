@@ -1,12 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-// Create a null supabase client if environment variables are missing
-// This allows the app to work with fallback data during development
-let supabase: any = null;
-
 // Validate URL format
 const isValidUrl = (url: string): boolean => {
   try {
@@ -16,6 +9,30 @@ const isValidUrl = (url: string): boolean => {
     return false;
   }
 };
+
+// Temporary fix for swapped environment variables
+let supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+let supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+// Check if values are swapped and fix them
+if (supabaseUrl && supabaseUrl.startsWith('eyJ')) {
+  // URL is actually the token, swap them
+  const temp = supabaseUrl;
+  supabaseUrl = supabaseAnonKey;
+  supabaseAnonKey = temp;
+  console.log('🔄 Fixed swapped Supabase environment variables');
+}
+
+// Debug logging
+console.log('Supabase URL after fix:', supabaseUrl);
+console.log('Supabase URL type:', typeof supabaseUrl);
+console.log('URL starts with https:', supabaseUrl?.startsWith('https://'));
+console.log('URL includes supabase.co:', supabaseUrl?.includes('.supabase.co'));
+console.log('Is valid URL:', supabaseUrl ? isValidUrl(supabaseUrl) : false);
+
+// Create a null supabase client if environment variables are missing
+// This allows the app to work with fallback data during development
+let supabase: any = null;
 
 if (!supabaseUrl || !supabaseAnonKey || !isValidUrl(supabaseUrl)) {
   if (supabaseUrl && !isValidUrl(supabaseUrl)) {

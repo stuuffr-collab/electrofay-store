@@ -110,19 +110,23 @@ export function SmartSearch({ products, onSearchChange, placeholder = "ابحث 
 
   // Handle search input changes
   useEffect(() => {
-    const filteredProducts = filterProducts(query);
-    onSearchChange(query, filteredProducts);
+    const timeoutId = setTimeout(() => {
+      const filteredProducts = filterProducts(query);
+      onSearchChange(query, filteredProducts);
 
-    if (query.trim()) {
-      const newSuggestions = generateSuggestions(query);
-      setSuggestions(newSuggestions);
-      setShowSuggestions(true);
-    } else {
-      setSuggestions([]);
-      setShowSuggestions(false);
-    }
-    setSelectedIndex(-1);
-  }, [query, products, onSearchChange]);
+      if (query.trim()) {
+        const newSuggestions = generateSuggestions(query);
+        setSuggestions(newSuggestions);
+        setShowSuggestions(true);
+      } else {
+        setSuggestions([]);
+        setShowSuggestions(false);
+      }
+      setSelectedIndex(-1);
+    }, 100); // Debounce to prevent maximum update depth
+
+    return () => clearTimeout(timeoutId);
+  }, [query, products]);
 
   // Handle keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
