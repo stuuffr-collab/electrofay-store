@@ -7,7 +7,21 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 // This allows the app to work with fallback data during development
 let supabase: any = null;
 
-if (!supabaseUrl || !supabaseAnonKey) {
+// Validate URL format
+const isValidUrl = (url: string): boolean => {
+  try {
+    new URL(url);
+    return url.startsWith('https://') && url.includes('.supabase.co');
+  } catch {
+    return false;
+  }
+};
+
+if (!supabaseUrl || !supabaseAnonKey || !isValidUrl(supabaseUrl)) {
+  if (supabaseUrl && !isValidUrl(supabaseUrl)) {
+    console.error('❌ Invalid Supabase URL format. Expected format: https://your-project.supabase.co');
+    console.error('Current URL appears to be a token instead of URL:', supabaseUrl.substring(0, 50) + '...');
+  }
   console.warn('⚠️ Supabase environment variables not found. App will use fallback data.');
   // Create a mock client that safely fails operations
   supabase = {
