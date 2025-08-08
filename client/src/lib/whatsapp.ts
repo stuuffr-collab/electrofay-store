@@ -35,9 +35,18 @@ ${customer.notes ? `📝 *ملاحظات:* ${customer.notes}` : ''}
   return message;
 }
 
-export function openWhatsApp(message: string, phoneNumber: string = "218922569912"): void {
-  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-  window.open(whatsappUrl, '_blank');
+export function openWhatsApp(message: string, phoneNumber?: string): void {
+  let configured = (import.meta as any).env?.VITE_WHATSAPP_PHONE as string | undefined;
+  let target = phoneNumber || configured || "218922569912";
+  target = (target || "").replace(/\D/g, "");
+  if (target.startsWith("0")) {
+    target = "218" + target.slice(1);
+  }
+  if (!target.startsWith("218")) {
+    target = "218" + target;
+  }
+  const whatsappUrl = `https://wa.me/${target}?text=${encodeURIComponent(message)}`;
+  window.open(whatsappUrl, "_blank");
 }
 
 export function shareProduct(platform: 'whatsapp' | 'facebook' | 'twitter', productName: string, productPrice: number): void {
