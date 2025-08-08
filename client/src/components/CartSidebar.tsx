@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useSaveOrder } from "@/hooks/useOrders";
 import toast from "react-hot-toast";
-
+import { openWhatsApp } from "@/lib/whatsapp";
 interface CartSidebarProps {
   isOpen: boolean;
   onClose: () => void;
@@ -122,11 +122,10 @@ ${items.map(item => `• ${item.product.name} × ${item.quantity} = ${formatPric
       });
       localStorage.setItem('businessOrders', JSON.stringify(orders));
       
-      // Show success dialog to user immediately
       setShowCheckoutDialog(false);
       setShowSuccessDialog(true);
+      openWhatsApp(orderMessage);
       
-      // Clear cart after a short delay
       setTimeout(() => {
         onCheckout();
         setCustomerData({ name: '', phone: '', city: '', address: '' });
@@ -134,11 +133,11 @@ ${items.map(item => `• ${item.product.name} × ${item.quantity} = ${formatPric
       
     } catch (error) {
       console.error('Error processing order:', error);
-      toast.error('حدث خطأ في حفظ الطلب، لكن تم تسجيله محلياً');
+      toast('تم فتح واتساب لإتمام الطلب، تعذر حفظه في قاعدة البيانات');
       
-      // Still show success to user since the order data is captured locally
       setShowCheckoutDialog(false);
       setShowSuccessDialog(true);
+      openWhatsApp(orderMessage);
       
       setTimeout(() => {
         onCheckout();
