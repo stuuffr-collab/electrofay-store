@@ -66,12 +66,12 @@ export function ProductCard({ product, onOrderClick, onAddToCart }: ProductCardP
     >
       <div className="relative">
         {/* Product Image */}
-        <div className="w-full h-48 bg-gray-700 relative overflow-hidden">
+        <div className="w-full h-56 bg-gray-800 relative overflow-hidden rounded-t-xl">
           {!imageError ? (
             <img
               src={product.image}
               alt={product.name}
-              className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ${
+              className={`w-full h-full object-contain group-hover:scale-105 transition-transform duration-300 ${
                 imageLoaded ? 'opacity-100' : 'opacity-0'
               }`}
               onLoad={() => setImageLoaded(true)}
