@@ -4,8 +4,10 @@ import { Search, Sun, Moon, Menu, Zap, ShoppingCart, Gamepad2 } from "lucide-rea
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { SmartSearch } from "@/components/SmartSearch";
 import { useDarkMode } from "@/hooks/use-dark-mode";
 import { useCart } from "@/hooks/use-cart";
+import { useProducts } from "@/hooks/useProducts";
 
 interface HeaderProps {}
 
@@ -15,6 +17,7 @@ export function Header({}: HeaderProps) {
   const cart = useCart();
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { data: products = [] } = useProducts();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,6 +51,15 @@ export function Header({}: HeaderProps) {
             </div>
           </Link>
 
+          {/* Smart Search */}
+          <div className="hidden md:block flex-1 max-w-md mx-8">
+            <SmartSearch 
+              products={products}
+              onSearchChange={() => {}}
+              placeholder="ابحث عن منتجات قيمنج، إكسسوارات، PC..."
+            />
+          </div>
+
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8 space-x-reverse">
             {navigationItems.map((item) => (
@@ -65,17 +77,6 @@ export function Header({}: HeaderProps) {
 
           {/* Right Section */}
           <div className="flex items-center space-x-4 space-x-reverse">
-            {/* Search */}
-            <form onSubmit={handleSearch} className="hidden sm:block relative">
-              <Input
-                type="text"
-                placeholder="ابحث عن المنتجات..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-64 pl-10 text-right bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-              />
-              <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
-            </form>
 
             {/* Cart Button */}
             <Button
@@ -115,17 +116,14 @@ export function Header({}: HeaderProps) {
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px] bg-dark-bg border-l border-dark-border" style={{ background: 'var(--dark-bg)' }}>
                 <div className="flex flex-col space-y-4 mt-8">
-                  {/* Mobile Search */}
-                  <form onSubmit={handleSearch} className="relative sm:hidden">
-                    <Input
-                      type="text"
-                      placeholder="ابحث عن المنتجات..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 text-right bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                  {/* Mobile Smart Search */}
+                  <div className="md:hidden">
+                    <SmartSearch 
+                      products={products}
+                      onSearchChange={() => {}}
+                      placeholder="ابحث عن منتجات قيمنج، إكسسوارات، PC..."
                     />
-                    <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
-                  </form>
+                  </div>
 
                   {/* Mobile Navigation */}
                   {navigationItems.map((item) => (

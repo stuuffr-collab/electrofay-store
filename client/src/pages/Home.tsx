@@ -3,7 +3,6 @@ import { useLocation } from "wouter";
 import { Gamepad2, Smartphone, ArrowLeft, Percent, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductCard, type Product } from "@/components/ProductCard";
-import { SmartSearch } from "@/components/SmartSearch";
 import { OrderModal } from "@/components/OrderModal";
 import { AnnouncementBanner } from "@/components/AnnouncementBanner";
 
@@ -22,8 +21,6 @@ export default function Home() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [filter, setFilter] = useState<"all" | "gaming_accessory" | "gaming_pc" | "gaming_console" | "streaming_gear">("all");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredBySearch, setFilteredBySearch] = useState<Product[]>([]);
   const { toasts, showSuccess } = useToastManager();
   const cart = useCart();
   const { data: products = [], isLoading, error } = useProducts();
@@ -32,17 +29,10 @@ export default function Home() {
   const offerEndDate = new Date();
   offerEndDate.setDate(offerEndDate.getDate() + 7);
 
-  const filteredProducts = (() => {
-    const searchResults = searchQuery ? filteredBySearch : products;
-    return searchResults.filter(product => 
-      filter === "all" || product.category === filter
-    ).slice(0, 8); // Show first 8 products
-  })();
+  const filteredProducts = products.filter(product => 
+    filter === "all" || product.category === filter
+  ).slice(0, 8); // Show first 8 products
 
-  const handleSearchChange = (query: string, searchResults: Product[]) => {
-    setSearchQuery(query);
-    setFilteredBySearch(searchResults);
-  };
 
   const handleOrderClick = (product: Product) => {
     setSelectedProduct(product);
@@ -184,24 +174,10 @@ export default function Home() {
             <p className="text-gray-300">أحدث منتجات القيمنج وأكثرها مبيعاً</p>
           </div>
 
-          {/* Smart Search */}
-          <div className="mb-8">
-            <SmartSearch 
-              products={products}
-              onSearchChange={handleSearchChange}
-              placeholder="ابحث عن منتجات قيمنج، إكسسوارات، PC..."
-            />
-          </div>
 
           <div className="flex justify-between items-center mb-8">
             <div className="text-sm text-gray-300">
-              {searchQuery ? (
-                <span className="bg-electric-yellow/10 text-electric-yellow px-3 py-1 rounded-full">
-                  نتائج البحث: "{searchQuery}" ({filteredProducts.length} منتج)
-                </span>
-              ) : (
-                "اختر فئة أو استخدم البحث الذكي أعلاه"
-              )}
+              "اختر فئة لعرض المنتجات"
             </div>
             
             {/* Filter Buttons */}
