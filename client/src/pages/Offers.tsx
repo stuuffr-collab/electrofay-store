@@ -64,41 +64,7 @@ export default function Offers() {
             </div>
           </div>
 
-          {/* Electronics Bundle Offer */}
-          <div className="bg-gradient-to-br from-blue-600 to-teal-600 rounded-2xl p-8 text-white relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-40 h-40 bg-white/5 rounded-full -translate-y-20 -translate-x-20"></div>
-            <div className="absolute bottom-0 right-0 w-28 h-28 bg-white/10 rounded-full translate-y-14 translate-x-14"></div>
-            
-            <div className="relative z-10">
-              <div className="flex items-center mb-4">
-                <Gift className="w-8 h-8 text-electric-yellow ml-3" />
-                <span className="bg-electric-yellow text-black px-3 py-1 rounded-full text-sm font-bold">
-                  باقة مميزة
-                </span>
-              </div>
-              
-              <h2 className="text-3xl font-bold mb-4">
-                باقة المنزل الذكي
-              </h2>
-              <p className="text-blue-100 mb-6">
-                احصل على 3 منتجات كهرومنزلية ذكية بسعر منتجين فقط + توصيل مجاني
-              </p>
-              
-              <div className="bg-white/10 rounded-lg p-4 mb-6">
-                <ul className="space-y-2 text-sm">
-                  <li>✓ سماعة ذكية + شاحن لاسلكي + بطارية محمولة</li>
-                  <li>✓ توفير يصل إلى 120 دينار ليبي</li>
-                  <li>✓ توصيل مجاني لجميع أنحاء ليبيا</li>
-                </ul>
-              </div>
 
-              <Link href="/products?category=electronics">
-                <Button className="bg-electric-yellow hover:bg-yellow-300 text-black font-semibold">
-                  تسوق المنتجات الكهرومنزلية
-                </Button>
-              </Link>
-            </div>
-          </div>
         </div>
 
         {/* Special Offers Cards */}

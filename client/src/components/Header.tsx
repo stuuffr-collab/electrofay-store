@@ -43,7 +43,7 @@ export function Header({}: HeaderProps) {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-4 space-x-reverse">
             <div className="w-10 h-10 bg-gradient-to-br from-electric-yellow to-yellow-500 rounded-lg flex items-center justify-center shadow-lg">
-              <Gamepad2 className="w-6 h-6 text-black" />
+              <Zap className="w-6 h-6 text-black" />
             </div>
             <div>
               <h1 className="text-xl font-bold text-white">إلكتروفاي</h1>

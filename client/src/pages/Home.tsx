@@ -127,7 +127,7 @@ export default function Home() {
               <div className="absolute inset-0 bg-black/20"></div>
               <div className="relative z-10">
                 <Gamepad2 className="w-12 h-12 mb-4 text-electric-yellow" />
-                <h4 className="text-2xl font-bold mb-2">إكسسوارات قيمنج</h4>
+                <h4 className="text-2xl font-bold mb-2">فئات اكسسوارات</h4>
                 <p className="text-purple-100 mb-6">لوحات مفاتيح، فأرة، سماعات، كراسي وإكسسوارات ألعاب احترافية</p>
                 <div className="flex items-center text-electric-yellow">
                   <span className="font-semibold">تسوق الآن</span>
@@ -149,7 +149,7 @@ export default function Home() {
               <div className="absolute inset-0 bg-black/20"></div>
               <div className="relative z-10">
                 <Smartphone className="w-12 h-12 mb-4 text-electric-yellow" />
-                <h4 className="text-2xl font-bold mb-2">أجهزة PC وستريمنج</h4>
+                <h4 className="text-2xl font-bold mb-2">فئات أجهزة PC</h4>
                 <p className="text-blue-100 mb-6">شاشات قيمنج، لابتوبات، تجميعات PC وأدوات الستريمر</p>
                 <div className="flex items-center text-electric-yellow">
                   <span className="font-semibold">تسوق الآن</span>

@@ -175,8 +175,8 @@ ${formData.message}
                 </div>
                 <div>
                   <h4 className="font-semibold text-electric-yellow mb-2">طرق الدفع المتاحة؟</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">
-                    الدفع عند الاستلام فقط حالياً
+                  <p className="text-sm text-gray-600 dark:text-gray-300 flex items-center">
+                    💵 <span className="mr-2">دفع عند الاستلام</span>
                   </p>
                 </div>
               </div>
@@ -316,32 +316,32 @@ ${formData.message}
 
         {/* Additional Info */}
         <div className="mt-16 grid md:grid-cols-3 gap-8">
-          <div className="text-center p-6 bg-gray-50 dark:bg-dark-card rounded-xl">
-            <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <MessageCircle className="w-8 h-8 text-green-600" />
+          <div className="text-center p-6 bg-black dark:bg-black rounded-xl border border-gray-800">
+            <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <MessageCircle className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-lg font-bold mb-2">رد سريع</h3>
-            <p className="text-gray-600 dark:text-gray-400 text-sm">
+            <h3 className="text-lg font-bold mb-2 text-white">رد سريع</h3>
+            <p className="text-gray-300 text-sm">
               نرد على استفساراتك خلال دقائق معدودة
             </p>
           </div>
 
-          <div className="text-center p-6 bg-gray-50 dark:bg-dark-card rounded-xl">
-            <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Phone className="w-8 h-8 text-blue-600" />
+          <div className="text-center p-6 bg-black dark:bg-black rounded-xl border border-gray-800">
+            <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Phone className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-lg font-bold mb-2">دعم مباشر</h3>
-            <p className="text-gray-600 dark:text-gray-400 text-sm">
+            <h3 className="text-lg font-bold mb-2 text-white">دعم مباشر</h3>
+            <p className="text-gray-300 text-sm">
               فريق خدمة عملاء متخصص ومدرب
             </p>
           </div>
 
-          <div className="text-center p-6 bg-gray-50 dark:bg-dark-card rounded-xl">
-            <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Clock className="w-8 h-8 text-purple-600" />
+          <div className="text-center p-6 bg-black dark:bg-black rounded-xl border border-gray-800">
+            <div className="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Clock className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-lg font-bold mb-2">متاح دائماً</h3>
-            <p className="text-gray-600 dark:text-gray-400 text-sm">
+            <h3 className="text-lg font-bold mb-2 text-white">متاح دائماً</h3>
+            <p className="text-gray-300 text-sm">
               خدمة العملاء متاحة 24 ساعة طوال الأسبوع
             </p>
           </div>

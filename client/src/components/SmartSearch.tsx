@@ -228,7 +228,7 @@ export function SmartSearch({ products, onSearchChange, placeholder = "ابحث 
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => query && setShowSuggestions(true)}
-          className="w-full pl-12 pr-12 py-3 text-right bg-dark-bg border-dark-border text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-electric-yellow focus:border-electric-yellow transition-all duration-200"
+          className="w-full pl-12 pr-12 py-3 text-right bg-dark-bg border-dark-border text-black dark:text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-electric-yellow focus:border-electric-yellow transition-all duration-200"
           data-testid="search-input"
         />
         <Search className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />

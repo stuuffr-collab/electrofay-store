@@ -14,7 +14,7 @@ export default function Products() {
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [filter, setFilter] = useState<"all" | "gaming_accessory" | "gaming_pc" | "gaming_console" | "streaming_gear">("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<"name" | "price" | "rating">("name");
+  const [sortBy, setSortBy] = useState<"name" | "price_asc" | "price_desc">("name");
   const { toasts, showSuccess } = useToastManager();
   const { data: products = [], isLoading, error } = useProducts();
 
@@ -28,10 +28,10 @@ export default function Products() {
     })
     .sort((a, b) => {
       switch (sortBy) {
-        case "price":
+        case "price_asc":
           return a.price - b.price;
-        case "rating":
-          return b.rating - a.rating;
+        case "price_desc":
+          return b.price - a.price;
         default:
           return a.name.localeCompare(b.name, 'ar');
       }
@@ -125,12 +125,12 @@ export default function Products() {
             {/* Sort */}
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as "name" | "price" | "rating")}
-              className="px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg bg-white dark:bg-dark-bg text-right"
+              onChange={(e) => setSortBy(e.target.value as "name" | "price_asc" | "price_desc")}
+              className="px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg bg-white dark:bg-dark-bg text-right text-black dark:text-white"
             >
               <option value="name">ترتيب حسب الاسم</option>
-              <option value="price">ترتيب حسب السعر</option>
-              <option value="rating">ترتيب حسب التقييم</option>
+              <option value="price_desc">السعر من الأعلى للأقل</option>
+              <option value="price_asc">السعر من الأقل للأعلى</option>
             </select>
           </div>
         </div>

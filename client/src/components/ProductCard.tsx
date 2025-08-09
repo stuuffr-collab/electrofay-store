@@ -123,20 +123,7 @@ export function ProductCard({ product, onOrderClick, onAddToCart }: ProductCardP
           </div>
         </div>
 
-        {/* Star Rating */}
-        <div className="flex items-center justify-center mb-4">
-          {[...Array(5)].map((_, index) => (
-            <Star 
-              key={index} 
-              className={`w-4 h-4 ${
-                index < Math.floor(product.rating) 
-                  ? 'text-yellow-400 fill-current' 
-                  : 'text-gray-500'
-              }`} 
-            />
-          ))}
-          <span className="text-sm text-gray-300 mr-2">({product.rating})</span>
-        </div>
+
 
         <div className="flex gap-2 mb-2">
           <Button

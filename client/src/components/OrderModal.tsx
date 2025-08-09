@@ -263,8 +263,8 @@ export function OrderModal({ isOpen, product, onClose, onOrderSubmit }: OrderMod
                     • رسوم التوصيل لـ {selectedCity.name}: {selectedCity.deliveryFee} د.ل
                   </p>
                 )}
-                <p className="text-sm text-gray-600 dark:text-gray-300">
-                  • الدفع عند الاستلام فقط
+                <p className="text-sm text-gray-600 dark:text-gray-300 flex items-center">
+                  💵 <span className="mr-2">دفع عند الاستلام</span>
                 </p>
               </div>
 
