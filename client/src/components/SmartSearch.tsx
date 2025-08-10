@@ -123,10 +123,10 @@ export function SmartSearch({ products, onSearchChange, placeholder = "ابحث 
         setShowSuggestions(false);
       }
       setSelectedIndex(-1);
-    }, 100); // Debounce to prevent maximum update depth
+    }, 300); // Increased debounce to prevent maximum update depth
 
     return () => clearTimeout(timeoutId);
-  }, [query, products]);
+  }, [query, products, onSearchChange]);
 
   // Handle keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {

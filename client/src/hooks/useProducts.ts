@@ -26,7 +26,7 @@ export async function fetchProducts(): Promise<Product[]> {
       descriptionEn: item.description_en,
       price: parseFloat(item.price),
       originalPrice: item.original_price ? parseFloat(item.original_price) : null,
-      category: item.category as 'gaming' | 'electronics',
+      category: item.category as "gaming_accessory" | "gaming_pc" | "gaming_console" | "streaming_gear",
       image: item.image,
       rating: parseFloat(item.rating),
       badges: item.badges || [],

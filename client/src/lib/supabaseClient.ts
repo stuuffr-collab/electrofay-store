@@ -14,21 +14,15 @@ const isValidUrl = (url: string): boolean => {
 let supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim();
 let supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim();
 
-// Check if values are swapped and fix them
-if (supabaseUrl && supabaseUrl.startsWith('eyJ')) {
+// Check if values are swapped and fix them (only once)
+const needsSwap = supabaseUrl && supabaseUrl.startsWith('eyJ');
+if (needsSwap) {
   // URL is actually the token, swap them
   const temp = supabaseUrl;
   supabaseUrl = supabaseAnonKey;
   supabaseAnonKey = temp;
   console.log('🔄 Fixed swapped Supabase environment variables');
 }
-
-// Debug logging
-console.log('Supabase URL after fix:', supabaseUrl);
-console.log('Supabase URL type:', typeof supabaseUrl);
-console.log('URL starts with https:', supabaseUrl?.startsWith('https://'));
-console.log('URL includes supabase.co:', supabaseUrl?.includes('.supabase.co'));
-console.log('Is valid URL:', supabaseUrl ? isValidUrl(supabaseUrl) : false);
 
 // Create a null supabase client if environment variables are missing
 // This allows the app to work with fallback data during development
