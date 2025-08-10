@@ -110,25 +110,26 @@ export function SmartSearch({ products, onSearchChange, placeholder = "ابحث 
 
   // Handle search input changes with stable callback
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (typeof onSearchChange === 'function') {
-        const filteredProducts = filterProducts(query);
-        onSearchChange(query, filteredProducts);
-      }
+    if (!query.trim()) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      setSelectedIndex(-1);
+      return;
+    }
 
-      if (query.trim()) {
+    const timeoutId = setTimeout(() => {
+      try {
         const newSuggestions = generateSuggestions(query);
         setSuggestions(newSuggestions);
         setShowSuggestions(true);
-      } else {
-        setSuggestions([]);
-        setShowSuggestions(false);
+        setSelectedIndex(-1);
+      } catch (error) {
+        // Ignore errors in suggestions
       }
-      setSelectedIndex(-1);
-    }, 500); // Further increased debounce
+    }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [query]); // Remove dependencies that cause infinite loops
+  }, [query]); // Only depend on query
 
   // Handle keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
