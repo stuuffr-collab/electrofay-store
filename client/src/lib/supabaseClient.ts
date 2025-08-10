@@ -10,18 +10,15 @@ const isValidUrl = (url: string): boolean => {
   }
 };
 
-// Temporary fix for swapped environment variables
+// Get environment variables once
 let supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim();
 let supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim();
 
-// Check if values are swapped and fix them (only once)
-const needsSwap = supabaseUrl && supabaseUrl.startsWith('eyJ');
-if (needsSwap) {
-  // URL is actually the token, swap them
+// Check if values are swapped and fix them (only once, no logging)
+if (supabaseUrl && supabaseUrl.startsWith('eyJ')) {
   const temp = supabaseUrl;
   supabaseUrl = supabaseAnonKey;
   supabaseAnonKey = temp;
-  console.log('🔄 Fixed swapped Supabase environment variables');
 }
 
 // Create a null supabase client if environment variables are missing
@@ -29,12 +26,7 @@ if (needsSwap) {
 let supabase: any = null;
 
 if (!supabaseUrl || !supabaseAnonKey || !isValidUrl(supabaseUrl)) {
-  if (supabaseUrl && !isValidUrl(supabaseUrl)) {
-    console.error('❌ Invalid Supabase URL format. Expected format: https://your-project.supabase.co');
-    console.error('Current URL appears to be a token instead of URL:', supabaseUrl.substring(0, 50) + '...');
-  }
-  console.warn('⚠️ Supabase environment variables not found. App will use fallback data.');
-  // Create a mock client that safely fails operations
+  // Create a mock client that safely fails operations (no console logging)
   supabase = {
     from: () => ({
       select: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),

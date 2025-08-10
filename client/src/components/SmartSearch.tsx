@@ -108,11 +108,13 @@ export function SmartSearch({ products, onSearchChange, placeholder = "ابحث 
     });
   };
 
-  // Handle search input changes
+  // Handle search input changes with stable callback
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      const filteredProducts = filterProducts(query);
-      onSearchChange(query, filteredProducts);
+      if (typeof onSearchChange === 'function') {
+        const filteredProducts = filterProducts(query);
+        onSearchChange(query, filteredProducts);
+      }
 
       if (query.trim()) {
         const newSuggestions = generateSuggestions(query);
@@ -123,10 +125,10 @@ export function SmartSearch({ products, onSearchChange, placeholder = "ابحث 
         setShowSuggestions(false);
       }
       setSelectedIndex(-1);
-    }, 300); // Increased debounce to prevent maximum update depth
+    }, 500); // Further increased debounce
 
     return () => clearTimeout(timeoutId);
-  }, [query, products, onSearchChange]);
+  }, [query]); // Remove dependencies that cause infinite loops
 
   // Handle keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {

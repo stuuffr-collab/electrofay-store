@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase-stable';
 import { Product } from '@/components/ProductCard';
 
 export async function fetchProducts(): Promise<Product[]> {
@@ -11,8 +11,7 @@ export async function fetchProducts(): Promise<Product[]> {
       .eq('in_stock', true);
 
     if (error) {
-      console.error('خطأ أثناء جلب المنتجات من Supabase:', error);
-      // Fallback to local products data
+      // Fallback to local products data (no console logging)
       const { default: localProducts } = await import('@/data/products.json');
       return localProducts as Product[];
     }
@@ -34,8 +33,7 @@ export async function fetchProducts(): Promise<Product[]> {
       stockCount: item.stock_count
     }));
   } catch (error) {
-    console.error('خطأ في الاتصال مع قاعدة البيانات:', error);
-    // Fallback to local products data
+    // Fallback to local products data (no console logging)
     const { default: localProducts } = await import('@/data/products.json');
     return localProducts as Product[];
   }
@@ -45,8 +43,10 @@ export function useProducts() {
   return useQuery({
     queryKey: ['products'],
     queryFn: fetchProducts,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: 30 * 60 * 1000, // 30 minutes (reduce API calls)
+    gcTime: 60 * 60 * 1000, // 1 hour
+    refetchOnWindowFocus: false, // Prevent refetch on focus
+    refetchOnReconnect: false, // Prevent refetch on reconnect
   });
 }
 
@@ -57,7 +57,9 @@ export function useProductsByCategory(category: string) {
       const products = await fetchProducts();
       return products.filter(product => product.category === category);
     },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
+    staleTime: 30 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 }
