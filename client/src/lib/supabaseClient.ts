@@ -25,7 +25,13 @@ if (supabaseUrl && supabaseUrl.startsWith('eyJ')) {
 // This allows the app to work with fallback data during development
 let supabase: any = null;
 
+// Temporary debug logging (will remove after fix)
+console.log('🔧 Supabase URL:', supabaseUrl ? 'موجود' : 'مفقود');
+console.log('🔧 Supabase Key:', supabaseAnonKey ? 'موجود' : 'مفقود');
+console.log('🔧 URL Valid:', supabaseUrl ? isValidUrl(supabaseUrl) : false);
+
 if (!supabaseUrl || !supabaseAnonKey || !isValidUrl(supabaseUrl)) {
+  console.log('❌ Supabase غير مكون بشكل صحيح، استخدام البيانات المحلية');
   // Create a mock client that safely fails operations (no console logging)
   supabase = {
     from: () => ({

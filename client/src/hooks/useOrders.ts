@@ -16,6 +16,8 @@ export interface OrderData {
 }
 
 export async function saveOrder(orderData: OrderData) {
+  console.log('🚀 بدء حفظ الطلب:', orderData);
+  
   try {
     // Prepare items data for database storage
     const itemsJson = JSON.stringify(orderData.items.map(item => ({
@@ -26,34 +28,39 @@ export async function saveOrder(orderData: OrderData) {
       total: item.product.price * item.quantity
     })));
 
+    console.log('📦 بيانات المنتجات المحضرة:', itemsJson);
+
+    const insertData = {
+      customer_name: orderData.customerName,
+      customer_phone: orderData.customerPhone,
+      customer_city: orderData.customerCity,
+      customer_address: orderData.customerAddress,
+      order_notes: orderData.customerNotes || null,
+      items: itemsJson,
+      total_amount: orderData.totalAmount,
+      delivery_fee: orderData.deliveryFee || 0,
+      status: orderData.status || 'pending'
+    };
+
+    console.log('💾 البيانات المرسلة لقاعدة البيانات:', insertData);
+
     const { data, error } = await supabase
       .from('orders')
-      .insert({
-        customer_name: orderData.customerName,
-        customer_phone: orderData.customerPhone,
-        customer_email: orderData.customerEmail || null,
-        customer_city: orderData.customerCity,
-        customer_address: orderData.customerAddress,
-        order_notes: orderData.customerNotes || null,
-        items: itemsJson,
-        total_amount: orderData.totalAmount.toString(),
-        delivery_fee: (orderData.deliveryFee || 0).toString(),
-        status: orderData.status || 'pending'
-      })
+      .insert(insertData)
       .select()
       .single();
 
     if (error) {
-      console.error('خطأ أثناء حفظ الطلب في Supabase:', error);
-      throw new Error('فشل في حفظ الطلب في قاعدة البيانات');
+      console.error('❌ خطأ Supabase:', error);
+      console.error('❌ تفاصيل الخطأ:', JSON.stringify(error, null, 2));
+      throw new Error(`فشل في حفظ الطلب: ${error.message}`);
     }
 
     console.log('✅ تم حفظ الطلب بنجاح في Supabase:', data);
     return data;
   } catch (error) {
-    console.error('خطأ في حفظ الطلب:', error);
-    // Log the order locally as fallback
-    console.log('📋 طلب جديد (محفوظ محلياً):', orderData);
+    console.error('💥 خطأ شامل في حفظ الطلب:', error);
+    console.log('📋 بيانات الطلب المفشل:', JSON.stringify(orderData, null, 2));
     throw error;
   }
 }

@@ -6,9 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { createWhatsAppMessage, openWhatsApp, type OrderData } from "@/lib/whatsapp";
+import { createWhatsAppMessage, openWhatsApp, type OrderData as WhatsAppOrderData } from "@/lib/whatsapp";
 import { type Product } from "./ProductCard";
-import { useSaveOrder, saveOrder } from "@/hooks/useOrders";
+import { useSaveOrder, type OrderData as SupabaseOrderData } from "@/hooks/useOrders";
 import citiesData from "@/data/cities.json";
 import toast from 'react-hot-toast';
 
@@ -16,7 +16,7 @@ interface OrderModalProps {
   isOpen: boolean;
   product: Product | null;
   onClose: () => void;
-  onOrderSubmit: (orderData: OrderData) => void;
+  onOrderSubmit: (orderData: WhatsAppOrderData) => void;
 }
 
 interface CustomerData {
@@ -95,7 +95,7 @@ export function OrderModal({ isOpen, product, onClose, onOrderSubmit }: OrderMod
       const deliveryFee = selectedCityData?.deliveryFee || 0;
       
       // Prepare order data for Supabase
-      const supabaseOrderData = {
+      const supabaseOrderData: SupabaseOrderData = {
         customerName: customerData.name,
         customerPhone: customerData.phone,
         customerCity: selectedCityData?.name || customerData.city,
@@ -112,15 +112,16 @@ export function OrderModal({ isOpen, product, onClose, onOrderSubmit }: OrderMod
 
       // Save to Supabase database
       try {
-        await saveOrderMutation.mutateAsync(supabaseOrderData);
-        console.log('✅ تم حفظ الطلب بنجاح في قاعدة البيانات');
+        const savedOrder = await saveOrderMutation.mutateAsync(supabaseOrderData);
+        console.log('✅ تم حفظ الطلب بنجاح في قاعدة البيانات:', savedOrder);
       } catch (error) {
         console.error('❌ فشل في حفظ الطلب:', error);
-        // Continue with WhatsApp anyway
+        // Show error but continue with WhatsApp
+        toast.error('تعذر حفظ الطلب في النظام، لكن سيتم إرساله عبر واتساب');
       }
 
       // Create WhatsApp order data  
-      const whatsappOrderData: OrderData = {
+      const whatsappOrderData: WhatsAppOrderData = {
         product: {
           id: product.id,
           name: product.name,
