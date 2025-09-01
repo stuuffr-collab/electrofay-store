@@ -8,6 +8,9 @@ import { Toast, useToastManager } from "@/components/Toast";
 import { type OrderData } from "@/lib/whatsapp";
 import { trackEvent } from "@/lib/analytics";
 import { useProducts } from "@/hooks/useProducts";
+import { useCart } from "@/hooks/use-cart";
+import { MobileCartButton } from "@/components/MobileCartButton";
+import toast from "react-hot-toast";
 
 export default function Products() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -17,6 +20,7 @@ export default function Products() {
   const [sortBy, setSortBy] = useState<"name" | "price_asc" | "price_desc">("name");
   const { toasts, showSuccess } = useToastManager();
   const { data: products = [], isLoading, error } = useProducts();
+  const cart = useCart();
 
   const filteredAndSortedProducts = products
     .filter(product => {
@@ -46,6 +50,12 @@ export default function Products() {
   const handleOrderSubmit = (orderData: OrderData) => {
     showSuccess("📦 تم استلام طلبك - سنتواصل معك خلال دقائق");
     trackEvent('order_submitted', 'conversion', orderData.product.name, orderData.product.price);
+  };
+
+  const handleAddToCart = (product: Product) => {
+    cart.addItem(product);
+    toast.success(`✅ تمت إضافة ${product.name} للسلة`);
+    trackEvent('add_to_cart', 'engagement', product.name, product.price);
   };
 
   useEffect(() => {
@@ -172,6 +182,7 @@ export default function Products() {
                 key={product.id}
                 product={product as Product}
                 onOrderClick={handleOrderClick}
+                onAddToCart={handleAddToCart}
               />
             ))}
           </div>
@@ -202,6 +213,12 @@ export default function Products() {
         product={selectedProduct}
         onClose={() => setIsOrderModalOpen(false)}
         onOrderSubmit={handleOrderSubmit}
+      />
+
+      {/* Mobile Cart Button */}
+      <MobileCartButton 
+        itemCount={cart.totalItems}
+        onClick={() => cart.setIsOpen(true)}
       />
 
       {/* Toast Notifications */}
