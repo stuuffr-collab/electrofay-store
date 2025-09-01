@@ -99,8 +99,8 @@ export default function Home() {
             
             <div className="relative">
               <img 
-                src="https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
-                alt="Gaming setup with RGB lighting and accessories" 
+                src="/attached_assets/generated_images/Gaming_setup_hero_image_8e63dbf5.png" 
+                alt="إعداد قيمنج احترافي مع إضاءة RGB وإكسسوارات متقدمة" 
                 className="rounded-xl shadow-2xl w-full h-auto animate-pulse-electric"
                 loading="eager"
               />
