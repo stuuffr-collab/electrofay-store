@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { createWhatsAppMessage, openWhatsApp, type OrderData } from "@/lib/whatsapp";
 import { type Product } from "./ProductCard";
+import { useSaveOrder, saveOrder } from "@/hooks/useOrders";
 import citiesData from "@/data/cities.json";
 import toast from 'react-hot-toast';
 
@@ -44,6 +45,7 @@ export function OrderModal({ isOpen, product, onClose, onOrderSubmit }: OrderMod
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<ValidationErrors>({});
+  const saveOrderMutation = useSaveOrder();
 
   const handleInputChange = (field: keyof CustomerData, value: string) => {
     setCustomerData(prev => ({ ...prev, [field]: value }));
@@ -89,7 +91,36 @@ export function OrderModal({ isOpen, product, onClose, onOrderSubmit }: OrderMod
     setIsSubmitting(true);
 
     try {
-      const orderData: OrderData = {
+      const selectedCityData = citiesData.find(city => city.id === customerData.city);
+      const deliveryFee = selectedCityData?.deliveryFee || 0;
+      
+      // Prepare order data for Supabase
+      const supabaseOrderData = {
+        customerName: customerData.name,
+        customerPhone: customerData.phone,
+        customerCity: selectedCityData?.name || customerData.city,
+        customerAddress: customerData.address,
+        customerNotes: customerData.notes || undefined,
+        items: [{
+          product: product, // Pass the full product object
+          quantity: 1
+        }],
+        totalAmount: product.price + deliveryFee,
+        deliveryFee: deliveryFee,
+        status: 'pending'
+      };
+
+      // Save to Supabase database
+      try {
+        await saveOrderMutation.mutateAsync(supabaseOrderData);
+        console.log('✅ تم حفظ الطلب بنجاح في قاعدة البيانات');
+      } catch (error) {
+        console.error('❌ فشل في حفظ الطلب:', error);
+        // Continue with WhatsApp anyway
+      }
+
+      // Create WhatsApp order data  
+      const whatsappOrderData: OrderData = {
         product: {
           id: product.id,
           name: product.name,
@@ -98,21 +129,8 @@ export function OrderModal({ isOpen, product, onClose, onOrderSubmit }: OrderMod
         customer: customerData,
       };
 
-      const whatsappMessage = createWhatsAppMessage(orderData);
+      const whatsappMessage = createWhatsAppMessage(whatsappOrderData);
       openWhatsApp(whatsappMessage);
-
-      // Send order to backend API (non-blocking)
-      try {
-        await fetch('/api/orders', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(orderData),
-        });
-      } catch (error) {
-        console.log('Order logging failed (non-critical):', error);
-      }
 
       // Show success toast
       toast.success('📦 تم استلام طلبك – سنتواصل خلال دقائق', {
@@ -124,7 +142,7 @@ export function OrderModal({ isOpen, product, onClose, onOrderSubmit }: OrderMod
         },
       });
 
-      onOrderSubmit(orderData);
+      onOrderSubmit(whatsappOrderData);
       
       // Reset form and close modal
       setCustomerData({
