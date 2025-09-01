@@ -99,7 +99,7 @@ export default function Home() {
             
             <div className="relative">
               <img 
-                src="/attached_assets/generated_images/Gaming_setup_hero_image_8e63dbf5.png" 
+                src="/Gaming_setup_hero_image_8e63dbf5.png" 
                 alt="إعداد قيمنج احترافي مع إضاءة RGB وإكسسوارات متقدمة" 
                 className="rounded-xl shadow-2xl w-full h-auto animate-pulse-electric"
                 loading="eager"
