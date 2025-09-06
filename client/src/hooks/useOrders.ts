@@ -44,16 +44,27 @@ export async function saveOrder(orderData: OrderData) {
 
     console.log('💾 البيانات المرسلة لقاعدة البيانات:', insertData);
 
+    // Check if supabase client is properly configured
+    if (!supabase || typeof supabase.from !== 'function') {
+      throw new Error('Supabase client not properly configured');
+    }
+
     const { data, error } = await supabase
       .from('orders')
       .insert(insertData)
       .select()
       .single();
 
+    console.log('📊 Raw Supabase response:', { data, error });
+
     if (error) {
       console.error('❌ خطأ Supabase:', error);
       console.error('❌ تفاصيل الخطأ:', JSON.stringify(error, null, 2));
       throw new Error(`فشل في حفظ الطلب: ${error.message}`);
+    }
+
+    if (!data) {
+      throw new Error('لم يتم إرجاع بيانات من قاعدة البيانات');
     }
 
     console.log('✅ تم حفظ الطلب بنجاح في Supabase:', data);
