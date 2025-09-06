@@ -134,16 +134,9 @@ ${items.map(item => `• ${item.product.name} × ${item.quantity} = ${formatPric
       
     } catch (error) {
       console.error('Error processing order:', error);
-      toast.error('حدث خطأ في حفظ الطلب، لكن تم تسجيله محلياً');
+      toast.error('حدث خطأ في حفظ الطلب. يرجى المحاولة مرة أخرى أو التواصل معنا مباشرة');
       
-      // Still show success to user since the order data is captured locally
-      setShowCheckoutDialog(false);
-      setShowSuccessDialog(true);
-      
-      setTimeout(() => {
-        onCheckout();
-        setCustomerData({ name: '', phone: '', city: '', address: '' });
-      }, 2000);
+      return;
     }
   };
 
