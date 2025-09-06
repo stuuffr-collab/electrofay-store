@@ -40,9 +40,16 @@ if (!isValidUrl(supabaseUrl)) {
   throw new Error('Invalid Supabase URL');
 }
 
-// Create the real Supabase client
-supabase = createClient(supabaseUrl, supabaseAnonKey);
-console.log('✅ Supabase client created successfully');
+// Create the real Supabase client with explicit options
+supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: false
+  },
+  db: {
+    schema: 'public'
+  }
+});
+console.log('✅ Supabase client created successfully with URL:', supabaseUrl.substring(0, 30) + '...');
 
 export { supabase };
 
