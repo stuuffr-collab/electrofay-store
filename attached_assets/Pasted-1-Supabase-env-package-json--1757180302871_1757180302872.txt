@@ -1,0 +1,83 @@
+1) أضف مفاتيح Supabase (خطوة إلزامية)
+
+أنشئ ملف .env في جذر المشروع (نفس مستوى package.json) وضع القيم:
+
+VITE_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+VITE_SUPABASE_ANON_KEY=YOUR_PUBLIC_ANON_KEY
+
+
+تحصلها من: Supabase Dashboard → Project Settings → API (خذ Anon public key، ولا تستخدم Service Role في المتصفح).
+بعدها أعد تشغيل Vite/السيرفر (npm run dev مثلًا).
+
+حمّلت لك قالب جاهز لهذه الإضافات:
+
+.env.example.supabase
+
+انسخ محتواه إلى .env وعدّل القيم ببيانات مشروعك.
+
+2) ثبّت سكربت قواعد البيانات (RLS وسياسة الإدراج)
+
+في Supabase → SQL Editor، نفّذ (لو ما نفّذتها من قبل):
+
+-- جدول الطلبات (موجود لديك لكن للتذكير)
+-- يحتوي items كـ TEXT لتخزين JSON string
+-- ...
+
+-- فعّل RLS + اسمح بالإدخال للجميع (Anon)
+ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow public insert to orders"
+ON public.orders
+FOR INSERT
+WITH CHECK (true);
+
+
+عند الاختبار: لو ظهر لك في الشبكة “permission denied for table orders”، فالمشكلة من RLS/السياسات.
+
+3) استبدل دالة حفظ الطلب بكود مضمون (mapping + JSON)
+
+كتبت لك ملف بديل جاهز لـ client/src/hooks/useOrders.ts فيه:
+
+فحص صريح لمتغيّرات .env (يعطيك خطأ واضح لو ناقصة)
+
+تحويل حقول camelCase إلى snake_case
+
+تحويل محتوى السلة إلى JSON نصّي قبل الإدراج
+
+نزّله وضعه مكان الملف الحالي:
+
+useOrders.ts (مُحدّث)
+
+لمحة من الداخل:
+
+const payload = {
+  customer_name: order.customerName,
+  customer_phone: order.customerPhone,
+  customer_city: order.customerCity,
+  customer_address: order.customerAddress,
+  order_notes: order.customerNotes ?? null,
+  status: order.status ?? 'pending',
+  total_amount: order.totalAmount,
+  delivery_fee: order.deliveryFee ?? 0,
+  items: JSON.stringify(order.items), // مهم: TEXT في الجدول
+};
+
+const { data, error } = await supabase
+  .from('orders')
+  .insert(payload)
+  .select()
+  .single();
+
+if (error) throw new Error(`[Supabase insert] ${error.message}`);
+
+تشخيص سريع لو تعثّرت بعد التطبيق
+
+Network → rest/v1/orders يرجع 400/401/403
+
+401/403 → مفاتيح أو سياسات RLS.
+
+400 مع invalid input syntax → غالبًا حقل غير متوافق (تأكد من الأرقام/الحقول أو أن items سلسلة JSON وليس object مباشر).
+
+لا يظهر أي نداء لشبكة Supabase
+
+غالبًا VITE_SUPABASE_URL/ANON_KEY مفقودة في .env → عميل وهمي يوقف أي اتصال. أعد التشغيل بعد ضبط .env.
