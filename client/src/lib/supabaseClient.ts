@@ -30,7 +30,11 @@ if (!supabaseUrl || !supabaseAnonKey || !isValidUrl(supabaseUrl)) {
   supabase = {
     from: () => ({
       select: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
-      insert: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
+      insert: () => ({
+        select: () => ({
+          single: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } })
+        })
+      }),
       eq: () => ({ data: null, error: { message: 'Supabase not configured' } })
     }),
     storage: {
