@@ -19,6 +19,11 @@ export async function saveOrder(orderData: OrderData) {
   console.log('🚀 بدء حفظ الطلب:', orderData);
   
   try {
+    // Test Supabase connection first
+    console.log('🔍 Testing Supabase connection...');
+    const testResult = await supabase.from('orders').select('id').limit(1);
+    console.log('🧪 Connection test result:', testResult);
+    
     // Prepare items data for database storage
     const itemsJson = JSON.stringify(orderData.items.map(item => ({
       productId: item.product.id,
@@ -37,22 +42,18 @@ export async function saveOrder(orderData: OrderData) {
       customer_address: orderData.customerAddress,
       order_notes: orderData.customerNotes || null,
       items: itemsJson,
-      total_amount: orderData.totalAmount,
-      delivery_fee: orderData.deliveryFee || 0,
+      total_amount: Number(orderData.totalAmount),
+      delivery_fee: Number(orderData.deliveryFee || 0),
       status: orderData.status || 'pending'
     };
 
     console.log('💾 البيانات المرسلة لقاعدة البيانات:', insertData);
 
-    // Check if supabase client is properly configured
-    if (!supabase || typeof supabase.from !== 'function') {
-      throw new Error('Supabase client not properly configured');
-    }
-
+    // Insert the order
     const { data, error } = await supabase
       .from('orders')
-      .insert(insertData)
-      .select()
+      .insert([insertData])
+      .select('*')
       .single();
 
     console.log('📊 Raw Supabase response:', { data, error });
@@ -60,7 +61,7 @@ export async function saveOrder(orderData: OrderData) {
     if (error) {
       console.error('❌ خطأ Supabase:', error);
       console.error('❌ تفاصيل الخطأ:', JSON.stringify(error, null, 2));
-      throw new Error(`فشل في حفظ الطلب: ${error.message}`);
+      throw new Error(`فشل في حفظ الطلب: ${error.message} - Code: ${error.code}`);
     }
 
     if (!data) {

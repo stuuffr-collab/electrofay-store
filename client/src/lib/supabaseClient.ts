@@ -25,31 +25,24 @@ if (supabaseUrl && supabaseUrl.startsWith('eyJ')) {
 // This allows the app to work with fallback data during development
 let supabase: any = null;
 
-// Temporary debug logging (will remove after fix)
+// Debug logging
 console.log('🔧 Supabase URL:', supabaseUrl ? 'موجود' : 'مفقود');
 console.log('🔧 Supabase Key:', supabaseAnonKey ? 'موجود' : 'مفقود');
 console.log('🔧 URL Valid:', supabaseUrl ? isValidUrl(supabaseUrl) : false);
 
-if (!supabaseUrl || !supabaseAnonKey || !isValidUrl(supabaseUrl)) {
-  console.log('❌ Supabase غير مكون بشكل صحيح، استخدام البيانات المحلية');
-  // Create a mock client that safely fails operations (no console logging)
-  supabase = {
-    from: () => ({
-      select: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
-      insert: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
-      eq: () => ({ data: null, error: { message: 'Supabase not configured' } })
-    }),
-    storage: {
-      from: () => ({
-        upload: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
-        remove: () => Promise.resolve({ error: { message: 'Supabase not configured' } }),
-        getPublicUrl: () => ({ data: { publicUrl: '' } })
-      })
-    }
-  };
-} else {
-  supabase = createClient(supabaseUrl, supabaseAnonKey);
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('❌ Missing Supabase environment variables!');
+  throw new Error('Supabase configuration missing');
 }
+
+if (!isValidUrl(supabaseUrl)) {
+  console.error('❌ Invalid Supabase URL format!');
+  throw new Error('Invalid Supabase URL');
+}
+
+// Create the real Supabase client
+supabase = createClient(supabaseUrl, supabaseAnonKey);
+console.log('✅ Supabase client created successfully');
 
 export { supabase };
 
