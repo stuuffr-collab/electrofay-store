@@ -1,7 +1,6 @@
 import { ReactNode } from "react";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
-import { PromotionalTicker } from "./PromotionalTicker";
 import { CartSidebar } from "./CartSidebar";
 import { ScrollToTop } from "./ScrollToTop";
 import { useCart } from "@/hooks/use-cart";
@@ -34,7 +33,6 @@ export function Layout({ children }: LayoutProps) {
         onCheckout={handleCartCheckout}
       />
       
-      <PromotionalTicker />
       <Header />
       <main className="flex-1">
         {children}
