@@ -45,7 +45,6 @@ export async function saveOrder(orderData: OrderData) {
       }))),
       total_amount: Number(orderData.totalAmount),
       delivery_fee: Number(orderData.deliveryFee || 0),
-      usd_to_lyd_snapshot: currentExchangeRate,
       status: orderData.status || 'pending'
     };
 
@@ -54,9 +53,7 @@ export async function saveOrder(orderData: OrderData) {
     // Save order to Supabase
     const { data, error } = await supabase
       .from('orders')
-      .insert(orderPayload)
-      .select()
-      .single();
+      .insert(orderPayload);
 
     if (error) {
       console.error('❌ خطأ Supabase:', error);
@@ -66,7 +63,7 @@ export async function saveOrder(orderData: OrderData) {
     console.log('✅ تم حفظ الطلب بنجاح في Supabase:', data);
     return {
       success: true,
-      orderId: data.id,
+      orderId: data ? (Array.isArray(data) ? data[0]?.id : data.id) : null,
       message: 'Order saved successfully'
     };
     
