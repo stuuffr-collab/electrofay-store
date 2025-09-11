@@ -15,41 +15,10 @@ export interface OrderData {
   status?: string;
 }
 
-// Direct test function
-async function testDirectInsert() {
-  try {
-    const testData = {
-      customer_name: 'Direct Test',
-      customer_phone: '0911111111',
-      customer_city: 'طرابلس',
-      customer_address: 'Test Address',
-      items: '[{"test": true}]',
-      total_amount: 99,
-      delivery_fee: 0,
-      status: 'pending'
-    };
-    
-    console.log('🧪 Testing direct insert:', testData);
-    const result = await supabase.from('orders').insert(testData).select();
-    console.log('🧪 Direct insert result:', result);
-    return result;
-  } catch (error) {
-    console.error('🧪 Direct insert failed:', error);
-    return { error };
-  }
-}
-
 export async function saveOrder(orderData: OrderData) {
   console.log('🚀 بدء حفظ الطلب:', orderData);
   
   try {
-    // Test direct insert first
-    await testDirectInsert();
-    
-    // Test Supabase connection first
-    console.log('🔍 Testing Supabase connection...');
-    const testResult = await supabase.from('orders').select('id').limit(1);
-    console.log('🧪 Connection test result:', testResult);
     
     // Prepare items data for database storage
     const itemsJson = JSON.stringify(orderData.items.map(item => ({
@@ -76,8 +45,7 @@ export async function saveOrder(orderData: OrderData) {
 
     console.log('💾 البيانات المرسلة لقاعدة البيانات:', insertData);
 
-    // Insert the order with explicit method
-    console.log('🚀 Attempting insert with data:', insertData);
+    // Insert the order
     const { data, error } = await supabase
       .from('orders')
       .insert(insertData)
