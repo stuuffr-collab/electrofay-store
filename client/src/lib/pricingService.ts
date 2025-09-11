@@ -49,6 +49,8 @@ export async function fetchExchangeRate(): Promise<number> {
 // Fetch products with calculated LYD prices
 export async function fetchPricedProducts(): Promise<PricedProduct[]> {
   try {
+    console.log('📊 Fetching products and exchange rate from Supabase...');
+    
     // Fetch products and exchange rate in parallel
     const [productsResult, rate] = await Promise.all([
       supabase
@@ -61,13 +63,16 @@ export async function fetchPricedProducts(): Promise<PricedProduct[]> {
     const { data: products, error } = productsResult;
     
     if (error) {
-      console.error('Failed to fetch products:', error);
+      console.error('❌ Supabase error fetching products:', error);
       return [];
     }
 
-    if (!products) {
+    if (!products || products.length === 0) {
+      console.log('⚠️ No products found in Supabase. Please run the SQL setup script.');
       return [];
     }
+
+    console.log(`✅ Fetched ${products.length} products from Supabase`);
 
     // Calculate LYD prices for each product
     return products.map((product: any) => {
@@ -94,7 +99,7 @@ export async function fetchPricedProducts(): Promise<PricedProduct[]> {
       };
     });
   } catch (error) {
-    console.error('Error in fetchPricedProducts:', error);
+    console.error('💥 Error in fetchPricedProducts:', error);
     return [];
   }
 }
