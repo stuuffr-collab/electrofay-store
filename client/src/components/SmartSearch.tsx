@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useLocation } from "wouter";
 import { type Product } from "@/components/ProductCard";
 
 interface SmartSearchProps {
@@ -24,6 +25,7 @@ export function SmartSearch({ products, onSearchChange, placeholder = "ابحث 
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [, setLocation] = useLocation();
 
   // Generate smart suggestions based on query
   const generateSuggestions = (searchQuery: string): SearchSuggestion[] => {
@@ -162,8 +164,11 @@ export function SmartSearch({ products, onSearchChange, placeholder = "ابحث 
   // Handle suggestion selection
   const handleSuggestionClick = (suggestion: SearchSuggestion) => {
     if (suggestion.type === 'product' && suggestion.product) {
-      setQuery(suggestion.product.name);
-      onSearchChange(suggestion.product.name, [suggestion.product]);
+      // Navigate directly to product detail page
+      window.scrollTo(0, 0);
+      setLocation(`/product/${suggestion.product.id}`);
+      setShowSuggestions(false);
+      setSelectedIndex(-1);
     } else if (suggestion.type === 'category') {
       const categoryQueries = {
         'إكسسوارات قيمنج': 'إكسسوارات',
@@ -175,11 +180,16 @@ export function SmartSearch({ products, onSearchChange, placeholder = "ابحث 
         suggestion.text.includes(key)
       )?.[1] || suggestion.text;
       setQuery(categoryQuery);
+      onSearchChange(categoryQuery, filterProducts(categoryQuery));
+      setShowSuggestions(false);
+      setSelectedIndex(-1);
     } else {
-      setQuery(suggestion.text.replace(' - تصنيف', '').replace('منتجات ', ''));
+      const searchTerm = suggestion.text.replace(' - تصنيف', '').replace('منتجات ', '');
+      setQuery(searchTerm);
+      onSearchChange(searchTerm, filterProducts(searchTerm));
+      setShowSuggestions(false);
+      setSelectedIndex(-1);
     }
-    setShowSuggestions(false);
-    setSelectedIndex(-1);
   };
 
   // Close suggestions when clicking outside
