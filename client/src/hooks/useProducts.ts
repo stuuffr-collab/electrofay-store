@@ -20,7 +20,7 @@ export async function fetchProducts(): Promise<Product[]> {
         description: item.description,
         descriptionEn: item.descriptionEn,
         price: item.displayPriceLyd, // Use dynamically calculated LYD price
-        originalPrice: item.originalPrice || null,
+        originalPrice: null, // No longer using original price
         category: item.category as Product['category'],
         image: item.image,
         rating: item.rating,

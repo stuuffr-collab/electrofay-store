@@ -96,7 +96,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
           descriptionEn: product.descriptionEn,
           basePriceUsd,
           displayPriceLyd,
-          originalPrice: product.originalPrice ? parseFloat(String(product.originalPrice)) : undefined,
           category: product.category,
           image: product.image,
           rating: parseFloat(String(product.rating)),

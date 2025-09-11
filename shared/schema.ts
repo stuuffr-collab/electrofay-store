@@ -14,9 +14,7 @@ export const products = pgTable("products", {
   nameEn: text("name_en").notNull(),
   description: text("description").notNull(),
   descriptionEn: text("description_en").notNull(),
-  price: decimal("price", { precision: 10, scale: 2 }).notNull(), // Legacy LYD price (will be calculated)
-  originalPrice: decimal("original_price", { precision: 10, scale: 2 }),
-  basePriceUsd: decimal("base_price_usd", { precision: 10, scale: 2 }).notNull(), // New USD base price
+  basePriceUsd: decimal("base_price_usd", { precision: 10, scale: 2 }).notNull(), // USD base price only
   category: text("category").notNull(), // 'gaming' or 'electronics'
   image: text("image").notNull(),
   rating: decimal("rating", { precision: 3, scale: 2 }).notNull().default("0"),
