@@ -201,12 +201,6 @@ export default function ProductDetail() {
               <p className="text-gray-400 text-xl">{product.nameEn}</p>
             </div>
 
-            {/* Enhanced Rating */}
-            <StarRating 
-              rating={product.rating} 
-              reviewCount={127} 
-              size="lg" 
-            />
 
             {/* Enhanced Price Display */}
             <div className="space-y-3 p-6 bg-gradient-to-r from-dark-card to-dark-card/50 rounded-xl border border-dark-border">
