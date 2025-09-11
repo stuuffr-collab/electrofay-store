@@ -7,21 +7,21 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim();
 // Create fallback client for development environment
 const createFallbackClient = () => ({
   from: (table: string) => ({
-    select: (columns?: string) => Promise.resolve({ 
-      data: null, 
-      error: { message: `Using fallback mode - backend API recommended for ${table}` } 
+    select: (columns?: string) => ({
+      eq: (column: string, value: any) => ({
+        single: () => Promise.resolve({ 
+          data: null, 
+          error: { message: `Using fallback mode - backend API recommended for ${table}` } 
+        })
+      })
     }),
     insert: (data: any) => Promise.resolve({ 
       data: null, 
       error: { message: `Using fallback mode - backend API recommended for ${table}` } 
     }),
-    eq: (column: string, value: any) => ({ 
+    upsert: (data: any) => Promise.resolve({ 
       data: null, 
       error: { message: `Using fallback mode - backend API recommended for ${table}` } 
-    }),
-    single: () => ({ 
-      data: null, 
-      error: { message: 'Using fallback mode - backend API recommended' } 
     })
   }),
   storage: {

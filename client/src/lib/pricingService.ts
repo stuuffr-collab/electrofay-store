@@ -17,10 +17,9 @@ export interface PricedProduct {
   usdToLydRate: number;
 }
 
-// Round LYD prices to nearest 0.5 (or your preferred step)
+// Round LYD prices to nearest whole number (no decimals)
 function roundLYD(value: number): number {
-  const step = 0.5;
-  return Math.round(value / step) * step;
+  return Math.round(value);
 }
 
 // Fetch exchange rate from settings
