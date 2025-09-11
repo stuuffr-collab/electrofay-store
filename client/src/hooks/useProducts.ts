@@ -1,19 +1,19 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchProductsFromAPI, type ApiProduct } from '@/lib/apiService';
+import { fetchPricedProducts, type PricedProduct } from '@/lib/pricingService';
 import { Product } from '@/components/ProductCard';
 
 export async function fetchProducts(): Promise<Product[]> {
   try {
-    console.log('🔍 Fetching products from local API...');
+    console.log('🔍 Fetching products from Supabase with dynamic pricing...');
     
-    // Try to fetch products from local API
-    const apiProducts = await fetchProductsFromAPI();
+    // Try to fetch products from Supabase with dynamic pricing
+    const pricedProducts = await fetchPricedProducts();
 
-    if (apiProducts && apiProducts.length > 0) {
-      console.log(`✅ تم تحميل ${apiProducts.length} منتج من API المحلي مع التسعير الديناميكي!`);
+    if (pricedProducts && pricedProducts.length > 0) {
+      console.log(`✅ تم تحميل ${pricedProducts.length} منتج من Supabase مع التسعير الديناميكي!`);
       
-      // Transform ApiProduct to Product interface
-      const transformedProducts: Product[] = apiProducts.map(item => ({
+      // Transform PricedProduct to Product interface
+      const transformedProducts: Product[] = pricedProducts.map(item => ({
         id: item.id,
         name: item.name,
         nameEn: item.nameEn,
@@ -33,7 +33,7 @@ export async function fetchProducts(): Promise<Product[]> {
     }
 
     // Fallback to local data if no products in database
-    console.log('لا توجد منتجات في قاعدة البيانات، سيتم استخدام البيانات المحلية');
+    console.log('لا توجد منتجات في Supabase، سيتم استخدام البيانات المحلية');
     
     // Import local data as fallback
     try {
@@ -44,7 +44,7 @@ export async function fetchProducts(): Promise<Product[]> {
     }
     
   } catch (error) {
-    console.error('حدث خطأ أثناء تحميل المنتجات من API:', error);
+    console.error('حدث خطأ أثناء تحميل المنتجات من Supabase:', error);
     console.log('سيتم استخدام البيانات المحلية كبديل');
     
     // Import local data as fallback
