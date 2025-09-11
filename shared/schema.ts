@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, decimal } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, decimal, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -14,8 +14,9 @@ export const products = pgTable("products", {
   nameEn: text("name_en").notNull(),
   description: text("description").notNull(),
   descriptionEn: text("description_en").notNull(),
-  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(), // Legacy LYD price (will be calculated)
   originalPrice: decimal("original_price", { precision: 10, scale: 2 }),
+  basePriceUsd: decimal("base_price_usd", { precision: 10, scale: 2 }).notNull(), // New USD base price
   category: text("category").notNull(), // 'gaming' or 'electronics'
   image: text("image").notNull(),
   rating: decimal("rating", { precision: 3, scale: 2 }).notNull().default("0"),
@@ -38,6 +39,7 @@ export const orders = pgTable("orders", {
   totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
   deliveryFee: decimal("delivery_fee", { precision: 10, scale: 2 }).notNull().default("0"),
   items: text("items").notNull(), // JSON string containing cart items
+  usdToLydSnapshot: decimal("usd_to_lyd_snapshot", { precision: 12, scale: 6 }), // Exchange rate used when order was placed
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -60,6 +62,12 @@ export const contactMessages = pgTable("contact_messages", {
   message: text("message").notNull(),
   status: text("status").notNull().default("new"), // 'new', 'read', 'replied'
   createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const settings = pgTable("settings", {
+  key: text("key").primaryKey(),
+  value: jsonb("value").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Insert schemas
@@ -89,12 +97,17 @@ export const insertContactMessageSchema = createInsertSchema(contactMessages).om
   createdAt: true,
 });
 
+export const insertSettingSchema = createInsertSchema(settings).omit({
+  updatedAt: true,
+});
+
 // Select types
 export type User = typeof users.$inferSelect;
 export type Product = typeof products.$inferSelect;
 export type Order = typeof orders.$inferSelect;
 export type City = typeof cities.$inferSelect;
 export type ContactMessage = typeof contactMessages.$inferSelect;
+export type Setting = typeof settings.$inferSelect;
 
 // Insert types
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -102,3 +115,4 @@ export type InsertProduct = z.infer<typeof insertProductSchema>;
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
 export type InsertCity = z.infer<typeof insertCitySchema>;
 export type InsertContactMessage = z.infer<typeof insertContactMessageSchema>;
+export type InsertSetting = z.infer<typeof insertSettingSchema>;

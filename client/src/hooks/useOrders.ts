@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabaseClient';
 import { CartItem } from '@/context/CartContext';
 
 export interface OrderData {
@@ -19,52 +18,45 @@ export async function saveOrder(orderData: OrderData) {
   console.log('🚀 بدء حفظ الطلب:', orderData);
   
   try {
-    
-    // Prepare items data for database storage
-    const itemsJson = JSON.stringify(orderData.items.map(item => ({
-      productId: item.product.id,
-      name: item.product.name,
-      price: item.product.price,
-      quantity: item.quantity,
-      total: item.product.price * item.quantity
-    })));
-
-    console.log('📦 بيانات المنتجات المحضرة:', itemsJson);
-
-    const insertData = {
-      customer_name: orderData.customerName,
-      customer_phone: orderData.customerPhone,
-      customer_city: orderData.customerCity,
-      customer_address: orderData.customerAddress,
-      order_notes: orderData.customerNotes || null,
-      items: itemsJson,
-      total_amount: Number(orderData.totalAmount),
-      delivery_fee: Number(orderData.deliveryFee || 0),
+    // Prepare order data for local API
+    const orderPayload = {
+      customerName: orderData.customerName,
+      customerPhone: orderData.customerPhone,
+      customerCity: orderData.customerCity,
+      customerAddress: orderData.customerAddress,
+      customerNotes: orderData.customerNotes || null,
+      items: orderData.items.map(item => ({
+        productId: item.product.id,
+        name: item.product.name,
+        price: item.product.price,
+        quantity: item.quantity,
+        total: item.product.price * item.quantity
+      })),
+      totalAmount: Number(orderData.totalAmount),
+      deliveryFee: Number(orderData.deliveryFee || 0),
       status: orderData.status || 'pending'
     };
 
-    console.log('💾 البيانات المرسلة لقاعدة البيانات:', insertData);
+    console.log('💾 البيانات المرسلة للـ API المحلي:', orderPayload);
 
-    // Insert the order
-    const { data, error } = await supabase
-      .from('orders')
-      .insert(insertData)
-      .select();
+    // Send order to local API
+    const response = await fetch('/api/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(orderPayload)
+    });
 
-    console.log('📊 Raw Supabase response:', { data, error });
-
-    if (error) {
-      console.error('❌ خطأ Supabase:', error);
-      console.error('❌ تفاصيل الخطأ:', JSON.stringify(error, null, 2));
-      throw new Error(`فشل في حفظ الطلب: ${error.message} - Code: ${error.code}`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+      throw new Error(`API error ${response.status}: ${errorData.error || 'Failed to save order'}`);
     }
 
-    if (!data) {
-      throw new Error('لم يتم إرجاع بيانات من قاعدة البيانات');
-    }
-
-    console.log('✅ تم حفظ الطلب بنجاح في Supabase:', data);
-    return data;
+    const result = await response.json();
+    console.log('✅ تم حفظ الطلب بنجاح في قاعدة البيانات المحلية:', result);
+    return result;
+    
   } catch (error) {
     console.error('💥 خطأ شامل في حفظ الطلب:', error);
     console.log('📋 بيانات الطلب المفشل:', JSON.stringify(orderData, null, 2));

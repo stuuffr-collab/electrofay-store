@@ -1,0 +1,175 @@
+📌 Prompt: Dynamic Pricing (USD → LYD) for electrofay-store (Supabase + Node + Vite)
+الهدف
+
+تخزين سعر كل منتج بالدولار base_price_usd.
+
+عرض السعر للزبون بالدينار الليبي display_price_lyd اعتمادًا على سعر صرف قابل للتحديث.
+
+قفل السعر المستخدم وقت إضافة الطلب (Snapshot) حتى لو تغيّر سعر الصرف لاحقًا.
+
+خيار A (موصى به للبدء – MVP آمن وبسيط)
+1) مخطط قاعدة البيانات (Supabase/Postgres)
+
+جدول المنتجات:
+
+create table if not exists public.products (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  base_price_usd numeric(10,2) not null,
+  is_active boolean not null default true,
+  created_at timestamptz not null default now()
+);
+
+
+جدول إعدادات عامّة لتخزين سعر الصرف الحالي فقط:
+
+create table if not exists public.settings (
+  key text primary key,
+  value jsonb not null,
+  updated_at timestamptz not null default now()
+);
+
+-- أدخل سعر الصرف الحالي (مثال: 1 USD = 5.0 LYD)
+insert into public.settings (key, value) values
+('usd_to_lyd', jsonb_build_object('rate', 5.0))
+on conflict (key) do update
+set value = excluded.value, updated_at = now();
+
+
+RLS:
+
+-- فعّل RLS على الجدولين
+alter table public.products enable row level security;
+alter table public.settings enable row level security;
+
+-- السماح بقراءة المنتجات للجميع (عرض منتجات فقط)
+create policy "public read products"
+on public.products for select
+to anon using (is_active = true);
+
+-- السماح بقراءة (usd_to_lyd) فقط للجميع
+create policy "public read usd_to_lyd"
+on public.settings for select
+to anon using (key = 'usd_to_lyd');
+
+-- منع أي تعديل من anon
+revoke all on table public.products from anon;
+revoke all on table public.settings from anon;
+
+2) حساب السعر المعروض (Frontend + عرض فقط)
+
+في Vite/React:
+
+// supabaseClient.ts
+import { createClient } from '@supabase/supabase-js'
+
+export const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL!,
+  import.meta.env.VITE_SUPABASE_ANON_KEY!
+)
+
+// productsService.ts
+import { supabase } from './supabaseClient'
+
+export async function fetchPricedProducts() {
+  const [{ data: products, error: pErr }, { data: settings, error: sErr }] =
+    await Promise.all([
+      supabase.from('products').select('id,name,base_price_usd').eq('is_active', true),
+      supabase.from('settings').select('value').eq('key', 'usd_to_lyd').single()
+    ])
+
+  if (pErr) throw pErr
+  if (sErr) throw sErr
+
+  const rate = Number(settings?.value?.rate ?? 0)
+  return (products ?? []).map(p => {
+    const raw = Number(p.base_price_usd) * rate
+    const rounded = roundLYD(raw) // شوف الدالة تحت
+    return { ...p, display_price_lyd: rounded, usd_to_lyd: rate }
+  })
+}
+
+// قاعدة تقريب (مثال: لأقرب 0.5 دينار)
+function roundLYD(value: number) {
+  const step = 0.5
+  return Math.round(value / step) * step
+}
+
+
+مهم: العرض في الواجهة فقط. الحساب النهائي يتم في السيرفر وقت إنشاء الطلب لضمان الأمان.
+
+3) إنشاء الطلب (Backend – قفل السعر Snapshot)
+
+جدول الطلبات وبنودها:
+
+create table if not exists public.orders (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.order_items (
+  id uuid primary key default gen_random_uuid(),
+  order_id uuid references public.orders(id) on delete cascade,
+  product_id uuid references public.products(id),
+  qty int not null check (qty > 0),
+  unit_price_usd numeric(10,2) not null,
+  usd_to_lyd numeric(12,6) not null,           -- سعر الصرف المستخدم وقت الطلب
+  unit_price_lyd numeric(12,2) generated always as (unit_price_usd * usd_to_lyd) stored,
+  created_at timestamptz not null default now()
+);
+
+
+في Express/Node (باستخدام service role في السيرفر فقط):
+
+import { createClient } from '@supabase/supabase-js'
+import type { Request, Response } from 'express'
+
+const supabase = createClient(
+  process.env.VITE_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY! // سري
+)
+
+export async function createOrder(req: Request, res: Response) {
+  const { items } = req.body as { items: { product_id: string; qty: number }[] }
+
+  // 1) جيب سعر الصرف الحالي من settings
+  const { data: setting, error: sErr } = await supabase
+    .from('settings').select('value').eq('key', 'usd_to_lyd').single()
+  if (sErr) return res.status(500).json({ message: sErr.message })
+  const rate = Number(setting?.value?.rate)
+  if (!rate) return res.status(500).json({ message: 'Exchange rate not set' })
+
+  // 2) جيب أسعار USD للمنتجات المطلوبة
+  const ids = items.map(i => i.product_id)
+  const { data: products, error: pErr } = await supabase
+    .from('products')
+    .select('id, base_price_usd')
+    .in('id', ids)
+  if (pErr) return res.status(500).json({ message: pErr.message })
+
+  // 3) أنشئ الطلب وبنوده (سعر USD + snapshot لـ rate)
+  const { data: order, error: oErr } = await supabase
+    .from('orders').insert({}).select('id').single()
+  if (oErr) return res.status(500).json({ message: oErr.message })
+
+  const itemsRows = items.map(i => {
+    const p = products!.find(x => x.id === i.product_id)!
+    return {
+      order_id: order.id,
+      product_id: i.product_id,
+      qty: i.qty,
+      unit_price_usd: p.base_price_usd,
+      usd_to_lyd: rate
+      // unit_price_lyd يُحتسب تلقائياً من الـ generated column
+    }
+  })
+
+  const { error: oiErr } = await supabase.from('order_items').insert(itemsRows)
+  if (oiErr) return res.status(500).json({ message: oiErr.message })
+
+  return res.json({ order_id: order.id })
+}
+
+
+بهذا الشكل، الفاتورة تظل ثابتة حتى لو تغيّر سعر الصرف بعد دقيقة.

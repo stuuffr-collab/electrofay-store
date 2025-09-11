@@ -1,45 +1,59 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabaseClient';
+import { fetchProductsFromAPI, type ApiProduct } from '@/lib/apiService';
 import { Product } from '@/components/ProductCard';
 
 export async function fetchProducts(): Promise<Product[]> {
   try {
-    // Try to fetch from Supabase first
-    const { data: supabaseProducts, error } = await supabase
-      .from('products')
-      .select('*')
-      .eq('is_active', true)
-      .order('created_at', { ascending: false });
+    console.log('🔍 Fetching products from local API...');
+    
+    // Try to fetch products from local API
+    const apiProducts = await fetchProductsFromAPI();
 
-    if (!error && supabaseProducts && supabaseProducts.length > 0) {
-      // Convert Supabase data to Product format
-      const products: Product[] = supabaseProducts.map((item: any) => ({
+    if (apiProducts && apiProducts.length > 0) {
+      console.log(`✅ تم تحميل ${apiProducts.length} منتج من API المحلي مع التسعير الديناميكي!`);
+      
+      // Transform ApiProduct to Product interface
+      const transformedProducts: Product[] = apiProducts.map(item => ({
         id: item.id,
         name: item.name,
-        name_en: item.name_en,
+        nameEn: item.nameEn,
         description: item.description,
-        description_en: item.description_en,
-        price: parseFloat(item.price),
-        originalPrice: item.original_price ? parseFloat(item.original_price) : undefined,
-        category: item.category,
+        descriptionEn: item.descriptionEn,
+        price: item.displayPriceLyd, // Use dynamically calculated LYD price
+        originalPrice: item.originalPrice || null,
+        category: item.category as Product['category'],
         image: item.image,
-        rating: parseFloat(item.rating),
+        rating: item.rating,
         badges: item.badges || [],
-        inStock: item.in_stock,
-        stockCount: item.stock_count
+        inStock: item.inStock,
+        stockCount: item.stockCount
       }));
-      return products;
-    }
-  } catch (error) {
-    console.log('خطأ في تحميل البيانات من Supabase، سيتم استخدام البيانات المحلية');
-  }
 
-  // Fallback to local data if Supabase fails
-  try {
-    const { default: localProducts } = await import('@/data/products.json');
-    return localProducts as Product[];
+      return transformedProducts;
+    }
+
+    // Fallback to local data if no products in database
+    console.log('لا توجد منتجات في قاعدة البيانات، سيتم استخدام البيانات المحلية');
+    
+    // Import local data as fallback
+    try {
+      const { default: localProducts } = await import('@/data/products.json');
+      return localProducts as Product[];
+    } catch (error) {
+      return [];
+    }
+    
   } catch (error) {
-    return [];
+    console.error('حدث خطأ أثناء تحميل المنتجات من API:', error);
+    console.log('سيتم استخدام البيانات المحلية كبديل');
+    
+    // Import local data as fallback
+    try {
+      const { default: localProducts } = await import('@/data/products.json');
+      return localProducts as Product[];
+    } catch (error) {
+      return [];
+    }
   }
 }
 
@@ -47,12 +61,8 @@ export function useProducts() {
   return useQuery({
     queryKey: ['products'],
     queryFn: fetchProducts,
-    staleTime: Infinity, // Cache forever
-    gcTime: Infinity, // Never garbage collect
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    retry: false,
+    staleTime: 2 * 60 * 1000, // 2 minutes (shorter because prices can change)
+    retry: 2,
   });
 }
 
@@ -63,11 +73,7 @@ export function useProductsByCategory(category: string) {
       const products = await fetchProducts();
       return products.filter(product => product.category === category);
     },
-    staleTime: Infinity,
-    gcTime: Infinity,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    retry: false,
+    staleTime: 2 * 60 * 1000,
+    retry: 2,
   });
 }

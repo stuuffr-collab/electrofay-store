@@ -15,7 +15,7 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 40913
+localPort = 45939
 externalPort = 3000
 
 [env]
@@ -43,3 +43,4 @@ args = "npm run dev"
 waitForPort = 5000
 
 [agent]
+integrations = ["javascript_database:1.0.0"]
