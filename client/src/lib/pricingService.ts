@@ -37,8 +37,22 @@ export async function fetchExchangeRate(): Promise<number> {
       return 5.0; // Fallback rate
     }
     
-    const rate = Number(data?.value) || parseFloat(String(data?.value));
-    return rate || 5.0; // Fallback rate
+    // Parse JSON object format: { rate: number }
+    let rate = 5.0;
+    try {
+      if (data?.value && typeof data.value === 'object' && 'rate' in data.value) {
+        rate = Number(data.value.rate);
+      } else if (typeof data?.value === 'string') {
+        const parsed = JSON.parse(data.value);
+        rate = Number(parsed.rate);
+      } else if (typeof data?.value === 'number') {
+        rate = data.value; // Fallback for direct number storage
+      }
+    } catch (parseError) {
+      console.warn('⚠️ Error parsing exchange rate JSON:', parseError);
+    }
+    
+    return rate > 0 ? rate : 5.0; // Ensure valid rate
   } catch (error) {
     console.error('Error fetching exchange rate:', error);
     return 5.0; // Fallback rate
@@ -109,7 +123,7 @@ export async function updateExchangeRate(newRate: number): Promise<boolean> {
       .from('settings')
       .upsert({
         key: 'usd_to_lyd_rate',
-        value: newRate
+        value: { rate: newRate } // Store as JSON object
       });
     
     if (error) {
@@ -117,6 +131,7 @@ export async function updateExchangeRate(newRate: number): Promise<boolean> {
       return false;
     }
     
+    console.log(`✅ Updated exchange rate to ${newRate}`);
     return true;
   } catch (error) {
     console.error('Error updating exchange rate:', error);
