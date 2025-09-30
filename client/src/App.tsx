@@ -20,7 +20,6 @@ import About from "@/pages/About";
 import Contact from "@/pages/Contact";
 
 import { AdminOrders } from "@/pages/AdminOrders";
-import AnalyzeProducts from "@/pages/AnalyzeProducts";
 
 import NotFound from "@/pages/not-found";
 import NotFound404 from "@/pages/NotFound404";
@@ -44,7 +43,6 @@ function Router() {
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
       <Route path="/admin/orders" component={AdminOrders} />
-      <Route path="/analyze" component={AnalyzeProducts} />
 
       {/* Fallback to 404 */}
       <Route component={NotFound404} />

@@ -15,12 +15,13 @@ import { type OrderData } from "@/lib/whatsapp";
 import { trackEvent } from "@/lib/analytics";
 import { useProducts } from "@/hooks/useProducts";
 import toast from "react-hot-toast";
+import { filterBySmartCategory, type SmartCategory, categoryLabels } from "@/lib/smartFilters";
 
 export default function Home() {
   const [, setLocation] = useLocation();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
-  const [filter, setFilter] = useState<"all" | "gaming_accessory" | "gaming_pc" | "gaming_console" | "streaming_gear">("all");
+  const [filter, setFilter] = useState<SmartCategory>("all");
   const { toasts, showSuccess } = useToastManager();
   const cart = useCart();
   const { data: products = [], isLoading, error } = useProducts();
@@ -29,9 +30,7 @@ export default function Home() {
   const offerEndDate = new Date();
   offerEndDate.setDate(offerEndDate.getDate() + 7);
 
-  const filteredProducts = products.filter(product => 
-    filter === "all" || product.category === filter
-  ).slice(0, 8); // Show first 8 products
+  const filteredProducts = filterBySmartCategory(products, filter).slice(0, 8); // Show first 8 products
 
 
   const handleOrderClick = (product: Product) => {
@@ -132,31 +131,39 @@ export default function Home() {
                 onClick={() => setFilter("all")}
                 className={filter === "all" ? "bg-electric-yellow text-black" : ""}
               >
-                الكل
+                {categoryLabels.all.ar}
               </Button>
               <Button
-                variant={filter === "gaming_accessory" ? "default" : "ghost"}
+                variant={filter === "pc_components" ? "default" : "ghost"}
                 size="sm"
-                onClick={() => setFilter("gaming_accessory")}
-                className={filter === "gaming_accessory" ? "bg-electric-yellow text-black" : ""}
+                onClick={() => setFilter("pc_components")}
+                className={filter === "pc_components" ? "bg-electric-yellow text-black" : ""}
               >
-                اكسسوارات
+                {categoryLabels.pc_components.ar}
               </Button>
               <Button
-                variant={filter === "gaming_pc" ? "default" : "ghost"}
+                variant={filter === "gaming_peripherals" ? "default" : "ghost"}
                 size="sm"
-                onClick={() => setFilter("gaming_pc")}
-                className={filter === "gaming_pc" ? "bg-electric-yellow text-black" : ""}
+                onClick={() => setFilter("gaming_peripherals")}
+                className={filter === "gaming_peripherals" ? "bg-electric-yellow text-black" : ""}
               >
-                أجهزة PC
+                {categoryLabels.gaming_peripherals.ar}
               </Button>
               <Button
-                variant={filter === "streaming_gear" ? "default" : "ghost"}
+                variant={filter === "setup_equipment" ? "default" : "ghost"}
                 size="sm"
-                onClick={() => setFilter("streaming_gear")}
-                className={filter === "streaming_gear" ? "bg-electric-yellow text-black" : ""}
+                onClick={() => setFilter("setup_equipment")}
+                className={filter === "setup_equipment" ? "bg-electric-yellow text-black" : ""}
               >
-                ستريمنج
+                {categoryLabels.setup_equipment.ar}
+              </Button>
+              <Button
+                variant={filter === "accessories" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setFilter("accessories")}
+                className={filter === "accessories" ? "bg-electric-yellow text-black" : ""}
+              >
+                {categoryLabels.accessories.ar}
               </Button>
             </div>
           </div>
