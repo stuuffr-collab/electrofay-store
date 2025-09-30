@@ -110,62 +110,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Categories Section */}
-      <section className="py-16 bg-dark-bg transition-colors duration-300" style={{ background: 'var(--dark-bg)' }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold mb-4 text-white">تسوق حسب الفئة</h3>
-            <p className="text-gray-300">اختر من أفضل منتجات القيمنج والستريمنج الاحترافية</p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Gaming Accessories Category */}
-            <div 
-              onClick={() => setFilter('gaming_accessory')}
-              className="group relative bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl p-8 text-white overflow-hidden cursor-pointer transform hover:scale-105 transition-all duration-300"
-            >
-              <div className="absolute inset-0 bg-black/20"></div>
-              <div className="relative z-10">
-                <Gamepad2 className="w-12 h-12 mb-4 text-electric-yellow" />
-                <h4 className="text-2xl font-bold mb-2">فئات اكسسوارات</h4>
-                <p className="text-purple-100 mb-6">لوحات مفاتيح، فأرة، سماعات، كراسي وإكسسوارات ألعاب احترافية</p>
-                <div className="flex items-center text-electric-yellow">
-                  <span className="font-semibold">تسوق الآن</span>
-                  <ArrowLeft className="w-5 h-5 mr-2 group-hover:translate-x-2 transition-transform" />
-                </div>
-              </div>
-              <img 
-                src="https://images.unsplash.com/photo-1593305841991-05c297ba4575?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300" 
-                alt="Gaming controller and accessories" 
-                className="absolute top-0 right-0 w-32 h-32 object-cover opacity-30 group-hover:opacity-50 transition-opacity"
-              />
-            </div>
-
-            {/* Gaming PC & Streaming Category */}
-            <div 
-              onClick={() => setFilter('gaming_pc')}
-              className="group relative bg-gradient-to-br from-blue-500 to-teal-500 rounded-2xl p-8 text-white overflow-hidden cursor-pointer transform hover:scale-105 transition-all duration-300"
-            >
-              <div className="absolute inset-0 bg-black/20"></div>
-              <div className="relative z-10">
-                <Smartphone className="w-12 h-12 mb-4 text-electric-yellow" />
-                <h4 className="text-2xl font-bold mb-2">فئات أجهزة PC</h4>
-                <p className="text-blue-100 mb-6">شاشات قيمنج، لابتوبات، تجميعات PC وأدوات الستريمر</p>
-                <div className="flex items-center text-electric-yellow">
-                  <span className="font-semibold">تسوق الآن</span>
-                  <ArrowLeft className="w-5 h-5 mr-2 group-hover:translate-x-2 transition-transform" />
-                </div>
-              </div>
-              <img 
-                src="https://images.unsplash.com/photo-1587831990711-23ca6441447b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300" 
-                alt="Gaming PC and streaming setup" 
-                className="absolute top-0 right-0 w-32 h-32 object-cover opacity-30 group-hover:opacity-50 transition-opacity"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Featured Products */}
       <section id="products" className="py-16 bg-dark-card transition-colors duration-300" style={{ background: 'var(--dark-card)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
