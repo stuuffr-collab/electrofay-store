@@ -51,9 +51,13 @@ export async function saveOrder(orderData: OrderData) {
     console.log('💾 البيانات المرسلة لـ Supabase:', orderPayload);
 
     // Save order to Supabase
-    const { data, error } = await supabase
+    const result = supabase
       .from('orders')
       .insert(orderPayload);
+    
+    const { data, error } = 'select' in result 
+      ? await result.select()
+      : await result;
 
     if (error) {
       console.error('❌ خطأ Supabase:', error);
@@ -63,7 +67,7 @@ export async function saveOrder(orderData: OrderData) {
     console.log('✅ تم حفظ الطلب بنجاح في Supabase:', data);
     return {
       success: true,
-      orderId: data ? (Array.isArray(data) ? data[0]?.id : data.id) : null,
+      orderId: data && data.length > 0 ? data[0].id : null,
       message: 'Order saved successfully'
     };
     
