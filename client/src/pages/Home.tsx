@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
-import { Gamepad2, Smartphone, ArrowLeft, Percent, Truck } from "lucide-react";
+import { useLocation, Link } from "wouter";
+import { Gamepad2, Smartphone, ArrowLeft, Percent, Truck, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductCard, type Product } from "@/components/ProductCard";
 import { OrderModal } from "@/components/OrderModal";
 import { AnnouncementBanner } from "@/components/AnnouncementBanner";
-
+import { motion } from "framer-motion";
 import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
 import { MobileCartButton } from "@/components/MobileCartButton";
 import { CountdownTimer } from "@/components/CountdownTimer";
@@ -16,6 +16,7 @@ import { trackEvent } from "@/lib/analytics";
 import { useProducts } from "@/hooks/useProducts";
 import toast from "react-hot-toast";
 import { filterBySmartCategory, type SmartCategory, categoryLabels } from "@/lib/smartFilters";
+import { categories } from "@/lib/categories";
 
 export default function Home() {
   const [, setLocation] = useLocation();
@@ -105,6 +106,63 @@ export default function Home() {
               />
               <div className="absolute inset-0 bg-gradient-to-tr from-electric-yellow/20 to-blue-500/20 rounded-xl"></div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Categories Section */}
+      <section className="py-16 bg-gradient-to-b from-gray-900 to-black">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-white mb-4">تصفح حسب الأقسام</h2>
+            <p className="text-gray-400 text-lg">اكتشف مجموعتنا المتنوعة من المنتجات التقنية المنظمة في أقسام متخصصة</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {categories.slice(0, 6).map((category, index) => {
+              const IconComponent = category.icon;
+              return (
+                <motion.div
+                  key={category.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                >
+                  <Link href={`/categories/${category.id}`}>
+                    <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 hover:border-gray-600 transition-all duration-300 cursor-pointer h-full p-6">
+                      <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
+                      
+                      <div className="relative flex items-start gap-4">
+                        <div className={`w-14 h-14 rounded-lg bg-gradient-to-br ${category.gradient} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                          <IconComponent className="w-7 h-7 text-white" />
+                        </div>
+                        
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-purple-400 transition-all duration-300">
+                            {category.name}
+                          </h3>
+                          <p className="text-sm text-gray-400 mb-3">{category.description}</p>
+                          
+                          <div className="flex items-center gap-2 text-sm text-gray-500">
+                            <span>{category.subcategories.length} فئة فرعية</span>
+                            <ChevronLeft className="w-4 h-4 group-hover:text-white group-hover:-translate-x-2 transition-all duration-300" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          <div className="text-center">
+            <Link href="/categories">
+              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-6 text-lg font-bold rounded-xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
+                عرض جميع الأقسام
+                <ChevronLeft className="w-5 h-5 mr-2" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
