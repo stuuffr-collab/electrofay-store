@@ -309,13 +309,19 @@ export function categorizeProduct(product: any): { categoryId: string; subcatego
   const desc = (product.description?.toLowerCase() || product.descriptionEn?.toLowerCase() || '');
   const combined = `${name} ${desc}`;
   
-  // Displays - ملحقات شاشة (monitor accessories like light bars) - check first
+  // PC Components - كروت الشاشة (check FIRST to avoid confusion with displays)
+  if (combined.match(/كرت شاشة|graphics card|gpu|rtx|gtx|geforce|vga|rx [4567]|nvidia|radeon/) && !combined.match(/\bشاشة\b.*(?:gaming|monitor|24|27|curved)|\bmonitor\b/)) {
+    return { categoryId: 'pc-components', subcategoryId: 'graphics-cards' };
+  }
+  
+  // Displays - ملحقات شاشة (monitor accessories like light bars)
   if (combined.match(/colorpanda|monitor light|لايت بار/) && combined.match(/monitor|شاشة/)) {
     return { categoryId: 'displays', subcategoryId: 'monitor-accessories' };
   }
   
-  // Displays - الشاشات (all monitors - check before other categories)
-  if (combined.match(/\bشاشة\b|شاشات|\bmonitor\b|\bdisplay\b|screen|gaming monitor|hz\b|fps\b|curved|ultrawide|ips panel/)) {
+  // Displays - الشاشات (all monitors)
+  if (combined.match(/شاشة|شاشات|\bmonitor\b|gaming monitor|curved|ultrawide|ips panel|refresh rate|144hz|165hz|240hz|27 inch|24 inch/) || 
+      (combined.match(/\bdisplay\b|screen/) && !combined.match(/adapter|محول|رام|ram|memory|ddr|graphics|gpu|rtx|gtx/))) {
     return { categoryId: 'displays', subcategoryId: 'gaming-monitors' };
   }
   
@@ -327,11 +333,6 @@ export function categorizeProduct(product: any): { categoryId: string; subcatego
   // PC Components - المعالجات
   if (combined.match(/معالج|processor|cpu|ryzen|i[3579]|ryzen [3579]/) && !combined.match(/motherboard|لوحة أم/)) {
     return { categoryId: 'pc-components', subcategoryId: 'processors' };
-  }
-  
-  // PC Components - كروت الشاشة
-  if (combined.match(/كرت شاشة|graphics|gpu|rtx|gtx|vga|rx [4567]|nvidia|radeon/) && !combined.match(/\bشاشة\b|\bmonitor\b/)) {
-    return { categoryId: 'pc-components', subcategoryId: 'graphics-cards' };
   }
   
   // PC Components - الرامات
@@ -395,7 +396,7 @@ export function categorizeProduct(product: any): { categoryId: string; subcatego
   }
   
   // Setup Accessories - الإضاءة (moved from streaming-gear)
-  if (combined.match(/led|rgb|إضاءة|light bar|strip|govee|نيون/)) {
+  if (combined.match(/led|rgb|إضاءة|light strip|govee|نيون/) && !combined.match(/monitor|شاشة/)) {
     return { categoryId: 'setup-accessories', subcategoryId: 'lighting' };
   }
   

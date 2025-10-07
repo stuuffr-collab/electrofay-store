@@ -6,6 +6,17 @@ This is a **production-ready** Arabic e-commerce store called "إلكتروفا�
 
 ## Recent Changes (October 7, 2025)
 
+### ✅ **Category Structure Refinement & Rule Optimization** (October 7, 2025)
+- **PC Components Subcategories** - Added PC Cases subcategory to PC Components section
+- **Setup Accessories Reorganization** - Moved gaming chairs and RGB lighting from PC Components to Setup Accessories
+- **Displays Simplification** - Streamlined Displays category to focus on gaming monitors only, added Monitor Accessories subcategory
+- **Categorization Rules Update** - Enhanced keyword-based categorization logic in both `server/routes.ts` and `client/src/lib/categories.ts`
+- **Critical Order Priority Fix** - Graphics cards now checked BEFORE monitors to prevent RTX/GTX cards from being misclassified as displays
+- **Advanced Pattern Matching** - Improved regex patterns to distinguish between displays and display-related components (graphics cards)
+- **Code Synchronization** - Ensured consistent categorization between frontend and backend for 63 Supabase products
+- **Performance Optimization** - Removed duplicate categorization rules for cleaner, more efficient code
+- **Verification** - Tested across all categories: Displays (6 products: 5 monitors + 1 accessory), PC Components (42 products with proper subcategory distribution)
+
 ### ✅ **Advanced Category Navigation System** (October 7, 2025)
 - **Category Taxonomy** - Created comprehensive category structure with 5 main categories and subcategories in `client/src/lib/categories.ts`
 - **Categories Page** - New dedicated `/categories` page showcasing all main categories with modern card design
