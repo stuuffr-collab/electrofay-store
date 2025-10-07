@@ -133,6 +133,7 @@ export function ProductCard({ product, onOrderClick, onAddToCart }: ProductCardP
             }}
             disabled={!product.inStock}
             className="flex-1 bg-gradient-to-r from-[#FFD700] to-[#FFB300] hover:from-[#FFB300] hover:to-[#FF8C00] text-black font-semibold shadow-lg hover:shadow-xl transition-all duration-300 animate-pulse-glow"
+            data-testid={`button-add-to-cart-${product.id}`}
           >
             <ShoppingCart className="w-4 h-4 ml-1" />
             {product.inStock ? "أضف للسلة" : "غير متوفر"}
@@ -144,7 +145,8 @@ export function ProductCard({ product, onOrderClick, onAddToCart }: ProductCardP
             }}
             disabled={!product.inStock}
             variant="outline"
-            className="px-3 border-electric-yellow text-electric-yellow hover:bg-electric-yellow hover:text-black"
+            className="flex-1 border-2 border-electric-yellow text-electric-yellow hover:bg-electric-yellow hover:text-black font-semibold transition-all duration-300"
+            data-testid={`button-view-details-${product.id}`}
           >
             عرض التفاصيل
           </Button>
