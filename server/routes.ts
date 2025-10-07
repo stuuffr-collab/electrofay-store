@@ -126,19 +126,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const desc = (product.description?.toLowerCase() || product.descriptionEn?.toLowerCase() || '');
     const combined = `${name} ${desc}`;
     
+    // PC Components - اللوحات الأم (check first to avoid misclassification)
+    if (combined.match(/لوحة أم|motherboard|mainboard/)) {
+      return { categoryId: 'pc-components', subcategoryId: 'motherboards' };
+    }
+    
     // PC Components - المعالجات
-    if (combined.match(/معالج|processor|cpu|intel|ryzen|i[3579]|ryzen [3579]/)) {
+    if (combined.match(/معالج|processor|cpu|intel|amd|ryzen|i[3579]|ryzen [3579]/)) {
       return { categoryId: 'pc-components', subcategoryId: 'processors' };
     }
     
     // PC Components - كروت الشاشة
     if (combined.match(/كرت شاشة|graphics|gpu|rtx|gtx|vga|rx [4567]|nvidia|radeon/)) {
       return { categoryId: 'pc-components', subcategoryId: 'graphics-cards' };
-    }
-    
-    // PC Components - اللوحات الأم
-    if (combined.match(/لوحة أم|motherboard|mainboard|gigabyte|asus|msi|b[45][567]0|z[4567]90|x[4567]70/)) {
-      return { categoryId: 'pc-components', subcategoryId: 'motherboards' };
     }
     
     // PC Components - الرامات
@@ -156,8 +156,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return { categoryId: 'pc-components', subcategoryId: 'power-supply' };
     }
     
-    // PC Components - التبريد
-    if (combined.match(/مبرد|تبريد|cooler|cooling|fan|liquid|airflow|aio/)) {
+    // PC Components - كيس الكمبيوتر
+    if (combined.match(/كيس|case|chassis|tower/)) {
+      return { categoryId: 'pc-components', subcategoryId: 'cases' };
+    }
+    
+    // PC Components - المبردات (cooling fans)
+    if (combined.match(/مبرد|تبريد|مروحة|مراوح|cooler|cooling|fan|liquid|airflow|aio/) && !combined.match(/كيس|case/)) {
       return { categoryId: 'pc-components', subcategoryId: 'cooling' };
     }
     
@@ -176,11 +181,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return { categoryId: 'peripherals', subcategoryId: 'headsets' };
     }
     
-    // Peripherals - الكراسي
-    if (combined.match(/كرسي|chair|gaming chair|ergonomic|مقعد/)) {
-      return { categoryId: 'peripherals', subcategoryId: 'chairs' };
-    }
-    
     // Peripherals - Mouse Pads
     if (combined.match(/ماوس باد|mouse ?pad|mousepad/)) {
       return { categoryId: 'peripherals', subcategoryId: 'mouse-pads' };
@@ -196,32 +196,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return { categoryId: 'streaming-gear', subcategoryId: 'microphones' };
     }
     
-    // Streaming Gear - LED & RGB Lighting
+    // Setup Accessories - الكراسي (moved from peripherals)
+    if (combined.match(/كرسي|chair|gaming chair|ergonomic|مقعد/)) {
+      return { categoryId: 'setup-accessories', subcategoryId: 'chairs' };
+    }
+    
+    // Setup Accessories - الإضاءة (moved from streaming-gear)
     if (combined.match(/led|rgb|إضاءة|light bar|strip|govee|نيون/)) {
-      return { categoryId: 'streaming-gear', subcategoryId: 'lighting' };
+      return { categoryId: 'setup-accessories', subcategoryId: 'lighting' };
     }
     
-    // Displays - الشاشات
-    if (combined.match(/شاشة|monitor|display|screen/)) {
-      if (combined.match(/قيمنج|gaming|144hz|165hz|180hz|240hz|curved|1ms/)) {
-        return { categoryId: 'displays', subcategoryId: 'gaming-monitors' };
-      }
-      return { categoryId: 'displays', subcategoryId: 'professional-monitors' };
-    }
-    
-    // Ready Builds - التجميعات
-    if (combined.match(/تجميعة|pc build|bundle|pre.?built/)) {
-      return { categoryId: 'ready-builds', subcategoryId: 'pc-builds' };
-    }
-    
-    // Ready Builds - اللابتوبات
-    if (combined.match(/لابتوب|laptop|notebook/)) {
-      return { categoryId: 'ready-builds', subcategoryId: 'laptops' };
-    }
-    
-    // Ready Builds - Controllers
+    // Setup Accessories - Controllers (moved from ready-builds)
     if (combined.match(/تحكم|controller|gamepad|joystick|xbox|ps[45]/)) {
-      return { categoryId: 'ready-builds', subcategoryId: 'controllers' };
+      return { categoryId: 'setup-accessories', subcategoryId: 'controllers' };
     }
     
     // Setup Accessories - Stands
@@ -229,14 +216,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return { categoryId: 'setup-accessories', subcategoryId: 'stands' };
     }
     
-    // Setup Accessories - Hubs & Adapters
+    // Setup Accessories - Adapters (renamed from hubs-adapters)
     if (combined.match(/hub|adapter|محول|bluetooth|wi-?fi|usb.*hub|شبكة|network/)) {
-      return { categoryId: 'setup-accessories', subcategoryId: 'hubs-adapters' };
+      return { categoryId: 'setup-accessories', subcategoryId: 'adapters' };
     }
     
     // Setup Accessories - Smart Accessories
     if (combined.match(/sensor|مستشعر|smart|ذكي|iot/)) {
       return { categoryId: 'setup-accessories', subcategoryId: 'smart-accessories' };
+    }
+    
+    // Displays - ملحقات شاشة (monitor accessories like light bars)
+    if (combined.match(/colorpanda|monitor light|لايت بار|light bar/) && combined.match(/monitor|شاشة/)) {
+      return { categoryId: 'displays', subcategoryId: 'monitor-accessories' };
+    }
+    
+    // Displays - الشاشات (all monitors go to gaming-monitors now)
+    if (combined.match(/شاشة|monitor|display|screen/)) {
+      return { categoryId: 'displays', subcategoryId: 'gaming-monitors' };
+    }
+    
+    // Ready Builds - التجميعات (only PC builds now)
+    if (combined.match(/تجميعة|pc build|bundle|pre.?built/)) {
+      return { categoryId: 'ready-builds', subcategoryId: 'pc-builds' };
     }
     
     // Fallback to generic PC components

@@ -1,4 +1,4 @@
-import { Monitor, Cpu, HardDrive, Keyboard, Mouse, Headphones, Gamepad2, Laptop, Camera, Mic, Fan, Power, CircuitBoard, SlidersHorizontal, Armchair, Box, LucideIcon } from 'lucide-react';
+import { Monitor, Cpu, HardDrive, Keyboard, Mouse, Headphones, Gamepad2, Laptop, Camera, Mic, Fan, Power, CircuitBoard, SlidersHorizontal, Armchair, Box, LucideIcon, Lightbulb, Cable } from 'lucide-react';
 
 export interface Subcategory {
   id: string;
@@ -82,11 +82,19 @@ export const categories: Category[] = [
       },
       {
         id: 'cooling',
-        name: 'التبريد',
+        name: 'المبردات',
         nameEn: 'Cooling',
         icon: Fan,
-        description: 'مبردات هوائية ومائية',
-        descriptionEn: 'Air & Liquid Cooling'
+        description: 'مبردات هوائية ومائية ومراوح',
+        descriptionEn: 'Air & Liquid Cooling & Fans'
+      },
+      {
+        id: 'cases',
+        name: 'كيس الكمبيوتر',
+        nameEn: 'PC Cases',
+        icon: Box,
+        description: 'صناديق وكيسات الكمبيوتر',
+        descriptionEn: 'Computer Cases & Enclosures'
       }
     ]
   },
@@ -95,8 +103,8 @@ export const categories: Category[] = [
     name: 'ملحقات الكمبيوتر',
     nameEn: 'Computer Peripherals',
     icon: Keyboard,
-    description: 'سماعات، ماوس، كيبورد، كراسي وملحقات أخرى',
-    descriptionEn: 'Headsets, Mice, Keyboards, Chairs & More',
+    description: 'سماعات، ماوس، كيبورد وملحقات أخرى',
+    descriptionEn: 'Headsets, Mice, Keyboards & More',
     color: '#8b5cf6',
     gradient: 'from-purple-500 to-purple-700',
     subcategories: [
@@ -125,14 +133,6 @@ export const categories: Category[] = [
         descriptionEn: 'Gaming & Professional Headsets'
       },
       {
-        id: 'chairs',
-        name: 'الكراسي',
-        nameEn: 'Chairs',
-        icon: Armchair,
-        description: 'كراسي قيمنج ومكتبية',
-        descriptionEn: 'Gaming & Office Chairs'
-      },
-      {
         id: 'mouse-pads',
         name: 'ماوس باد',
         nameEn: 'Mouse Pads',
@@ -147,8 +147,8 @@ export const categories: Category[] = [
     name: 'معدات البث والستريمنج',
     nameEn: 'Streaming Gear',
     icon: Camera,
-    description: 'كاميرات، مايكروفونات، إضاءة وملحقات البث',
-    descriptionEn: 'Cameras, Microphones, Lighting & Streaming Accessories',
+    description: 'كاميرات ومايكروفونات البث',
+    descriptionEn: 'Cameras & Microphones for Streaming',
     color: '#ec4899',
     gradient: 'from-pink-500 to-pink-700',
     subcategories: [
@@ -167,14 +167,6 @@ export const categories: Category[] = [
         icon: Mic,
         description: 'مايكروفونات USB واحترافية',
         descriptionEn: 'USB & Professional Microphones'
-      },
-      {
-        id: 'lighting',
-        name: 'الإضاءة',
-        nameEn: 'Lighting',
-        icon: Fan,
-        description: 'إضاءة LED و RGB للسيت أب',
-        descriptionEn: 'LED & RGB Lighting for Setup'
       }
     ]
   },
@@ -183,11 +175,27 @@ export const categories: Category[] = [
     name: 'إكسسوارات السيت أب',
     nameEn: 'Setup Accessories',
     icon: SlidersHorizontal,
-    description: 'حوامل، هبات USB، محولات ومستشعرات',
-    descriptionEn: 'Stands, USB Hubs, Adapters & Sensors',
+    description: 'كراسي، إضاءة، حوامل، محولات وأجهزة التحكم',
+    descriptionEn: 'Chairs, Lighting, Stands, Adapters & Controllers',
     color: '#06b6d4',
     gradient: 'from-cyan-500 to-cyan-700',
     subcategories: [
+      {
+        id: 'chairs',
+        name: 'الكراسي',
+        nameEn: 'Chairs',
+        icon: Armchair,
+        description: 'كراسي قيمنج ومكتبية',
+        descriptionEn: 'Gaming & Office Chairs'
+      },
+      {
+        id: 'lighting',
+        name: 'الإضاءة',
+        nameEn: 'Lighting',
+        icon: Lightbulb,
+        description: 'إضاءة LED و RGB للسيت أب',
+        descriptionEn: 'LED & RGB Lighting for Setup'
+      },
       {
         id: 'stands',
         name: 'الحوامل',
@@ -197,12 +205,20 @@ export const categories: Category[] = [
         descriptionEn: 'Microphone & Monitor Stands'
       },
       {
-        id: 'hubs-adapters',
-        name: 'هبات ومحولات',
-        nameEn: 'Hubs & Adapters',
-        icon: CircuitBoard,
-        description: 'USB Hub و Bluetooth Adapter',
-        descriptionEn: 'USB Hubs & Bluetooth Adapters'
+        id: 'adapters',
+        name: 'المحولات',
+        nameEn: 'Adapters',
+        icon: Cable,
+        description: 'محولات USB وBluetooth وشبكة',
+        descriptionEn: 'USB, Bluetooth & Network Adapters'
+      },
+      {
+        id: 'controllers',
+        name: 'أجهزة التحكم',
+        nameEn: 'Controllers',
+        icon: Gamepad2,
+        description: 'أجهزة تحكم للألعاب',
+        descriptionEn: 'Gaming Controllers'
       },
       {
         id: 'smart-accessories',
@@ -219,8 +235,8 @@ export const categories: Category[] = [
     name: 'الشاشات والعرض',
     nameEn: 'Displays & Monitors',
     icon: Monitor,
-    description: 'شاشات قيمنج واحترافية بمختلف الأحجام',
-    descriptionEn: 'Gaming & Professional Monitors in Various Sizes',
+    description: 'شاشات الألعاب وملحقاتها',
+    descriptionEn: 'Gaming Monitors & Accessories',
     color: '#10b981',
     gradient: 'from-green-500 to-green-700',
     subcategories: [
@@ -233,48 +249,32 @@ export const categories: Category[] = [
         descriptionEn: 'High Refresh Rate Gaming Monitors'
       },
       {
-        id: 'professional-monitors',
-        name: 'شاشات احترافية',
-        nameEn: 'Professional Monitors',
-        icon: Monitor,
-        description: 'شاشات للتصميم والعمل',
-        descriptionEn: 'Design & Work Monitors'
+        id: 'monitor-accessories',
+        name: 'ملحقات شاشة',
+        nameEn: 'Monitor Accessories',
+        icon: Lightbulb,
+        description: 'إضاءة وملحقات للشاشات',
+        descriptionEn: 'Lighting & Monitor Accessories'
       }
     ]
   },
   {
     id: 'ready-builds',
     name: 'التجميعات الجاهزة',
-    nameEn: 'Ready Builds & Systems',
-    icon: Laptop,
-    description: 'تجميعات PC جاهزة، لابتوبات، أجهزة تحكم',
-    descriptionEn: 'Ready PC Builds, Laptops, Controllers',
+    nameEn: 'Ready Builds',
+    icon: Box,
+    description: 'تجميعات PC جاهزة للألعاب والعمل',
+    descriptionEn: 'Ready PC Builds for Gaming & Work',
     color: '#f59e0b',
     gradient: 'from-amber-500 to-amber-700',
     subcategories: [
       {
         id: 'pc-builds',
-        name: 'تجميعات PC',
-        nameEn: 'PC Builds',
+        name: 'تجميعات جاهزة',
+        nameEn: 'Ready Builds',
         icon: Box,
         description: 'تجميعات جاهزة للألعاب والعمل',
         descriptionEn: 'Ready Gaming & Work Builds'
-      },
-      {
-        id: 'laptops',
-        name: 'اللابتوبات',
-        nameEn: 'Laptops',
-        icon: Laptop,
-        description: 'لابتوبات قيمنج واحترافية',
-        descriptionEn: 'Gaming & Professional Laptops'
-      },
-      {
-        id: 'controllers',
-        name: 'أجهزة التحكم',
-        nameEn: 'Controllers',
-        icon: Gamepad2,
-        description: 'أجهزة تحكم للألعاب',
-        descriptionEn: 'Gaming Controllers'
       }
     ]
   }
@@ -309,19 +309,19 @@ export function categorizeProduct(product: any): { categoryId: string; subcatego
   const desc = (product.description?.toLowerCase() || product.descriptionEn?.toLowerCase() || '');
   const combined = `${name} ${desc}`;
   
+  // PC Components - اللوحات الأم (check first to avoid misclassification)
+  if (combined.match(/لوحة أم|motherboard|mainboard/)) {
+    return { categoryId: 'pc-components', subcategoryId: 'motherboards' };
+  }
+  
   // PC Components - المعالجات
-  if (combined.match(/معالج|processor|cpu|intel|ryzen|i[3579]|ryzen [3579]/)) {
+  if (combined.match(/معالج|processor|cpu|intel|amd|ryzen|i[3579]|ryzen [3579]/)) {
     return { categoryId: 'pc-components', subcategoryId: 'processors' };
   }
   
   // PC Components - كروت الشاشة
   if (combined.match(/كرت شاشة|graphics|gpu|rtx|gtx|vga|rx [4567]|nvidia|radeon/)) {
     return { categoryId: 'pc-components', subcategoryId: 'graphics-cards' };
-  }
-  
-  // PC Components - اللوحات الأم
-  if (combined.match(/لوحة أم|motherboard|mainboard|gigabyte|asus|msi|b[45][567]0|z[4567]90|x[4567]70/)) {
-    return { categoryId: 'pc-components', subcategoryId: 'motherboards' };
   }
   
   // PC Components - الرامات
@@ -339,8 +339,13 @@ export function categorizeProduct(product: any): { categoryId: string; subcatego
     return { categoryId: 'pc-components', subcategoryId: 'power-supply' };
   }
   
-  // PC Components - التبريد
-  if (combined.match(/مبرد|تبريد|cooler|cooling|fan|liquid|airflow|aio/)) {
+  // PC Components - كيس الكمبيوتر
+  if (combined.match(/كيس|case|chassis|tower/)) {
+    return { categoryId: 'pc-components', subcategoryId: 'cases' };
+  }
+  
+  // PC Components - المبردات (cooling fans)
+  if (combined.match(/مبرد|تبريد|مروحة|مراوح|cooler|cooling|fan|liquid|airflow|aio/) && !combined.match(/كيس|case/)) {
     return { categoryId: 'pc-components', subcategoryId: 'cooling' };
   }
   
@@ -359,11 +364,6 @@ export function categorizeProduct(product: any): { categoryId: string; subcatego
     return { categoryId: 'peripherals', subcategoryId: 'headsets' };
   }
   
-  // Peripherals - الكراسي
-  if (combined.match(/كرسي|chair|gaming chair|ergonomic|مقعد/)) {
-    return { categoryId: 'peripherals', subcategoryId: 'chairs' };
-  }
-  
   // Peripherals - Mouse Pads
   if (combined.match(/ماوس باد|mouse ?pad|mousepad/)) {
     return { categoryId: 'peripherals', subcategoryId: 'mouse-pads' };
@@ -379,32 +379,19 @@ export function categorizeProduct(product: any): { categoryId: string; subcatego
     return { categoryId: 'streaming-gear', subcategoryId: 'microphones' };
   }
   
-  // Displays - الشاشات
-  if (combined.match(/شاشة|monitor|display|screen/)) {
-    if (combined.match(/قيمنج|gaming|144hz|165hz|180hz|240hz|curved|1ms/)) {
-      return { categoryId: 'displays', subcategoryId: 'gaming-monitors' };
-    }
-    return { categoryId: 'displays', subcategoryId: 'professional-monitors' };
+  // Setup Accessories - الكراسي (moved from peripherals)
+  if (combined.match(/كرسي|chair|gaming chair|ergonomic|مقعد/)) {
+    return { categoryId: 'setup-accessories', subcategoryId: 'chairs' };
   }
   
-  // Ready Builds - التجميعات
-  if (combined.match(/تجميعة|pc build|bundle|pre.?built/)) {
-    return { categoryId: 'ready-builds', subcategoryId: 'pc-builds' };
-  }
-  
-  // Ready Builds - اللابتوبات
-  if (combined.match(/لابتوب|laptop|notebook/)) {
-    return { categoryId: 'ready-builds', subcategoryId: 'laptops' };
-  }
-  
-  // Ready Builds - Controllers
-  if (combined.match(/تحكم|controller|gamepad|joystick|xbox|ps[45]/)) {
-    return { categoryId: 'ready-builds', subcategoryId: 'controllers' };
-  }
-  
-  // Streaming Gear - LED & RGB Lighting
+  // Setup Accessories - الإضاءة (moved from streaming-gear)
   if (combined.match(/led|rgb|إضاءة|light bar|strip|govee|نيون/)) {
-    return { categoryId: 'streaming-gear', subcategoryId: 'lighting' };
+    return { categoryId: 'setup-accessories', subcategoryId: 'lighting' };
+  }
+  
+  // Setup Accessories - Controllers (moved from ready-builds)
+  if (combined.match(/تحكم|controller|gamepad|joystick|xbox|ps[45]/)) {
+    return { categoryId: 'setup-accessories', subcategoryId: 'controllers' };
   }
   
   // Setup Accessories - Stands
@@ -412,14 +399,29 @@ export function categorizeProduct(product: any): { categoryId: string; subcatego
     return { categoryId: 'setup-accessories', subcategoryId: 'stands' };
   }
   
-  // Setup Accessories - Hubs & Adapters
+  // Setup Accessories - Adapters (renamed from hubs-adapters)
   if (combined.match(/hub|adapter|محول|bluetooth|wi-?fi|usb.*hub|شبكة|network/)) {
-    return { categoryId: 'setup-accessories', subcategoryId: 'hubs-adapters' };
+    return { categoryId: 'setup-accessories', subcategoryId: 'adapters' };
   }
   
   // Setup Accessories - Smart Accessories
   if (combined.match(/sensor|مستشعر|smart|ذكي|iot/)) {
     return { categoryId: 'setup-accessories', subcategoryId: 'smart-accessories' };
+  }
+  
+  // Displays - ملحقات شاشة (monitor accessories like light bars)
+  if (combined.match(/colorpanda|monitor light|لايت بار|light bar/) && combined.match(/monitor|شاشة/)) {
+    return { categoryId: 'displays', subcategoryId: 'monitor-accessories' };
+  }
+  
+  // Displays - الشاشات (all monitors go to gaming-monitors now)
+  if (combined.match(/شاشة|monitor|display|screen/)) {
+    return { categoryId: 'displays', subcategoryId: 'gaming-monitors' };
+  }
+  
+  // Ready Builds - التجميعات (only PC builds now)
+  if (combined.match(/تجميعة|pc build|bundle|pre.?built/)) {
+    return { categoryId: 'ready-builds', subcategoryId: 'pc-builds' };
   }
   
   // Fallback to generic PC components
