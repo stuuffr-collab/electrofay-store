@@ -228,7 +228,7 @@ export default function Home() {
 
           {/* Products Grid */}
           {isLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {[...Array(8)].map((_, index) => (
                 <div key={index} className="animate-pulse">
                   <div className="bg-gray-300 dark:bg-gray-700 rounded-lg h-64 mb-4"></div>
@@ -243,7 +243,7 @@ export default function Home() {
               <p className="text-gray-600 dark:text-gray-400">سيتم استخدام البيانات المؤقتة</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {filteredProducts.map((product, index) => (
                 <div 
                   key={product.id}
