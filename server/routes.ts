@@ -126,18 +126,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const desc = (product.description?.toLowerCase() || product.descriptionEn?.toLowerCase() || '');
     const combined = `${name} ${desc}`;
     
-    // PC Components - اللوحات الأم (check first to avoid misclassification)
+    // Displays - ملحقات شاشة (monitor accessories like light bars) - check first
+    if (combined.match(/colorpanda|monitor light|لايت بار/) && combined.match(/monitor|شاشة/)) {
+      return { categoryId: 'displays', subcategoryId: 'monitor-accessories' };
+    }
+    
+    // Displays - الشاشات (all monitors - check before other categories)
+    if (combined.match(/\bشاشة\b|شاشات|\bmonitor\b|\bdisplay\b|screen|gaming monitor|hz\b|fps\b|curved|ultrawide|ips panel/)) {
+      return { categoryId: 'displays', subcategoryId: 'gaming-monitors' };
+    }
+    
+    // PC Components - اللوحات الأم (check before processors)
     if (combined.match(/لوحة أم|motherboard|mainboard/)) {
       return { categoryId: 'pc-components', subcategoryId: 'motherboards' };
     }
     
     // PC Components - المعالجات
-    if (combined.match(/معالج|processor|cpu|intel|amd|ryzen|i[3579]|ryzen [3579]/)) {
+    if (combined.match(/معالج|processor|cpu|ryzen|i[3579]|ryzen [3579]/) && !combined.match(/motherboard|لوحة أم/)) {
       return { categoryId: 'pc-components', subcategoryId: 'processors' };
     }
     
     // PC Components - كروت الشاشة
-    if (combined.match(/كرت شاشة|graphics|gpu|rtx|gtx|vga|rx [4567]|nvidia|radeon/)) {
+    if (combined.match(/كرت شاشة|graphics|gpu|rtx|gtx|vga|rx [4567]|nvidia|radeon/) && !combined.match(/\bشاشة\b|\bmonitor\b/)) {
       return { categoryId: 'pc-components', subcategoryId: 'graphics-cards' };
     }
     
@@ -224,16 +234,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     // Setup Accessories - Smart Accessories
     if (combined.match(/sensor|مستشعر|smart|ذكي|iot/)) {
       return { categoryId: 'setup-accessories', subcategoryId: 'smart-accessories' };
-    }
-    
-    // Displays - ملحقات شاشة (monitor accessories like light bars)
-    if (combined.match(/colorpanda|monitor light|لايت بار|light bar/) && combined.match(/monitor|شاشة/)) {
-      return { categoryId: 'displays', subcategoryId: 'monitor-accessories' };
-    }
-    
-    // Displays - الشاشات (all monitors go to gaming-monitors now)
-    if (combined.match(/شاشة|monitor|display|screen/)) {
-      return { categoryId: 'displays', subcategoryId: 'gaming-monitors' };
     }
     
     // Ready Builds - التجميعات (only PC builds now)
