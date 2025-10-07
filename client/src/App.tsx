@@ -18,6 +18,8 @@ import Checkout from "@/pages/Checkout";
 import Offers from "@/pages/Offers";
 import About from "@/pages/About";
 import Contact from "@/pages/Contact";
+import CategoriesPage from "@/pages/CategoriesPage";
+import CategoryDetailPage from "@/pages/CategoryDetailPage";
 
 import { AdminOrders } from "@/pages/AdminOrders";
 
@@ -42,6 +44,8 @@ function Router() {
       <Route path="/offers" component={Offers} />
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
+      <Route path="/categories" component={CategoriesPage} />
+      <Route path="/categories/:categoryId" component={CategoryDetailPage} />
       <Route path="/admin/orders" component={AdminOrders} />
 
       {/* Fallback to 404 */}

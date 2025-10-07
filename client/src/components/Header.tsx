@@ -30,6 +30,7 @@ export function Header({}: HeaderProps) {
 
   const navigationItems = [
     { href: "/", label: "الرئيسية" },
+    { href: "/categories", label: "الأقسام" },
     { href: "/products", label: "المنتجات" },
     { href: "/offers", label: "العروض" },
     { href: "/about", label: "من نحن" },
