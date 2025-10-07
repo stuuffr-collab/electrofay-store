@@ -57,6 +57,14 @@ export const categories: Category[] = [
         descriptionEn: 'Gaming & Professional Motherboards'
       },
       {
+        id: 'memory',
+        name: 'الذاكرة (RAM)',
+        nameEn: 'Memory (RAM)',
+        icon: CircuitBoard,
+        description: 'ذاكرة DDR4 و DDR5',
+        descriptionEn: 'DDR4 & DDR5 Memory'
+      },
+      {
         id: 'storage',
         name: 'التخزين',
         nameEn: 'Storage',
@@ -159,6 +167,50 @@ export const categories: Category[] = [
         icon: Mic,
         description: 'مايكروفونات USB واحترافية',
         descriptionEn: 'USB & Professional Microphones'
+      },
+      {
+        id: 'lighting',
+        name: 'الإضاءة',
+        nameEn: 'Lighting',
+        icon: Fan,
+        description: 'إضاءة LED و RGB للسيت أب',
+        descriptionEn: 'LED & RGB Lighting for Setup'
+      }
+    ]
+  },
+  {
+    id: 'setup-accessories',
+    name: 'إكسسوارات السيت أب',
+    nameEn: 'Setup Accessories',
+    icon: SlidersHorizontal,
+    description: 'حوامل، هبات USB، محولات ومستشعرات',
+    descriptionEn: 'Stands, USB Hubs, Adapters & Sensors',
+    color: '#06b6d4',
+    gradient: 'from-cyan-500 to-cyan-700',
+    subcategories: [
+      {
+        id: 'stands',
+        name: 'الحوامل',
+        nameEn: 'Stands',
+        icon: SlidersHorizontal,
+        description: 'حوامل مايكروفونات وشاشات',
+        descriptionEn: 'Microphone & Monitor Stands'
+      },
+      {
+        id: 'hubs-adapters',
+        name: 'هبات ومحولات',
+        nameEn: 'Hubs & Adapters',
+        icon: CircuitBoard,
+        description: 'USB Hub و Bluetooth Adapter',
+        descriptionEn: 'USB Hubs & Bluetooth Adapters'
+      },
+      {
+        id: 'smart-accessories',
+        name: 'ملحقات ذكية',
+        nameEn: 'Smart Accessories',
+        icon: SlidersHorizontal,
+        description: 'مستشعرات وأجهزة جانبية ذكية',
+        descriptionEn: 'Sensors & Smart Devices'
       }
     ]
   },
@@ -251,75 +303,125 @@ export function mapOldCategoryToNew(oldCategory: string): { categoryId: string; 
   return mapping[oldCategory] || { categoryId: 'pc-components', subcategoryId: 'processors' };
 }
 
-// Helper function to determine category and subcategory based on product
+// Enhanced AI-powered product categorization with comprehensive keyword matching
 export function categorizeProduct(product: any): { categoryId: string; subcategoryId: string } {
-  const name = product.name.toLowerCase() || product.nameEn?.toLowerCase() || '';
-  const desc = product.description?.toLowerCase() || product.descriptionEn?.toLowerCase() || '';
+  const name = (product.name?.toLowerCase() || product.nameEn?.toLowerCase() || '');
+  const desc = (product.description?.toLowerCase() || product.descriptionEn?.toLowerCase() || '');
+  const combined = `${name} ${desc}`;
   
-  // PC Components
-  if (name.includes('معالج') || name.includes('processor') || name.includes('cpu')) {
+  // PC Components - المعالجات
+  if (combined.match(/معالج|processor|cpu|intel|ryzen|i[3579]|ryzen [3579]/)) {
     return { categoryId: 'pc-components', subcategoryId: 'processors' };
   }
-  if (name.includes('كرت') || name.includes('graphics') || name.includes('gpu') || name.includes('rtx') || name.includes('rx')) {
+  
+  // PC Components - كروت الشاشة
+  if (combined.match(/كرت شاشة|graphics|gpu|rtx|gtx|vga|rx [4567]|nvidia|radeon/)) {
     return { categoryId: 'pc-components', subcategoryId: 'graphics-cards' };
   }
-  if (name.includes('لوحة أم') || name.includes('motherboard')) {
+  
+  // PC Components - اللوحات الأم
+  if (combined.match(/لوحة أم|motherboard|mainboard|gigabyte|asus|msi|b[45][567]0|z[4567]90|x[4567]70/)) {
     return { categoryId: 'pc-components', subcategoryId: 'motherboards' };
   }
-  if (name.includes('تخزين') || name.includes('ssd') || name.includes('hdd') || name.includes('storage') || name.includes('nvme')) {
+  
+  // PC Components - الرامات
+  if (combined.match(/رام|ذاكرة|ram|ddr[345]|memory|16gb|32gb|8gb/) && !combined.match(/ssd|nvme|hdd|storage/)) {
+    return { categoryId: 'pc-components', subcategoryId: 'memory' };
+  }
+  
+  // PC Components - التخزين
+  if (combined.match(/تخزين|ssd|nvme|hdd|m\.2|storage|hard disk|500gb|1tb|2tb/)) {
     return { categoryId: 'pc-components', subcategoryId: 'storage' };
   }
-  if (name.includes('مزود طاقة') || name.includes('power supply') || name.includes('psu')) {
+  
+  // PC Components - مزودات الطاقة
+  if (combined.match(/مزود طاقة|power supply|psu|watt|bronze|gold|platinum|[567][05]0w/)) {
     return { categoryId: 'pc-components', subcategoryId: 'power-supply' };
   }
-  if (name.includes('مبرد') || name.includes('cooler') || name.includes('cooling')) {
+  
+  // PC Components - التبريد
+  if (combined.match(/مبرد|تبريد|cooler|cooling|fan|liquid|airflow|aio/)) {
     return { categoryId: 'pc-components', subcategoryId: 'cooling' };
   }
   
-  // Peripherals
-  if (name.includes('كيبورد') || name.includes('لوحة مفاتيح') || name.includes('keyboard')) {
+  // Peripherals - لوحات المفاتيح
+  if (combined.match(/كيبورد|لوحة مفاتيح|keyboard|mechanical|rgb keyboard|keychron/)) {
     return { categoryId: 'peripherals', subcategoryId: 'keyboards' };
   }
-  if (name.includes('ماوس') || name.includes('mouse') && !name.includes('pad')) {
+  
+  // Peripherals - الماوس
+  if (combined.match(/ماوس(?! باد)|mouse(?! pad)|dpi|wireless mouse|gaming mouse/) && !combined.includes('pad')) {
     return { categoryId: 'peripherals', subcategoryId: 'mice' };
   }
-  if (name.includes('سماعة') || name.includes('headset') || name.includes('headphone')) {
+  
+  // Peripherals - السماعات
+  if (combined.match(/سماعة|سماعات|headset|headphone|hyperx|razer|gaming headset/)) {
     return { categoryId: 'peripherals', subcategoryId: 'headsets' };
   }
-  if (name.includes('كرسي') || name.includes('chair')) {
+  
+  // Peripherals - الكراسي
+  if (combined.match(/كرسي|chair|gaming chair|ergonomic|مقعد/)) {
     return { categoryId: 'peripherals', subcategoryId: 'chairs' };
   }
-  if (name.includes('ماوس باد') || name.includes('mouse pad') || name.includes('mousepad')) {
+  
+  // Peripherals - Mouse Pads
+  if (combined.match(/ماوس باد|mouse ?pad|mousepad/)) {
     return { categoryId: 'peripherals', subcategoryId: 'mouse-pads' };
   }
   
-  // Streaming Gear
-  if (name.includes('كاميرا') || name.includes('webcam') || name.includes('camera')) {
+  // Streaming Gear - الكاميرات
+  if (combined.match(/كاميرا|webcam|camera|streaming cam|logitech.*c[97]/)) {
     return { categoryId: 'streaming-gear', subcategoryId: 'cameras' };
   }
-  if (name.includes('مايك') || name.includes('microphone') || name.includes('mic')) {
+  
+  // Streaming Gear - المايكروفونات
+  if (combined.match(/مايك|ميكروفون|microphone|mic|condenser|blue yeti|usb mic/)) {
     return { categoryId: 'streaming-gear', subcategoryId: 'microphones' };
   }
   
-  // Displays
-  if (name.includes('شاشة') || name.includes('monitor') || name.includes('display')) {
-    if (name.includes('قيمنج') || name.includes('gaming') || name.includes('144hz') || name.includes('180hz') || name.includes('240hz')) {
+  // Displays - الشاشات
+  if (combined.match(/شاشة|monitor|display|screen/)) {
+    if (combined.match(/قيمنج|gaming|144hz|165hz|180hz|240hz|curved|1ms/)) {
       return { categoryId: 'displays', subcategoryId: 'gaming-monitors' };
     }
     return { categoryId: 'displays', subcategoryId: 'professional-monitors' };
   }
   
-  // Ready Builds
-  if (name.includes('تجميعة') || name.includes('pc build') || (name.includes('pc') && desc.includes('rtx'))) {
+  // Ready Builds - التجميعات
+  if (combined.match(/تجميعة|pc build|bundle|pre.?built/)) {
     return { categoryId: 'ready-builds', subcategoryId: 'pc-builds' };
   }
-  if (name.includes('لابتوب') || name.includes('laptop')) {
+  
+  // Ready Builds - اللابتوبات
+  if (combined.match(/لابتوب|laptop|notebook/)) {
     return { categoryId: 'ready-builds', subcategoryId: 'laptops' };
   }
-  if (name.includes('تحكم') || name.includes('controller') || name.includes('gamepad')) {
+  
+  // Ready Builds - Controllers
+  if (combined.match(/تحكم|controller|gamepad|joystick|xbox|ps[45]/)) {
     return { categoryId: 'ready-builds', subcategoryId: 'controllers' };
   }
   
-  // Default fallback
+  // Streaming Gear - LED & RGB Lighting
+  if (combined.match(/led|rgb|إضاءة|light bar|strip|govee|نيون/)) {
+    return { categoryId: 'streaming-gear', subcategoryId: 'lighting' };
+  }
+  
+  // Setup Accessories - Stands
+  if (combined.match(/حامل|stand|mount|arm|قاعدة/)) {
+    return { categoryId: 'setup-accessories', subcategoryId: 'stands' };
+  }
+  
+  // Setup Accessories - Hubs & Adapters
+  if (combined.match(/hub|adapter|محول|bluetooth|wi-?fi|usb.*hub|شبكة|network/)) {
+    return { categoryId: 'setup-accessories', subcategoryId: 'hubs-adapters' };
+  }
+  
+  // Setup Accessories - Smart Accessories
+  if (combined.match(/sensor|مستشعر|smart|ذكي|iot/)) {
+    return { categoryId: 'setup-accessories', subcategoryId: 'smart-accessories' };
+  }
+  
+  // Fallback to generic PC components
   return { categoryId: 'pc-components', subcategoryId: 'processors' };
 }

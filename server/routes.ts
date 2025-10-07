@@ -68,7 +68,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     return Math.round(value / step) * step;
   }
 
-  // Get products with dynamic pricing
+  // Get products with dynamic pricing and smart categorization
   app.get("/api/products", async (req, res) => {
     try {
       // Fetch products and exchange rate in parallel
@@ -82,11 +82,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ? (settingsResult[0].value as { rate: number }).rate 
         : 5.10;
 
-      // Calculate LYD prices
+      // Calculate LYD prices and add smart categorization
       const productsWithPricing = productsResult.map(product => {
         const basePriceUsd = parseFloat(String(product.basePriceUsd)) || 0;
         const rawLydPrice = basePriceUsd * exchangeRate;
         const displayPriceLyd = roundLYD(rawLydPrice);
+
+        // Smart categorization using categorizeProduct from categories.ts
+        // This is calculated dynamically based on product name and description
+        const categorization = categorizeProduct(product);
 
         return {
           id: product.id,
@@ -97,6 +101,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           basePriceUsd,
           displayPriceLyd,
           category: product.category,
+          categoryId: categorization.categoryId,
+          subcategoryId: categorization.subcategoryId,
           image: product.image,
           rating: parseFloat(String(product.rating)),
           badges: product.badges || [],
@@ -106,13 +112,136 @@ export async function registerRoutes(app: Express): Promise<Server> {
         };
       });
 
-      console.log(`✅ API: Returning ${productsWithPricing.length} products with USD→LYD rate ${exchangeRate}`);
+      console.log(`✅ API: Returning ${productsWithPricing.length} products with smart categorization and USD→LYD rate ${exchangeRate}`);
       res.json(productsWithPricing);
     } catch (error) {
       console.error('Error fetching products:', error);
       res.status(500).json({ error: 'Failed to fetch products' });
     }
   });
+  
+  // Helper function for smart categorization (imported logic from client)
+  function categorizeProduct(product: any): { categoryId: string; subcategoryId: string } {
+    const name = (product.name?.toLowerCase() || product.nameEn?.toLowerCase() || '');
+    const desc = (product.description?.toLowerCase() || product.descriptionEn?.toLowerCase() || '');
+    const combined = `${name} ${desc}`;
+    
+    // PC Components - المعالجات
+    if (combined.match(/معالج|processor|cpu|intel|ryzen|i[3579]|ryzen [3579]/)) {
+      return { categoryId: 'pc-components', subcategoryId: 'processors' };
+    }
+    
+    // PC Components - كروت الشاشة
+    if (combined.match(/كرت شاشة|graphics|gpu|rtx|gtx|vga|rx [4567]|nvidia|radeon/)) {
+      return { categoryId: 'pc-components', subcategoryId: 'graphics-cards' };
+    }
+    
+    // PC Components - اللوحات الأم
+    if (combined.match(/لوحة أم|motherboard|mainboard|gigabyte|asus|msi|b[45][567]0|z[4567]90|x[4567]70/)) {
+      return { categoryId: 'pc-components', subcategoryId: 'motherboards' };
+    }
+    
+    // PC Components - الرامات
+    if (combined.match(/رام|ذاكرة|ram|ddr[345]|memory|16gb|32gb|8gb/) && !combined.match(/ssd|nvme|hdd|storage/)) {
+      return { categoryId: 'pc-components', subcategoryId: 'memory' };
+    }
+    
+    // PC Components - التخزين
+    if (combined.match(/تخزين|ssd|nvme|hdd|m\.2|storage|hard disk|500gb|1tb|2tb/)) {
+      return { categoryId: 'pc-components', subcategoryId: 'storage' };
+    }
+    
+    // PC Components - مزودات الطاقة
+    if (combined.match(/مزود طاقة|power supply|psu|watt|bronze|gold|platinum|[567][05]0w/)) {
+      return { categoryId: 'pc-components', subcategoryId: 'power-supply' };
+    }
+    
+    // PC Components - التبريد
+    if (combined.match(/مبرد|تبريد|cooler|cooling|fan|liquid|airflow|aio/)) {
+      return { categoryId: 'pc-components', subcategoryId: 'cooling' };
+    }
+    
+    // Peripherals - لوحات المفاتيح
+    if (combined.match(/كيبورد|لوحة مفاتيح|keyboard|mechanical|rgb keyboard|keychron/)) {
+      return { categoryId: 'peripherals', subcategoryId: 'keyboards' };
+    }
+    
+    // Peripherals - الماوس
+    if (combined.match(/ماوس(?! باد)|mouse(?! pad)|dpi|wireless mouse|gaming mouse/) && !combined.includes('pad')) {
+      return { categoryId: 'peripherals', subcategoryId: 'mice' };
+    }
+    
+    // Peripherals - السماعات
+    if (combined.match(/سماعة|سماعات|headset|headphone|hyperx|razer|gaming headset/)) {
+      return { categoryId: 'peripherals', subcategoryId: 'headsets' };
+    }
+    
+    // Peripherals - الكراسي
+    if (combined.match(/كرسي|chair|gaming chair|ergonomic|مقعد/)) {
+      return { categoryId: 'peripherals', subcategoryId: 'chairs' };
+    }
+    
+    // Peripherals - Mouse Pads
+    if (combined.match(/ماوس باد|mouse ?pad|mousepad/)) {
+      return { categoryId: 'peripherals', subcategoryId: 'mouse-pads' };
+    }
+    
+    // Streaming Gear - الكاميرات
+    if (combined.match(/كاميرا|webcam|camera|streaming cam|logitech.*c[97]/)) {
+      return { categoryId: 'streaming-gear', subcategoryId: 'cameras' };
+    }
+    
+    // Streaming Gear - المايكروفونات
+    if (combined.match(/مايك|ميكروفون|microphone|mic|condenser|blue yeti|usb mic/)) {
+      return { categoryId: 'streaming-gear', subcategoryId: 'microphones' };
+    }
+    
+    // Streaming Gear - LED & RGB Lighting
+    if (combined.match(/led|rgb|إضاءة|light bar|strip|govee|نيون/)) {
+      return { categoryId: 'streaming-gear', subcategoryId: 'lighting' };
+    }
+    
+    // Displays - الشاشات
+    if (combined.match(/شاشة|monitor|display|screen/)) {
+      if (combined.match(/قيمنج|gaming|144hz|165hz|180hz|240hz|curved|1ms/)) {
+        return { categoryId: 'displays', subcategoryId: 'gaming-monitors' };
+      }
+      return { categoryId: 'displays', subcategoryId: 'professional-monitors' };
+    }
+    
+    // Ready Builds - التجميعات
+    if (combined.match(/تجميعة|pc build|bundle|pre.?built/)) {
+      return { categoryId: 'ready-builds', subcategoryId: 'pc-builds' };
+    }
+    
+    // Ready Builds - اللابتوبات
+    if (combined.match(/لابتوب|laptop|notebook/)) {
+      return { categoryId: 'ready-builds', subcategoryId: 'laptops' };
+    }
+    
+    // Ready Builds - Controllers
+    if (combined.match(/تحكم|controller|gamepad|joystick|xbox|ps[45]/)) {
+      return { categoryId: 'ready-builds', subcategoryId: 'controllers' };
+    }
+    
+    // Setup Accessories - Stands
+    if (combined.match(/حامل|stand|mount|arm|قاعدة/)) {
+      return { categoryId: 'setup-accessories', subcategoryId: 'stands' };
+    }
+    
+    // Setup Accessories - Hubs & Adapters
+    if (combined.match(/hub|adapter|محول|bluetooth|wi-?fi|usb.*hub|شبكة|network/)) {
+      return { categoryId: 'setup-accessories', subcategoryId: 'hubs-adapters' };
+    }
+    
+    // Setup Accessories - Smart Accessories
+    if (combined.match(/sensor|مستشعر|smart|ذكي|iot/)) {
+      return { categoryId: 'setup-accessories', subcategoryId: 'smart-accessories' };
+    }
+    
+    // Fallback to generic PC components
+    return { categoryId: 'pc-components', subcategoryId: 'processors' };
+  }
 
   // Get exchange rate setting
   app.get("/api/settings/:key", async (req, res) => {
