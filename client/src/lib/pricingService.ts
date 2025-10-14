@@ -10,7 +10,6 @@ export interface PricedProduct {
   displayPriceLyd: number;
   category: string;
   image: string;
-  badges: string[];
   inStock: boolean;
   stockCount: number;
   usdToLydRate: number;
@@ -66,7 +65,7 @@ export async function fetchPricedProducts(): Promise<PricedProduct[]> {
     const [productsResult, rate] = await Promise.all([
       supabase
         .from('products')
-        .select('id, name, name_en, description, description_en, base_price_usd, category, image, badges, in_stock, stock_count')
+        .select('id, name, name_en, description, description_en, base_price_usd, category, image, in_stock, stock_count')
         .eq('is_active', true),
       fetchExchangeRate()
     ]) as [any, number];
@@ -101,7 +100,6 @@ export async function fetchPricedProducts(): Promise<PricedProduct[]> {
         displayPriceLyd,
         category: product.category,
         image: product.image,
-        badges: product.badges || [],
         inStock: product.in_stock,
         stockCount: product.stock_count,
         usdToLydRate: rate

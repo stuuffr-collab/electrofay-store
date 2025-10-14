@@ -90,14 +90,6 @@ export default function ProductDetail() {
     }
   };
 
-  const getBadgeColor = (badge: string) => {
-    if (badge.includes("خصم") || badge.includes("%")) return "destructive";
-    if (badge === "جديد") return "secondary";
-    if (badge.includes("متبقي") || badge.includes("قطع")) return "outline";
-    if (badge === "الأكثر مبيعاً") return "default";
-    return "secondary";
-  };
-
   const discountPercentage = product.originalPrice 
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
@@ -188,11 +180,6 @@ export default function ProductDetail() {
                 <Badge variant="outline" className="text-electric-yellow border-electric-yellow">
                   {getCategoryDisplayName(product.category)}
                 </Badge>
-                {product.badges.map((badge, index) => (
-                  <Badge key={index} variant={getBadgeColor(badge)}>
-                    {badge}
-                  </Badge>
-                ))}
               </div>
               <h1 className="text-4xl lg:text-5xl font-extrabold mb-3 leading-tight" style={{ fontFamily: 'Cairo, Tajawal, sans-serif' }}>
                 {product.name}

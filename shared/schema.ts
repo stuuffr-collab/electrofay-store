@@ -17,7 +17,6 @@ export const products = pgTable("products", {
   basePriceUsd: decimal("base_price_usd", { precision: 10, scale: 2 }).notNull(), // USD base price only
   category: text("category").notNull(), // 'gaming' or 'electronics'
   image: text("image").notNull(),
-  badges: text("badges").array().default([]),
   inStock: boolean("in_stock").notNull().default(true),
   stockCount: integer("stock_count").notNull().default(0),
   isActive: boolean("is_active").notNull().default(true),

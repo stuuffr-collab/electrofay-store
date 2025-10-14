@@ -15,7 +15,6 @@ export interface Product {
   originalPrice: number | null;
   category: "gaming_accessory" | "gaming_pc" | "gaming_console" | "streaming_gear";
   image: string;
-  badges: string[];
   inStock: boolean;
   stockCount: number;
 }
@@ -33,24 +32,8 @@ export function ProductCard({ product, onOrderClick, onAddToCart }: ProductCardP
 
 
 
-  const getBadgeColor = (badge: string) => {
-    if (badge.includes("خصم") || badge.includes("%")) return "destructive";
-    if (badge === "جديد") return "secondary";
-    if (badge.includes("متبقي") || badge.includes("قطع")) return "outline";
-    if (badge === "الأكثر مبيعاً") return "default";
-    return "secondary";
-  };
-
   // Generate dynamic stock badge
-  const generateStockBadge = () => {
-    if (product.stockCount <= 5) {
-      return `⚡ متبقّي ${product.stockCount} قطع`;
-    }
-    return null;
-  };
-
-  const dynamicBadge = generateStockBadge();
-  const allBadges = dynamicBadge ? [dynamicBadge, ...product.badges] : product.badges;
+  const stockBadge = product.stockCount <= 5 ? `⚡ متبقّي ${product.stockCount} قطع` : null;
 
   const handleProductClick = () => {
     window.scrollTo(0, 0);
@@ -88,14 +71,14 @@ export function ProductCard({ product, onOrderClick, onAddToCart }: ProductCardP
           )}
         </div>
 
-        {/* Product Badges */}
-        <div className="absolute top-3 right-3 flex flex-col gap-2">
-          {allBadges.map((badge, index) => (
-            <Badge key={index} variant={getBadgeColor(badge)} className="text-xs shadow-sm">
-              {badge}
+        {/* Product Badge */}
+        {stockBadge && (
+          <div className="absolute top-3 right-3">
+            <Badge variant="outline" className="text-xs shadow-sm">
+              {stockBadge}
             </Badge>
-          ))}
-        </div>
+          </div>
+        )}
       </div>
 
       <div className="p-4">
