@@ -13,7 +13,7 @@ export interface Product {
   descriptionEn: string;
   price: number;
   originalPrice: number | null;
-  category: "gaming_accessory" | "gaming_pc" | "gaming_console" | "streaming_gear";
+  category: string; // Support all categories from database
   image: string;
   inStock: boolean;
   stockCount: number;
