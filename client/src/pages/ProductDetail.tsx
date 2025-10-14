@@ -8,7 +8,6 @@ import { useProducts } from "@/hooks/useProducts";
 import { Product } from "@/components/ProductCard";
 import { useToast } from "@/hooks/use-toast";
 import { ProductImageZoom } from "@/components/ProductImageZoom";
-import { StarRating } from "@/components/StarRating";
 import { ProductTabs } from "@/components/ProductTabs";
 import { SimilarProductsCarousel } from "@/components/SimilarProductsCarousel";
 import { Breadcrumbs } from "@/components/Breadcrumbs";

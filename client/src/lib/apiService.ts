@@ -10,7 +10,6 @@ export interface ApiProduct {
   originalPrice?: number;
   category: string;
   image: string;
-  rating: number;
   badges: string[];
   inStock: boolean;
   stockCount: number;

@@ -23,7 +23,6 @@ export async function fetchProducts(): Promise<Product[]> {
         originalPrice: null, // No longer using original price
         category: item.category as Product['category'],
         image: item.image,
-        rating: item.rating,
         badges: item.badges || [],
         inStock: item.inStock,
         stockCount: item.stockCount

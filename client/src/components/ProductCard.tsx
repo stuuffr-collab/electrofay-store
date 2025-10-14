@@ -15,7 +15,6 @@ export interface Product {
   originalPrice: number | null;
   category: "gaming_accessory" | "gaming_pc" | "gaming_console" | "streaming_gear";
   image: string;
-  rating: number;
   badges: string[];
   inStock: boolean;
   stockCount: number;
