@@ -13,9 +13,9 @@ if (!supabaseUrl || !supabaseAnonKey) {
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 async function createAdminUser() {
-  const username = 'alizze';
-  const password = 'kokemode123';
-  const email = 'admin@electrofy.com';
+  const username = process.env.ADMIN_USERNAME || 'alizze';
+  const password = process.env.ADMIN_PASSWORD || 'kokemode123';
+  const email = process.env.ADMIN_EMAIL || 'admin@electrofy.com';
 
   try {
     console.log('🔐 جاري تشفير كلمة المرور...');
