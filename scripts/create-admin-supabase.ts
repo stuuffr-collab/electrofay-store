@@ -36,6 +36,8 @@ async function createAdminUser() {
       .single();
 
     if (error) {
+      console.error('❌ خطأ في إنشاء المستخدم:', JSON.stringify(error, null, 2));
+      
       if (error.code === '23505') {
         console.log('⚠️  المستخدم موجود بالفعل، جاري تحديث كلمة المرور...');
         
@@ -47,13 +49,14 @@ async function createAdminUser() {
           .single();
 
         if (updateError) {
-          console.error('❌ خطأ في تحديث المستخدم:', updateError);
+          console.error('❌ خطأ في تحديث المستخدم:', JSON.stringify(updateError, null, 2));
           process.exit(1);
         }
 
         console.log('✅ تم تحديث كلمة المرور بنجاح!');
       } else {
-        console.error('❌ خطأ في إنشاء المستخدم:', error);
+        console.error('⚠️  قد يكون الجدول غير موجود أو الصلاحيات غير كافية');
+        console.error('💡 جرب إضافة المستخدم يدوياً من لوحة Supabase SQL Editor');
         process.exit(1);
       }
     } else {
