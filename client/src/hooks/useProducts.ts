@@ -30,28 +30,13 @@ export async function fetchProducts(): Promise<Product[]> {
       return transformedProducts;
     }
 
-    // Fallback to local data if no products in database
-    console.log('لا توجد منتجات في Supabase، سيتم استخدام البيانات المحلية');
-    
-    // Import local data as fallback
-    try {
-      const { default: localProducts } = await import('@/data/products.json');
-      return localProducts as Product[];
-    } catch (error) {
-      return [];
-    }
+    // No products found in Supabase
+    console.log('⚠️ لا توجد منتجات في قاعدة البيانات');
+    return [];
     
   } catch (error) {
-    console.error('حدث خطأ أثناء تحميل المنتجات من Supabase:', error);
-    console.log('سيتم استخدام البيانات المحلية كبديل');
-    
-    // Import local data as fallback
-    try {
-      const { default: localProducts } = await import('@/data/products.json');
-      return localProducts as Product[];
-    } catch (error) {
-      return [];
-    }
+    console.error('❌ حدث خطأ أثناء تحميل المنتجات من Supabase:', error);
+    return [];
   }
 }
 
