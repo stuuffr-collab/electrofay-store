@@ -45,7 +45,7 @@ router.post('/login', async (req: Request, res: Response) => {
       .set({ lastLogin: new Date() })
       .where(eq(adminUsers.id, adminUser.id));
 
-    const session = req.session as any;
+    const session = (req as any).session;
     session.adminId = adminUser.id;
     session.adminUsername = adminUser.username;
     session.adminEmail = adminUser.email;
@@ -63,8 +63,7 @@ router.post('/login', async (req: Request, res: Response) => {
 });
 
 router.post('/logout', (req: Request, res: Response) => {
-  const session = req.session as any;
-  req.session.destroy((err: any) => {
+  (req as any).session.destroy((err: any) => {
     if (err) {
       return res.status(500).json({ error: 'حدث خطأ أثناء تسجيل الخروج' });
     }
@@ -74,7 +73,7 @@ router.post('/logout', (req: Request, res: Response) => {
 });
 
 router.get('/me', (req: Request, res: Response) => {
-  const session = req.session as any;
+  const session = (req as any).session;
   if (!session.adminId) {
     return res.status(401).json({ error: 'غير مصرح' });
   }
@@ -87,7 +86,7 @@ router.get('/me', (req: Request, res: Response) => {
 });
 
 export function requireAdmin(req: Request, res: Response, next: any) {
-  const session = req.session as any;
+  const session = (req as any).session;
   if (!session.adminId) {
     return res.status(401).json({ error: 'غير مصرح - يجب تسجيل الدخول' });
   }

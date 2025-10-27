@@ -2,8 +2,9 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { db } from "./db";
-import { products, settings, orders, insertOrderSchema } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { products, settings, orders, insertOrderSchema, insertProductSchema } from "@shared/schema";
+import { eq, desc, sql } from "drizzle-orm";
+import { requireAdmin } from "./api/auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Order management API
@@ -101,11 +102,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           basePriceUsd,
           displayPriceLyd,
           category: product.category,
-          categoryId: categorization.categoryId,
-          subcategoryId: categorization.subcategoryId,
+          categoryId: product.categoryId || categorization.categoryId,
+          subcategoryId: product.subcategoryId || categorization.subcategoryId,
           image: product.image,
-          rating: parseFloat(String(product.rating)),
-          badges: product.badges || [],
           inStock: product.inStock,
           stockCount: product.stockCount,
           usdToLydRate: exchangeRate
@@ -264,6 +263,248 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error fetching setting:', error);
       res.status(500).json({ error: 'Failed to fetch setting' });
+    }
+  });
+
+  // ============= ADMIN API ROUTES =============
+  
+  // Admin: Get all products (including inactive)
+  app.get("/api/admin/products", requireAdmin, async (req, res) => {
+    try {
+      const allProducts = await db.select().from(products).orderBy(desc(products.createdAt));
+      
+      const [settingsResult] = await db.select().from(settings).where(eq(settings.key, 'usd_to_lyd_rate'));
+      const exchangeRate = settingsResult ? (settingsResult.value as { rate: number }).rate : 5.10;
+      
+      const productsWithPricing = allProducts.map(product => ({
+        ...product,
+        basePriceUsd: parseFloat(String(product.basePriceUsd)) || 0,
+        displayPriceLyd: roundLYD((parseFloat(String(product.basePriceUsd)) || 0) * exchangeRate),
+        usdToLydRate: exchangeRate
+      }));
+      
+      res.json(productsWithPricing);
+    } catch (error) {
+      console.error('Error fetching admin products:', error);
+      res.status(500).json({ error: 'Failed to fetch products' });
+    }
+  });
+  
+  // Admin: Create product
+  app.post("/api/admin/products", requireAdmin, async (req, res) => {
+    try {
+      const productData = req.body;
+      
+      const newProduct = await db.insert(products).values({
+        id: productData.id,
+        name: productData.name,
+        nameEn: productData.nameEn,
+        description: productData.description,
+        descriptionEn: productData.descriptionEn,
+        basePriceUsd: String(productData.basePriceUsd),
+        category: productData.category || '',
+        categoryId: productData.categoryId,
+        subcategoryId: productData.subcategoryId,
+        image: productData.image,
+        inStock: productData.inStock !== false,
+        stockCount: productData.stockCount || 0,
+        isActive: productData.isActive !== false
+      }).returning();
+      
+      res.status(201).json(newProduct[0]);
+    } catch (error) {
+      console.error('Error creating product:', error);
+      res.status(500).json({ error: 'Failed to create product' });
+    }
+  });
+  
+  // Admin: Update product
+  app.put("/api/admin/products/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const productData = req.body;
+      
+      const updated = await db.update(products)
+        .set({
+          name: productData.name,
+          nameEn: productData.nameEn,
+          description: productData.description,
+          descriptionEn: productData.descriptionEn,
+          basePriceUsd: String(productData.basePriceUsd),
+          category: productData.category || '',
+          categoryId: productData.categoryId,
+          subcategoryId: productData.subcategoryId,
+          image: productData.image,
+          inStock: productData.inStock,
+          stockCount: productData.stockCount,
+          isActive: productData.isActive,
+          updatedAt: new Date()
+        })
+        .where(eq(products.id, id))
+        .returning();
+      
+      if (!updated.length) {
+        return res.status(404).json({ error: 'Product not found' });
+      }
+      
+      res.json(updated[0]);
+    } catch (error) {
+      console.error('Error updating product:', error);
+      res.status(500).json({ error: 'Failed to update product' });
+    }
+  });
+  
+  // Admin: Delete product
+  app.delete("/api/admin/products/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      const deleted = await db.delete(products)
+        .where(eq(products.id, id))
+        .returning();
+      
+      if (!deleted.length) {
+        return res.status(404).json({ error: 'Product not found' });
+      }
+      
+      res.json({ message: 'Product deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      res.status(500).json({ error: 'Failed to delete product' });
+    }
+  });
+  
+  // Admin: Get all orders
+  app.get("/api/admin/orders", requireAdmin, async (req, res) => {
+    try {
+      const allOrders = await db.select().from(orders).orderBy(desc(orders.createdAt));
+      
+      const ordersWithParsedItems = allOrders.map(order => ({
+        ...order,
+        items: JSON.parse(order.items),
+        totalAmount: parseFloat(String(order.totalAmount)),
+        deliveryFee: parseFloat(String(order.deliveryFee))
+      }));
+      
+      res.json(ordersWithParsedItems);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      res.status(500).json({ error: 'Failed to fetch orders' });
+    }
+  });
+  
+  // Admin: Update order status
+  app.put("/api/admin/orders/:id/status", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+      
+      if (!['pending', 'confirmed', 'delivered', 'cancelled'].includes(status)) {
+        return res.status(400).json({ error: 'Invalid status' });
+      }
+      
+      const updated = await db.update(orders)
+        .set({ status, updatedAt: new Date() })
+        .where(eq(orders.id, parseInt(id)))
+        .returning();
+      
+      if (!updated.length) {
+        return res.status(404).json({ error: 'Order not found' });
+      }
+      
+      res.json(updated[0]);
+    } catch (error) {
+      console.error('Error updating order status:', error);
+      res.status(500).json({ error: 'Failed to update order status' });
+    }
+  });
+  
+  // Admin: Get all settings
+  app.get("/api/admin/settings", requireAdmin, async (req, res) => {
+    try {
+      const allSettings = await db.select().from(settings);
+      res.json(allSettings);
+    } catch (error) {
+      console.error('Error fetching settings:', error);
+      res.status(500).json({ error: 'Failed to fetch settings' });
+    }
+  });
+  
+  // Admin: Update settings
+  app.put("/api/admin/settings", requireAdmin, async (req, res) => {
+    try {
+      const { key, value } = req.body;
+      
+      const updated = await db.insert(settings)
+        .values({ key, value, updatedAt: new Date() })
+        .onConflictDoUpdate({
+          target: settings.key,
+          set: { value, updatedAt: new Date() }
+        })
+        .returning();
+      
+      res.json(updated[0]);
+    } catch (error) {
+      console.error('Error updating settings:', error);
+      res.status(500).json({ error: 'Failed to update settings' });
+    }
+  });
+  
+  // Admin: Get dashboard statistics
+  app.get("/api/admin/stats", requireAdmin, async (req, res) => {
+    try {
+      // Get total products
+      const totalProducts = await db.select({ count: sql<number>`count(*)` })
+        .from(products)
+        .where(eq(products.isActive, true));
+      
+      // Get total orders
+      const totalOrders = await db.select({ count: sql<number>`count(*)` })
+        .from(orders);
+      
+      // Get total sales
+      const totalSales = await db.select({ 
+        total: sql<number>`COALESCE(SUM(CAST(total_amount AS DECIMAL)), 0)` 
+      }).from(orders).where(eq(orders.status, 'delivered'));
+      
+      // Get low stock products (< 5 items)
+      const lowStockProducts = await db.select()
+        .from(products)
+        .where(sql`${products.stockCount} < 5 AND ${products.isActive} = true`)
+        .limit(10);
+      
+      // Get recent orders
+      const recentOrders = await db.select()
+        .from(orders)
+        .orderBy(desc(orders.createdAt))
+        .limit(10);
+      
+      // Get orders by status
+      const ordersByStatus = await db.select({
+        status: orders.status,
+        count: sql<number>`count(*)`
+      })
+      .from(orders)
+      .groupBy(orders.status);
+      
+      res.json({
+        totalProducts: totalProducts[0]?.count || 0,
+        totalOrders: totalOrders[0]?.count || 0,
+        totalSales: totalSales[0]?.total || 0,
+        lowStockProducts: lowStockProducts.map(p => ({
+          ...p,
+          basePriceUsd: parseFloat(String(p.basePriceUsd))
+        })),
+        recentOrders: recentOrders.map(o => ({
+          ...o,
+          items: JSON.parse(o.items),
+          totalAmount: parseFloat(String(o.totalAmount))
+        })),
+        ordersByStatus
+      });
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+      res.status(500).json({ error: 'Failed to fetch statistics' });
     }
   });
 
