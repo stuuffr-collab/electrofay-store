@@ -8,14 +8,27 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
 });
 
+export const adminUsers = pgTable("admin_users", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull().unique(),
+  username: text("username").notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
+  role: text("role").notNull().default("admin"),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  lastLogin: timestamp("last_login"),
+});
+
 export const products = pgTable("products", {
-  id: text("id").primaryKey(), // Changed to text to match current product IDs like "kb001"
+  id: text("id").primaryKey(),
   name: text("name").notNull(),
   nameEn: text("name_en").notNull(),
   description: text("description").notNull(),
   descriptionEn: text("description_en").notNull(),
-  basePriceUsd: decimal("base_price_usd", { precision: 10, scale: 2 }).notNull(), // USD base price only
-  category: text("category").notNull(), // 'gaming' or 'electronics'
+  basePriceUsd: decimal("base_price_usd", { precision: 10, scale: 2 }).notNull(),
+  category: text("category").notNull(),
+  categoryId: text("category_id"),
+  subcategoryId: text("subcategory_id"),
   image: text("image").notNull(),
   inStock: boolean("in_stock").notNull().default(true),
   stockCount: integer("stock_count").notNull().default(0),
@@ -72,6 +85,12 @@ export const insertUserSchema = createInsertSchema(users).pick({
   password: true,
 });
 
+export const insertAdminUserSchema = createInsertSchema(adminUsers).omit({
+  id: true,
+  createdAt: true,
+  lastLogin: true,
+});
+
 export const insertProductSchema = createInsertSchema(products).omit({
   id: true,
   createdAt: true,
@@ -99,6 +118,7 @@ export const insertSettingSchema = createInsertSchema(settings).omit({
 
 // Select types
 export type User = typeof users.$inferSelect;
+export type AdminUser = typeof adminUsers.$inferSelect;
 export type Product = typeof products.$inferSelect;
 export type Order = typeof orders.$inferSelect;
 export type City = typeof cities.$inferSelect;
@@ -107,6 +127,7 @@ export type Setting = typeof settings.$inferSelect;
 
 // Insert types
 export type InsertUser = z.infer<typeof insertUserSchema>;
+export type InsertAdminUser = z.infer<typeof insertAdminUserSchema>;
 export type InsertProduct = z.infer<typeof insertProductSchema>;
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
 export type InsertCity = z.infer<typeof insertCitySchema>;
