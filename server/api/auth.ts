@@ -16,6 +16,8 @@ router.post('/login', async (req: Request, res: Response) => {
   try {
     const { username, password } = req.body;
 
+    console.log('تسجيل دخول - المستخدم:', username);
+
     if (!username || !password) {
       return res.status(400).json({ error: 'اسم المستخدم وكلمة المرور مطلوبة' });
     }
@@ -25,17 +27,21 @@ router.post('/login', async (req: Request, res: Response) => {
       .where(eq(adminUsers.username, username))
       .limit(1);
 
+    console.log('نتيجة البحث - عدد المستخدمين:', admin.length);
+
     if (!admin || admin.length === 0) {
       return res.status(401).json({ error: 'اسم المستخدم أو كلمة المرور غير صحيحة' });
     }
 
     const adminUser = admin[0];
+    console.log('المستخدم الموجود:', adminUser.username);
 
     if (!adminUser.isActive) {
       return res.status(403).json({ error: 'هذا الحساب غير نشط' });
     }
 
     const isValidPassword = await bcrypt.compare(password, adminUser.passwordHash);
+    console.log('كلمة المرور صحيحة:', isValidPassword);
 
     if (!isValidPassword) {
       return res.status(401).json({ error: 'اسم المستخدم أو كلمة المرور غير صحيحة' });
@@ -46,9 +52,16 @@ router.post('/login', async (req: Request, res: Response) => {
       .where(eq(adminUsers.id, adminUser.id));
 
     const session = (req as any).session;
+    if (!session) {
+      console.error('Session is undefined!');
+      return res.status(500).json({ error: 'خطأ في الجلسة' });
+    }
+
     session.adminId = adminUser.id;
     session.adminUsername = adminUser.username;
     session.adminEmail = adminUser.email;
+
+    console.log('✅ تسجيل دخول ناجح:', adminUser.username);
 
     res.json({
       id: adminUser.id,
@@ -57,8 +70,8 @@ router.post('/login', async (req: Request, res: Response) => {
       role: adminUser.role,
     });
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ error: 'حدث خطأ أثناء تسجيل الدخول' });
+    console.error('خطأ في تسجيل الدخول:', error);
+    res.status(500).json({ error: 'حدث خطأ أثناء تسجيل الدخول', details: error instanceof Error ? error.message : String(error) });
   }
 });
 

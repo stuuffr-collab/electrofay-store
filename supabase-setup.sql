@@ -158,6 +158,19 @@ ON CONFLICT (name) DO UPDATE SET
   delivery_fee = EXCLUDED.delivery_fee,
   is_active = EXCLUDED.is_active;
 
+-- إنشاء جدول المستخدمين الإداريين
+-- Create admin users table
+CREATE TABLE IF NOT EXISTS admin_users (
+  id SERIAL PRIMARY KEY,
+  email TEXT NOT NULL UNIQUE,
+  username TEXT NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  role TEXT NOT NULL DEFAULT 'admin',
+  is_active BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  last_login TIMESTAMP WITH TIME ZONE
+);
+
 -- تفعيل Row Level Security
 -- Enable Row Level Security
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
@@ -165,6 +178,7 @@ ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE cities ENABLE ROW LEVEL SECURITY;
 ALTER TABLE settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE contact_messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE admin_users ENABLE ROW LEVEL SECURITY;
 
 -- إنشاء سياسات للقراءة العامة
 -- Create policies for public read access

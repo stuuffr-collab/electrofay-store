@@ -5,10 +5,17 @@ import authRouter from "./api/auth";
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
 import { pool } from "./db";
+import cors from "cors";
 
 const PgSession = connectPgSimple(session);
 
 const app = express();
+
+app.use(cors({
+  origin: true,
+  credentials: true,
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
