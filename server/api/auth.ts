@@ -98,6 +98,48 @@ router.get('/me', (req: Request, res: Response) => {
   });
 });
 
+router.post('/setup-first-admin', async (req: Request, res: Response) => {
+  try {
+    const existingAdmins = await db.select().from(adminUsers).limit(1);
+    
+    if (existingAdmins.length > 0) {
+      return res.status(400).json({ error: 'يوجد حساب إدمن بالفعل. استخدم صفحة تسجيل الدخول.' });
+    }
+
+    const { username, password, email } = req.body;
+
+    if (!username || !password || !email) {
+      return res.status(400).json({ error: 'جميع الحقول مطلوبة' });
+    }
+
+    console.log('🔐 إنشاء أول حساب إدمن...');
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const [newAdmin] = await db.insert(adminUsers).values({
+      username,
+      email,
+      passwordHash,
+      role: 'admin',
+      isActive: true,
+    }).returning();
+
+    console.log('✅ تم إنشاء حساب الإدمن:', newAdmin.username);
+
+    res.json({
+      success: true,
+      message: 'تم إنشاء حساب الإدمن بنجاح',
+      admin: {
+        id: newAdmin.id,
+        username: newAdmin.username,
+        email: newAdmin.email,
+      }
+    });
+  } catch (error) {
+    console.error('❌ خطأ في إنشاء حساب الإدمن:', error);
+    res.status(500).json({ error: 'حدث خطأ أثناء إنشاء الحساب' });
+  }
+});
+
 export function requireAdmin(req: Request, res: Response, next: any) {
   const session = (req as any).session;
   if (!session.adminId) {
