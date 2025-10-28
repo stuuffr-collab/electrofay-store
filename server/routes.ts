@@ -488,9 +488,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       .groupBy(orders.status);
       
       res.json({
-        totalProducts: totalProducts[0]?.count || 0,
-        totalOrders: totalOrders[0]?.count || 0,
-        totalSales: totalSales[0]?.total || 0,
+        totalProducts: parseInt(String(totalProducts[0]?.count || 0)),
+        totalOrders: parseInt(String(totalOrders[0]?.count || 0)),
+        totalSales: parseFloat(String(totalSales[0]?.total || 0)),
         lowStockProducts: lowStockProducts.map(p => ({
           ...p,
           basePriceUsd: parseFloat(String(p.basePriceUsd))
@@ -500,7 +500,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           items: JSON.parse(o.items),
           totalAmount: parseFloat(String(o.totalAmount))
         })),
-        ordersByStatus
+        ordersByStatus: ordersByStatus.map(s => ({
+          status: s.status,
+          count: parseInt(String(s.count || 0))
+        }))
       });
     } catch (error) {
       console.error('Error fetching stats:', error);

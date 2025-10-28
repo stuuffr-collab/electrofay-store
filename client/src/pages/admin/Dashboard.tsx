@@ -98,7 +98,7 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-gray-900 dark:text-white">
-                {stats?.totalSales?.toFixed(2) || '0.00'} د.ل
+                {typeof stats?.totalSales === 'number' ? stats.totalSales.toFixed(2) : '0.00'} د.ل
               </div>
             </CardContent>
           </Card>
