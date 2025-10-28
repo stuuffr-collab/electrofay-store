@@ -20,10 +20,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   // Show loading state
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-950">
+      <div className="flex items-center justify-center min-h-screen admin-bg">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">جاري التحميل...</p>
+          <div className="w-16 h-16 border-4 rounded-full animate-spin mx-auto mb-4" style={{ borderColor: 'var(--admin-accent-cyan)', borderTopColor: 'transparent' }}></div>
+          <p className="admin-text-secondary">جاري التحميل...</p>
         </div>
       </div>
     );
@@ -40,11 +40,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen admin-bg">
       <Sidebar onLogout={logout} username={user.username} />
       
       <main className="lg:mr-64 min-h-screen">
-        <div className="p-6 lg:p-8">
+        <div className="admin-spacing-lg">
           {children}
         </div>
       </main>
