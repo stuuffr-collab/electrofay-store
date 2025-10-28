@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Eye } from 'lucide-react';
+import { Eye, ShoppingCart } from 'lucide-react';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 
@@ -18,11 +18,11 @@ const statusLabels: Record<string, string> = {
   cancelled: 'ملغي'
 };
 
-const statusColors: Record<string, string> = {
-  pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
-  confirmed: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
-  delivered: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
-  cancelled: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+const statusBadgeClasses: Record<string, string> = {
+  pending: 'admin-badge admin-badge-warning',
+  confirmed: 'admin-badge admin-badge-info',
+  delivered: 'admin-badge admin-badge-success',
+  cancelled: 'admin-badge admin-badge-error'
 };
 
 export default function AdminOrders() {
@@ -60,15 +60,20 @@ export default function AdminOrders() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">إدارة الطلبات</h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">
-              عرض وإدارة جميع الطلبات
-            </p>
-          </div>
-          
+      <div className="space-y-8 admin-animate-fade">
+        {/* Page Header */}
+        <div className="admin-spacing-md admin-header-gradient">
+          <h1 className="text-3xl font-bold flex items-center gap-3">
+            <ShoppingCart className="w-8 h-8" />
+            إدارة الطلبات
+          </h1>
+          <p className="text-white/90 mt-2 font-medium">
+            عرض وإدارة جميع الطلبات
+          </p>
+        </div>
+
+        {/* Filter */}
+        <div className="flex justify-end admin-animate-slide">
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger data-testid="select-status-filter" className="w-48">
               <SelectValue placeholder="تصفية حسب الحالة" />
@@ -83,37 +88,44 @@ export default function AdminOrders() {
           </Select>
         </div>
 
+        {/* Orders Table */}
         {isLoading ? (
-          <div className="text-center py-12">جاري التحميل...</div>
+          <div className="text-center py-12 admin-card admin-spacing-lg">
+            <div 
+              className="w-16 h-16 border-4 rounded-full animate-spin mx-auto mb-4" 
+              style={{ borderColor: 'var(--admin-accent-cyan)', borderTopColor: 'transparent' }}
+            ></div>
+            <p className="admin-text-secondary">جاري التحميل...</p>
+          </div>
         ) : (
-          <div className="bg-white dark:bg-gray-900 rounded-lg border">
-            <Table>
+          <div className="admin-card overflow-hidden admin-animate-slide" style={{ animationDelay: '0.1s' }}>
+            <Table className="admin-table">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-right">رقم الطلب</TableHead>
-                  <TableHead className="text-right">اسم العميل</TableHead>
-                  <TableHead className="text-right">الهاتف</TableHead>
-                  <TableHead className="text-right">المدينة</TableHead>
-                  <TableHead className="text-right">المبلغ الإجمالي</TableHead>
-                  <TableHead className="text-right">الحالة</TableHead>
-                  <TableHead className="text-right">التاريخ</TableHead>
-                  <TableHead className="text-right">إجراءات</TableHead>
+                  <TableHead className="text-right admin-text-secondary">رقم الطلب</TableHead>
+                  <TableHead className="text-right admin-text-secondary">اسم العميل</TableHead>
+                  <TableHead className="text-right admin-text-secondary">الهاتف</TableHead>
+                  <TableHead className="text-right admin-text-secondary">المدينة</TableHead>
+                  <TableHead className="text-right admin-text-secondary">المبلغ الإجمالي</TableHead>
+                  <TableHead className="text-right admin-text-secondary">الحالة</TableHead>
+                  <TableHead className="text-right admin-text-secondary">التاريخ</TableHead>
+                  <TableHead className="text-right admin-text-secondary">إجراءات</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredOrders.map((order: any) => (
                   <TableRow key={order.id} data-testid={`order-row-${order.id}`}>
-                    <TableCell className="font-medium">#{order.id}</TableCell>
-                    <TableCell>{order.customerName}</TableCell>
-                    <TableCell>{order.customerPhone}</TableCell>
-                    <TableCell>{order.customerCity}</TableCell>
-                    <TableCell>{order.totalAmount.toFixed(2)} د.ل</TableCell>
+                    <TableCell className="font-medium admin-text-primary">#{order.id}</TableCell>
+                    <TableCell className="admin-text-primary">{order.customerName}</TableCell>
+                    <TableCell className="admin-text-secondary">{order.customerPhone}</TableCell>
+                    <TableCell className="admin-text-secondary">{order.customerCity}</TableCell>
+                    <TableCell className="admin-text-primary font-semibold">{order.totalAmount.toFixed(2)} د.ل</TableCell>
                     <TableCell>
-                      <Badge className={statusColors[order.status]}>
+                      <span className={statusBadgeClasses[order.status]}>
                         {statusLabels[order.status]}
-                      </Badge>
+                      </span>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="admin-text-secondary">
                       {new Date(order.createdAt).toLocaleDateString('ar-LY')}
                     </TableCell>
                     <TableCell>
@@ -122,8 +134,9 @@ export default function AdminOrders() {
                         size="sm"
                         variant="outline"
                         onClick={() => setSelectedOrder(order)}
+                        className="admin-btn-secondary gap-1"
                       >
-                        <Eye className="w-4 h-4 mr-1" />
+                        <Eye className="w-4 h-4" />
                         عرض
                       </Button>
                     </TableCell>
@@ -136,128 +149,119 @@ export default function AdminOrders() {
 
         {/* Order Details Dialog */}
         <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto admin-card admin-scrollbar">
             <DialogHeader>
-              <DialogTitle>تفاصيل الطلب #{selectedOrder?.id}</DialogTitle>
+              <DialogTitle className="admin-text-primary text-2xl">
+                تفاصيل الطلب #{selectedOrder?.id}
+              </DialogTitle>
             </DialogHeader>
             
             {selectedOrder && (
               <div className="space-y-6">
                 {/* Customer Info */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">معلومات العميل</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
+                <div className="admin-card admin-spacing-md">
+                  <h3 className="admin-text-primary text-lg font-bold mb-4">معلومات العميل</h3>
+                  <div className="space-y-2">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <p className="text-sm text-gray-500">الاسم</p>
-                        <p className="font-medium">{selectedOrder.customerName}</p>
+                        <p className="text-sm admin-text-muted">الاسم</p>
+                        <p className="font-medium admin-text-primary">{selectedOrder.customerName}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-500">الهاتف</p>
-                        <p className="font-medium">{selectedOrder.customerPhone}</p>
+                        <p className="text-sm admin-text-muted">الهاتف</p>
+                        <p className="font-medium admin-text-primary">{selectedOrder.customerPhone}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-500">المدينة</p>
-                        <p className="font-medium">{selectedOrder.customerCity}</p>
+                        <p className="text-sm admin-text-muted">المدينة</p>
+                        <p className="font-medium admin-text-primary">{selectedOrder.customerCity}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-500">التاريخ</p>
-                        <p className="font-medium">
+                        <p className="text-sm admin-text-muted">التاريخ</p>
+                        <p className="font-medium admin-text-primary">
                           {new Date(selectedOrder.createdAt).toLocaleDateString('ar-LY')}
                         </p>
                       </div>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">العنوان</p>
-                      <p className="font-medium">{selectedOrder.customerAddress}</p>
+                      <p className="text-sm admin-text-muted">العنوان</p>
+                      <p className="font-medium admin-text-primary">{selectedOrder.customerAddress}</p>
                     </div>
                     {selectedOrder.orderNotes && (
                       <div>
-                        <p className="text-sm text-gray-500">ملاحظات</p>
-                        <p className="font-medium">{selectedOrder.orderNotes}</p>
+                        <p className="text-sm admin-text-muted">ملاحظات</p>
+                        <p className="font-medium admin-text-primary">{selectedOrder.orderNotes}</p>
                       </div>
                     )}
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
 
                 {/* Order Items */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">المنتجات</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {selectedOrder.items.map((item: any, index: number) => (
-                        <div
-                          key={index}
-                          className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
-                        >
-                          <div className="flex items-center gap-3">
-                            <img
-                              src={item.image}
-                              alt={item.name}
-                              className="w-12 h-12 object-cover rounded"
-                            />
-                            <div>
-                              <p className="font-medium">{item.name}</p>
-                              <p className="text-sm text-gray-500">
-                                الكمية: {item.quantity}
-                              </p>
-                            </div>
+                <div className="admin-card admin-spacing-md">
+                  <h3 className="admin-text-primary text-lg font-bold mb-4">المنتجات</h3>
+                  <div className="space-y-3">
+                    {selectedOrder.items.map((item: any, index: number) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-3 rounded-lg transition-all hover:bg-admin-card-hover-bg"
+                        style={{ background: 'rgba(255, 255, 255, 0.03)' }}
+                      >
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            className="w-12 h-12 object-cover rounded transition-transform hover:scale-110"
+                          />
+                          <div>
+                            <p className="font-medium admin-text-primary">{item.name}</p>
+                            <p className="text-sm admin-text-muted">
+                              الكمية: {item.quantity}
+                            </p>
                           </div>
-                          <p className="font-medium">
-                            {(item.price * item.quantity).toFixed(2)} د.ل
-                          </p>
                         </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                        <p className="font-medium admin-text-primary">
+                          {(item.price * item.quantity).toFixed(2)} د.ل
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
 
                 {/* Order Summary */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">ملخص الطلب</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
+                <div className="admin-card admin-spacing-md">
+                  <h3 className="admin-text-primary text-lg font-bold mb-4">ملخص الطلب</h3>
+                  <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">رسوم التوصيل</span>
-                      <span className="font-medium">{selectedOrder.deliveryFee} د.ل</span>
+                      <span className="admin-text-secondary">رسوم التوصيل</span>
+                      <span className="font-medium admin-text-primary">{selectedOrder.deliveryFee} د.ل</span>
                     </div>
-                    <div className="flex justify-between text-lg font-bold border-t pt-2">
-                      <span>المبلغ الإجمالي</span>
-                      <span>{selectedOrder.totalAmount.toFixed(2)} د.ل</span>
+                    <div className="flex justify-between text-lg font-bold border-t pt-2" style={{ borderColor: 'var(--admin-border)' }}>
+                      <span className="admin-text-primary">المبلغ الإجمالي</span>
+                      <span style={{ color: 'var(--admin-accent-cyan)' }}>{selectedOrder.totalAmount.toFixed(2)} د.ل</span>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
 
                 {/* Status Change */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">تغيير حالة الطلب</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex gap-2">
-                      <Select
-                        value={selectedOrder.status}
-                        onValueChange={(status) => handleStatusChange(selectedOrder.id, status)}
-                        disabled={updateStatusMutation.isPending}
-                      >
-                        <SelectTrigger data-testid="select-order-status">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="pending">قيد الانتظار</SelectItem>
-                          <SelectItem value="confirmed">مؤكد</SelectItem>
-                          <SelectItem value="delivered">تم التوصيل</SelectItem>
-                          <SelectItem value="cancelled">ملغي</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className="admin-card admin-spacing-md">
+                  <h3 className="admin-text-primary text-lg font-bold mb-4">تغيير حالة الطلب</h3>
+                  <div className="flex gap-2">
+                    <Select
+                      value={selectedOrder.status}
+                      onValueChange={(status) => handleStatusChange(selectedOrder.id, status)}
+                      disabled={updateStatusMutation.isPending}
+                    >
+                      <SelectTrigger data-testid="select-order-status">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pending">قيد الانتظار</SelectItem>
+                        <SelectItem value="confirmed">مؤكد</SelectItem>
+                        <SelectItem value="delivered">تم التوصيل</SelectItem>
+                        <SelectItem value="cancelled">ملغي</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
               </div>
             )}
           </DialogContent>

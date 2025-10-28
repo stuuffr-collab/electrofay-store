@@ -51,50 +51,51 @@ export function Sidebar({ onLogout, username }: SidebarProps) {
           const isActive = location === item.path;
           
           return (
-            <Link 
-              key={item.path} 
-              href={item.path}
-              onClick={() => setMobileOpen(false)}
-            >
-              <a
-                data-testid={item.testId}
-                className={cn(
-                  "flex items-center gap-4 px-5 py-4 rounded-xl transition-all duration-300 relative",
-                  isActive
-                    ? "admin-text-primary font-semibold"
-                    : "admin-text-secondary font-medium hover:admin-text-primary"
-                )}
-                style={{
-                  background: isActive ? 'rgba(0, 188, 212, 0.15)' : 'transparent',
-                  borderRight: isActive ? '3px solid var(--admin-accent-cyan)' : 'none',
-                  transform: isActive ? 'translateX(-4px)' : 'none',
-                }}
-                onMouseEnter={(e) => {
-                  if (!isActive) {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
-                    e.currentTarget.style.transform = 'translateX(-4px)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isActive) {
-                    e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.transform = 'none';
-                  }
-                }}
+            <div key={item.path}>
+              <Link 
+                href={item.path}
+                onClick={() => setMobileOpen(false)}
               >
-                <Icon 
-                  className="w-6 h-6" 
-                  style={{ color: isActive ? 'var(--admin-accent-cyan)' : 'var(--admin-text-secondary)' }}
-                />
-                <span className="text-[15px]">{item.label}</span>
-                {isActive && (
-                  <div 
-                    className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-3/4 rounded-r-md"
-                    style={{ background: 'var(--admin-gradient-header)' }}
+                <div
+                  data-testid={item.testId}
+                  className={cn(
+                    "flex items-center gap-4 px-5 py-4 rounded-xl transition-all duration-300 relative cursor-pointer",
+                    isActive
+                      ? "admin-text-primary font-semibold"
+                      : "admin-text-secondary font-medium hover:admin-text-primary"
+                  )}
+                  style={{
+                    background: isActive ? 'rgba(0, 188, 212, 0.15)' : 'transparent',
+                    borderRight: isActive ? '3px solid var(--admin-accent-cyan)' : 'none',
+                    transform: isActive ? 'translateX(-4px)' : 'none',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
+                      e.currentTarget.style.transform = 'translateX(-4px)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.background = 'transparent';
+                      e.currentTarget.style.transform = 'none';
+                    }
+                  }}
+                >
+                  <Icon 
+                    className="w-6 h-6" 
+                    style={{ color: isActive ? 'var(--admin-accent-cyan)' : 'var(--admin-text-secondary)' }}
                   />
-                )}
-              </a>
-            </Link>
+                  <span className="text-[15px]">{item.label}</span>
+                  {isActive && (
+                    <div 
+                      className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-3/4 rounded-r-md"
+                      style={{ background: 'var(--admin-gradient-header)' }}
+                    />
+                  )}
+                </div>
+              </Link>
+            </div>
           );
         })}
       </nav>

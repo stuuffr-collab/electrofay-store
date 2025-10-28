@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { DollarSign, Save } from 'lucide-react';
+import { DollarSign, Save, Settings as SettingsIcon, Store } from 'lucide-react';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 
@@ -62,32 +62,38 @@ export default function AdminSettings() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6 max-w-4xl">
-        <div>
-          <h1 className="text-3xl font-bold">الإعدادات</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">
+      <div className="space-y-8 max-w-4xl admin-animate-fade">
+        {/* Page Header */}
+        <div className="admin-spacing-md admin-header-gradient">
+          <h1 className="text-3xl font-bold flex items-center gap-3">
+            <SettingsIcon className="w-8 h-8" />
+            الإعدادات
+          </h1>
+          <p className="text-white/90 mt-2 font-medium">
             إدارة إعدادات المتجر العامة
           </p>
         </div>
 
         {/* Exchange Rate Setting */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
-                <DollarSign className="w-5 h-5 text-green-600 dark:text-green-400" />
-              </div>
-              <div>
-                <CardTitle>سعر الصرف</CardTitle>
-                <CardDescription>
-                  سعر الصرف من الدولار الأمريكي إلى الدينار الليبي (USD → LYD)
-                </CardDescription>
-              </div>
+        <div className="admin-card admin-spacing-md admin-animate-slide">
+          <div className="flex items-center gap-3 mb-6">
+            <div 
+              className="admin-stat-icon"
+              style={{ background: 'rgba(16, 185, 129, 0.15)', color: 'rgb(16, 185, 129)' }}
+            >
+              <DollarSign className="w-5 h-5" />
             </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
+            <div>
+              <h2 className="text-xl font-bold admin-text-primary">سعر الصرف</h2>
+              <p className="admin-text-secondary text-sm">
+                سعر الصرف من الدولار الأمريكي إلى الدينار الليبي (USD → LYD)
+              </p>
+            </div>
+          </div>
+          
+          <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="exchange-rate">سعر الصرف (1 USD = ? LYD)</Label>
+              <Label htmlFor="exchange-rate" className="admin-text-secondary">سعر الصرف (1 USD = ? LYD)</Label>
               <div className="flex gap-3">
                 <Input
                   id="exchange-rate"
@@ -97,93 +103,108 @@ export default function AdminSettings() {
                   value={exchangeRate}
                   onChange={(e) => setExchangeRate(e.target.value)}
                   placeholder="5.10"
-                  className="max-w-xs"
+                  className="max-w-xs admin-input"
                 />
                 <Button
                   data-testid="button-save-exchange-rate"
                   onClick={handleSaveExchangeRate}
                   disabled={updateSettingsMutation.isPending}
-                  className="gap-2"
+                  className="gap-2 admin-btn-primary"
                 >
                   <Save className="w-4 h-4" />
                   {updateSettingsMutation.isPending ? 'جاري الحفظ...' : 'حفظ'}
                 </Button>
               </div>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm admin-text-muted">
                 سيتم تحديث أسعار جميع المنتجات تلقائياً بناءً على سعر الصرف الجديد
               </p>
             </div>
 
             {/* Current Rate Display */}
-            <div className="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-lg">
-              <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+            <div 
+              className="p-4 rounded-lg admin-card"
+              style={{ background: 'rgba(16, 185, 129, 0.1)' }}
+            >
+              <p className="text-sm font-medium admin-text-secondary">
                 سعر الصرف الحالي
               </p>
-              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">
+              <p className="text-2xl font-bold mt-1" style={{ color: 'rgb(16, 185, 129)' }}>
                 1 USD = {exchangeRate} LYD
               </p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Store Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>معلومات المتجر</CardTitle>
-            <CardDescription>
-              معلومات أساسية عن المتجر
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <div className="admin-card admin-spacing-md admin-animate-slide" style={{ animationDelay: '0.1s' }}>
+          <div className="flex items-center gap-3 mb-6">
+            <div 
+              className="admin-stat-icon"
+              style={{ background: 'rgba(0, 188, 212, 0.15)', color: 'var(--admin-accent-cyan)' }}
+            >
+              <Store className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold admin-text-primary">معلومات المتجر</h2>
+              <p className="admin-text-secondary text-sm">
+                معلومات أساسية عن المتجر
+              </p>
+            </div>
+          </div>
+          
+          <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>اسم المتجر</Label>
+                <Label className="admin-text-secondary">اسم المتجر</Label>
                 <Input 
                   data-testid="input-store-name"
                   value="Electrofy Store" 
                   readOnly 
-                  className="bg-gray-50 dark:bg-gray-800"
+                  className="admin-input opacity-60"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label>البريد الإلكتروني</Label>
+                <Label className="admin-text-secondary">البريد الإلكتروني</Label>
                 <Input 
                   data-testid="input-store-email"
                   value="info@electrofy.ly" 
                   readOnly 
-                  className="bg-gray-50 dark:bg-gray-800"
+                  className="admin-input opacity-60"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label>رقم الهاتف</Label>
+                <Label className="admin-text-secondary">رقم الهاتف</Label>
                 <Input 
                   data-testid="input-store-phone"
                   value="+218 91 234 5678" 
                   readOnly 
-                  className="bg-gray-50 dark:bg-gray-800"
+                  className="admin-input opacity-60"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label>المدينة</Label>
+                <Label className="admin-text-secondary">المدينة</Label>
                 <Input 
                   data-testid="input-store-city"
                   value="طرابلس، ليبيا" 
                   readOnly 
-                  className="bg-gray-50 dark:bg-gray-800"
+                  className="admin-input opacity-60"
                 />
               </div>
             </div>
 
-            <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+            <div 
+              className="p-4 rounded-lg admin-card"
+              style={{ background: 'rgba(0, 188, 212, 0.05)' }}
+            >
+              <p className="text-sm admin-text-secondary">
                 💡 لتعديل معلومات المتجر، يرجى التواصل مع المطور أو تحديث قاعدة البيانات مباشرة.
               </p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </AdminLayout>
   );

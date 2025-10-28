@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Plus, Pencil, Trash2, Search } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, Package } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -156,15 +156,20 @@ export default function AdminProducts() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">إدارة المنتجات</h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">
-              إضافة وتعديل وحذف المنتجات
-            </p>
-          </div>
-          
+      <div className="space-y-8 admin-animate-fade">
+        {/* Page Header */}
+        <div className="admin-spacing-md admin-header-gradient">
+          <h1 className="text-3xl font-bold flex items-center gap-3">
+            <Package className="w-8 h-8" />
+            إدارة المنتجات
+          </h1>
+          <p className="text-white/90 mt-2 font-medium">
+            إضافة وتعديل وحذف المنتجات
+          </p>
+        </div>
+
+        {/* Action Bar */}
+        <div className="flex items-center justify-between admin-animate-slide">
           <Dialog open={dialogOpen} onOpenChange={(open) => {
             setDialogOpen(open);
             if (!open) {
@@ -173,14 +178,14 @@ export default function AdminProducts() {
             }
           }}>
             <DialogTrigger asChild>
-              <Button data-testid="button-add-product" className="gap-2">
+              <Button data-testid="button-add-product" className="gap-2 admin-btn-primary">
                 <Plus className="w-4 h-4" />
                 إضافة منتج جديد
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto admin-card">
               <DialogHeader>
-                <DialogTitle>
+                <DialogTitle className="admin-text-primary">
                   {editingProduct ? 'تعديل المنتج' : 'إضافة منتج جديد'}
                 </DialogTitle>
               </DialogHeader>
@@ -193,9 +198,9 @@ export default function AdminProducts() {
                       name="id"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>معرف المنتج (ID)</FormLabel>
+                          <FormLabel className="admin-text-secondary">معرف المنتج (ID)</FormLabel>
                           <FormControl>
-                            <Input {...field} data-testid="input-product-id" disabled={!!editingProduct} />
+                            <Input {...field} data-testid="input-product-id" disabled={!!editingProduct} className="admin-input" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -207,7 +212,7 @@ export default function AdminProducts() {
                       name="basePriceUsd"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>السعر بالدولار</FormLabel>
+                          <FormLabel className="admin-text-secondary">السعر بالدولار</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -215,6 +220,7 @@ export default function AdminProducts() {
                               {...field}
                               data-testid="input-price"
                               onChange={e => field.onChange(parseFloat(e.target.value))}
+                              className="admin-input"
                             />
                           </FormControl>
                           <FormMessage />
@@ -229,9 +235,9 @@ export default function AdminProducts() {
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>الاسم بالعربية</FormLabel>
+                          <FormLabel className="admin-text-secondary">الاسم بالعربية</FormLabel>
                           <FormControl>
-                            <Input {...field} data-testid="input-name-ar" />
+                            <Input {...field} data-testid="input-name-ar" className="admin-input" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -243,9 +249,9 @@ export default function AdminProducts() {
                       name="nameEn"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>الاسم بالإنجليزية</FormLabel>
+                          <FormLabel className="admin-text-secondary">الاسم بالإنجليزية</FormLabel>
                           <FormControl>
-                            <Input {...field} data-testid="input-name-en" />
+                            <Input {...field} data-testid="input-name-en" className="admin-input" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -259,9 +265,9 @@ export default function AdminProducts() {
                       name="description"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>الوصف بالعربية</FormLabel>
+                          <FormLabel className="admin-text-secondary">الوصف بالعربية</FormLabel>
                           <FormControl>
-                            <Textarea {...field} data-testid="input-desc-ar" rows={3} />
+                            <Textarea {...field} data-testid="input-desc-ar" rows={3} className="admin-input" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -273,9 +279,9 @@ export default function AdminProducts() {
                       name="descriptionEn"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>الوصف بالإنجليزية</FormLabel>
+                          <FormLabel className="admin-text-secondary">الوصف بالإنجليزية</FormLabel>
                           <FormControl>
-                            <Textarea {...field} data-testid="input-desc-en" rows={3} />
+                            <Textarea {...field} data-testid="input-desc-en" rows={3} className="admin-input" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -289,7 +295,7 @@ export default function AdminProducts() {
                       name="categoryId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>القسم الرئيسي</FormLabel>
+                          <FormLabel className="admin-text-secondary">القسم الرئيسي</FormLabel>
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger data-testid="select-category">
@@ -314,7 +320,7 @@ export default function AdminProducts() {
                       name="subcategoryId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>القسم الفرعي</FormLabel>
+                          <FormLabel className="admin-text-secondary">القسم الفرعي</FormLabel>
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger data-testid="select-subcategory">
@@ -340,9 +346,9 @@ export default function AdminProducts() {
                     name="image"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>رابط الصورة</FormLabel>
+                        <FormLabel className="admin-text-secondary">رابط الصورة</FormLabel>
                         <FormControl>
-                          <Input {...field} data-testid="input-image" placeholder="https://..." />
+                          <Input {...field} data-testid="input-image" placeholder="https://..." className="admin-input" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -354,13 +360,14 @@ export default function AdminProducts() {
                     name="stockCount"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>الكمية في المخزون</FormLabel>
+                        <FormLabel className="admin-text-secondary">الكمية في المخزون</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
                             {...field}
                             data-testid="input-stock"
                             onChange={e => field.onChange(parseInt(e.target.value))}
+                            className="admin-input"
                           />
                         </FormControl>
                         <FormMessage />
@@ -373,9 +380,9 @@ export default function AdminProducts() {
                       control={form.control}
                       name="inStock"
                       render={({ field }) => (
-                        <FormItem className="flex items-center justify-between rounded-lg border p-4">
+                        <FormItem className="flex items-center justify-between rounded-lg border border-admin-border p-4 admin-card">
                           <div>
-                            <FormLabel>متوفر في المخزون</FormLabel>
+                            <FormLabel className="admin-text-secondary">متوفر في المخزون</FormLabel>
                           </div>
                           <FormControl>
                             <Switch
@@ -392,9 +399,9 @@ export default function AdminProducts() {
                       control={form.control}
                       name="isActive"
                       render={({ field }) => (
-                        <FormItem className="flex items-center justify-between rounded-lg border p-4">
+                        <FormItem className="flex items-center justify-between rounded-lg border border-admin-border p-4 admin-card">
                           <div>
-                            <FormLabel>نشط</FormLabel>
+                            <FormLabel className="admin-text-secondary">نشط</FormLabel>
                           </div>
                           <FormControl>
                             <Switch
@@ -413,7 +420,7 @@ export default function AdminProducts() {
                       data-testid="button-save-product"
                       type="submit"
                       disabled={createMutation.isPending || updateMutation.isPending}
-                      className="flex-1"
+                      className="flex-1 admin-btn-primary"
                     >
                       {createMutation.isPending || updateMutation.isPending ? 'جاري الحفظ...' : 'حفظ'}
                     </Button>
@@ -421,6 +428,7 @@ export default function AdminProducts() {
                       type="button"
                       variant="outline"
                       onClick={() => setDialogOpen(false)}
+                      className="admin-btn-secondary"
                     >
                       إلغاء
                     </Button>
@@ -431,15 +439,16 @@ export default function AdminProducts() {
           </Dialog>
         </div>
 
-        <div className="flex gap-4">
+        {/* Search and Filter */}
+        <div className="flex gap-4 admin-animate-slide" style={{ animationDelay: '0.1s' }}>
           <div className="relative flex-1">
-            <Search className="absolute right-3 top-3 w-4 h-4 text-gray-400" />
+            <Search className="absolute right-3 top-3 w-4 h-4" style={{ color: 'var(--admin-text-muted)' }} />
             <Input
               data-testid="input-search"
               placeholder="بحث عن منتج..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pr-10"
+              className="pr-10 admin-input"
             />
           </div>
           <Select value={selectedCategory} onValueChange={setSelectedCategory}>
@@ -457,20 +466,27 @@ export default function AdminProducts() {
           </Select>
         </div>
 
+        {/* Products Table */}
         {isLoading ? (
-          <div className="text-center py-12">جاري التحميل...</div>
+          <div className="text-center py-12 admin-card admin-spacing-lg">
+            <div 
+              className="w-16 h-16 border-4 rounded-full animate-spin mx-auto mb-4" 
+              style={{ borderColor: 'var(--admin-accent-cyan)', borderTopColor: 'transparent' }}
+            ></div>
+            <p className="admin-text-secondary">جاري التحميل...</p>
+          </div>
         ) : (
-          <div className="bg-white dark:bg-gray-900 rounded-lg border">
-            <Table>
+          <div className="admin-card overflow-hidden admin-animate-slide" style={{ animationDelay: '0.2s' }}>
+            <Table className="admin-table">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-right">صورة</TableHead>
-                  <TableHead className="text-right">الاسم</TableHead>
-                  <TableHead className="text-right">السعر (USD)</TableHead>
-                  <TableHead className="text-right">المخزون</TableHead>
-                  <TableHead className="text-right">القسم</TableHead>
-                  <TableHead className="text-right">الحالة</TableHead>
-                  <TableHead className="text-right">إجراءات</TableHead>
+                  <TableHead className="text-right admin-text-secondary">صورة</TableHead>
+                  <TableHead className="text-right admin-text-secondary">الاسم</TableHead>
+                  <TableHead className="text-right admin-text-secondary">السعر (USD)</TableHead>
+                  <TableHead className="text-right admin-text-secondary">المخزون</TableHead>
+                  <TableHead className="text-right admin-text-secondary">القسم</TableHead>
+                  <TableHead className="text-right admin-text-secondary">الحالة</TableHead>
+                  <TableHead className="text-right admin-text-secondary">إجراءات</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -480,24 +496,26 @@ export default function AdminProducts() {
                       <img
                         src={product.image}
                         alt={product.name}
-                        className="w-12 h-12 object-cover rounded"
+                        className="w-12 h-12 object-cover rounded transition-transform hover:scale-110"
                       />
                     </TableCell>
                     <TableCell>
                       <div>
-                        <p className="font-medium">{product.name}</p>
-                        <p className="text-sm text-gray-500">{product.nameEn}</p>
+                        <p className="font-medium admin-text-primary">{product.name}</p>
+                        <p className="text-sm admin-text-muted">{product.nameEn}</p>
                       </div>
                     </TableCell>
-                    <TableCell>${product.basePriceUsd}</TableCell>
-                    <TableCell>{product.stockCount}</TableCell>
-                    <TableCell>
+                    <TableCell className="admin-text-primary font-semibold">${product.basePriceUsd}</TableCell>
+                    <TableCell className="admin-text-primary">{product.stockCount}</TableCell>
+                    <TableCell className="admin-text-secondary">
                       {categories.find(c => c.id === product.categoryId)?.name}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={product.isActive ? 'default' : 'secondary'}>
-                        {product.isActive ? 'نشط' : 'غير نشط'}
-                      </Badge>
+                      {product.isActive ? (
+                        <span className="admin-badge admin-badge-success">نشط</span>
+                      ) : (
+                        <span className="admin-badge admin-badge-error">غير نشط</span>
+                      )}
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
@@ -506,6 +524,7 @@ export default function AdminProducts() {
                           size="sm"
                           variant="outline"
                           onClick={() => handleEdit(product)}
+                          className="admin-btn-secondary"
                         >
                           <Pencil className="w-4 h-4" />
                         </Button>
