@@ -31,20 +31,22 @@ export function Sidebar({ onLogout, username }: SidebarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const SidebarContent = () => (
-    <div className="flex flex-col h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800">
+    <div className="flex flex-col h-full admin-sidebar-bg border-r" style={{ borderColor: 'var(--admin-border)' }}>
       {/* Header */}
-      <div className="p-6 border-b border-gray-200 dark:border-gray-800">
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-          Electrofy Admin
-        </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+      <div className="admin-spacing-md border-b admin-animate-fade" style={{ borderColor: 'var(--admin-border)' }}>
+        <div className="admin-header-gradient text-center">
+          <h1 className="text-2xl font-bold">
+            Electrofy Admin
+          </h1>
+        </div>
+        <p className="text-sm admin-text-secondary mt-3 text-center font-medium">
           مرحباً، {username || 'Admin'}
         </p>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2">
-        {menuItems.map((item) => {
+      <nav className="flex-1 admin-spacing-md space-y-3 admin-animate-slide">
+        {menuItems.map((item, index) => {
           const Icon = item.icon;
           const isActive = location === item.path;
           
@@ -57,14 +59,40 @@ export function Sidebar({ onLogout, username }: SidebarProps) {
               <a
                 data-testid={item.testId}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-lg transition-all",
+                  "flex items-center gap-4 px-5 py-4 rounded-xl transition-all duration-300 relative",
                   isActive
-                    ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium"
-                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    ? "admin-text-primary font-semibold"
+                    : "admin-text-secondary font-medium hover:admin-text-primary"
                 )}
+                style={{
+                  background: isActive ? 'rgba(0, 188, 212, 0.15)' : 'transparent',
+                  borderRight: isActive ? '3px solid var(--admin-accent-cyan)' : 'none',
+                  transform: isActive ? 'translateX(-4px)' : 'none',
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
+                    e.currentTarget.style.transform = 'translateX(-4px)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.transform = 'none';
+                  }
+                }}
               >
-                <Icon className="w-5 h-5" />
-                <span>{item.label}</span>
+                <Icon 
+                  className="w-6 h-6" 
+                  style={{ color: isActive ? 'var(--admin-accent-cyan)' : 'var(--admin-text-secondary)' }}
+                />
+                <span className="text-[15px]">{item.label}</span>
+                {isActive && (
+                  <div 
+                    className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-3/4 rounded-r-md"
+                    style={{ background: 'var(--admin-gradient-header)' }}
+                  />
+                )}
               </a>
             </Link>
           );
@@ -72,15 +100,24 @@ export function Sidebar({ onLogout, username }: SidebarProps) {
       </nav>
 
       {/* Logout Button */}
-      <div className="p-4 border-t border-gray-200 dark:border-gray-800">
+      <div className="admin-spacing-md border-t" style={{ borderColor: 'var(--admin-border)' }}>
         <Button
           data-testid="button-logout"
           onClick={onLogout}
           variant="ghost"
-          className="w-full justify-start gap-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+          className="w-full justify-start gap-4 px-5 py-4 rounded-xl text-red-400 hover:text-red-300 font-medium transition-all duration-300"
+          style={{
+            background: 'transparent',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'rgba(239, 68, 68, 0.15)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'transparent';
+          }}
         >
-          <LogOut className="w-5 h-5" />
-          <span>تسجيل الخروج</span>
+          <LogOut className="w-6 h-6" />
+          <span className="text-[15px]">تسجيل الخروج</span>
         </Button>
       </div>
     </div>
