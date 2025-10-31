@@ -40,7 +40,8 @@ router.post('/login', async (req: Request, res: Response) => {
       return res.status(403).json({ error: 'هذا الحساب غير نشط' });
     }
 
-    const isValidPassword = await bcrypt.compare(password, adminUser.password);
+    // Simple password comparison without encryption
+    const isValidPassword = password === adminUser.password;
     console.log('كلمة المرور صحيحة:', isValidPassword);
 
     if (!isValidPassword) {
@@ -113,12 +114,11 @@ router.post('/setup-first-admin', async (req: Request, res: Response) => {
     }
 
     console.log('🔐 إنشاء أول حساب إدمن...');
-    const hashedPassword = await bcrypt.hash(password, 10);
 
     const [newAdmin] = await db.insert(adminUsers).values({
       username,
       email,
-      password: hashedPassword,
+      password: password,
       role: 'admin',
       isActive: true,
     }).returning();

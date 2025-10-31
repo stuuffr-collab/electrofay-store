@@ -18,9 +18,6 @@ async function createAdminUser() {
   const email = process.env.ADMIN_EMAIL || 'admin@electrofy.com';
 
   try {
-    console.log('🔐 جاري تشفير كلمة المرور...');
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     console.log('📝 جاري إنشاء حساب المدير في Supabase...');
     
     const { data, error } = await supabase
@@ -28,7 +25,7 @@ async function createAdminUser() {
       .insert({
         username,
         email,
-        password: hashedPassword,
+        password: password,
         role: 'admin',
         is_active: true,
       })
@@ -43,7 +40,7 @@ async function createAdminUser() {
         
         const { data: updateData, error: updateError } = await supabase
           .from('admin_users')
-          .update({ password: hashedPassword })
+          .update({ password: password })
           .eq('username', username)
           .select()
           .single();

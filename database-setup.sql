@@ -136,9 +136,8 @@ ON CONFLICT DO NOTHING;
 -- Insert default admin account
 -- Username: admin
 -- Password: admin123
--- IMPORTANT: Change the password after first login
 INSERT INTO public.admin_users (email, username, password, role, is_active) VALUES
-('admin@electrofy.ly', 'admin', '$2a$10$rOvHPZQxlhXQH0KXLnU8l.xN3C/YJ7LrT8zGF0kYXzFW2k4UqvKSK', 'admin', true)
+('admin@electrofy.ly', 'admin', 'admin123', 'admin', true)
 ON CONFLICT (username) DO UPDATE
 SET password = EXCLUDED.password,
     is_active = true;
