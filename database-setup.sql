@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS public.admin_users (
     id SERIAL PRIMARY KEY,
     email TEXT NOT NULL UNIQUE,
     username TEXT NOT NULL UNIQUE,
-    password_hash TEXT NOT NULL,
+    password TEXT NOT NULL,
     role TEXT NOT NULL DEFAULT 'admin',
     is_active BOOLEAN NOT NULL DEFAULT true,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
@@ -137,10 +137,10 @@ ON CONFLICT DO NOTHING;
 -- Username: admin
 -- Password: admin123
 -- IMPORTANT: Change the password after first login
-INSERT INTO public.admin_users (email, username, password_hash, role, is_active) VALUES
+INSERT INTO public.admin_users (email, username, password, role, is_active) VALUES
 ('admin@electrofy.ly', 'admin', '$2a$10$rOvHPZQxlhXQH0KXLnU8l.xN3C/YJ7LrT8zGF0kYXzFW2k4UqvKSK', 'admin', true)
 ON CONFLICT (username) DO UPDATE
-SET password_hash = EXCLUDED.password_hash,
+SET password = EXCLUDED.password,
     is_active = true;
 
 -- Insert sample gaming products data

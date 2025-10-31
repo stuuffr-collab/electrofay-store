@@ -19,7 +19,7 @@ async function createAdminUser() {
 
   try {
     console.log('🔐 جاري تشفير كلمة المرور...');
-    const passwordHash = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     console.log('📝 جاري إنشاء حساب المدير في Supabase...');
     
@@ -28,7 +28,7 @@ async function createAdminUser() {
       .insert({
         username,
         email,
-        password_hash: passwordHash,
+        password: hashedPassword,
         role: 'admin',
         is_active: true,
       })
@@ -43,7 +43,7 @@ async function createAdminUser() {
         
         const { data: updateData, error: updateError } = await supabase
           .from('admin_users')
-          .update({ password_hash: passwordHash })
+          .update({ password: hashedPassword })
           .eq('username', username)
           .select()
           .single();

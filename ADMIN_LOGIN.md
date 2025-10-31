@@ -68,7 +68,7 @@ WHERE username = 'admin';
 
 ```sql
 UPDATE admin_users 
-SET password_hash = '$2a$10$rOvHPZQxlhXQH0KXLnU8l.xN3C/YJ7LrT8zGF0kYXzFW2k4UqvKSK'
+SET password = '$2a$10$rOvHPZQxlhXQH0KXLnU8l.xN3C/YJ7LrT8zGF0kYXzFW2k4UqvKSK'
 WHERE username = 'admin';
 ```
 

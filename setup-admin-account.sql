@@ -8,7 +8,7 @@ ALTER TABLE admin_users DISABLE ROW LEVEL SECURITY;
 -- DELETE FROM admin_users WHERE username = 'admin';
 
 -- إنشاء حساب admin مع كلمة مرور مشفرة
-INSERT INTO admin_users (username, email, password_hash, role, is_active)
+INSERT INTO admin_users (username, email, password, role, is_active)
 VALUES (
   'admin',
   'admin@electrofy.com',
@@ -17,7 +17,7 @@ VALUES (
   true
 )
 ON CONFLICT (username) DO UPDATE
-SET password_hash = EXCLUDED.password_hash,
+SET password = EXCLUDED.password,
     is_active = true;
 
 -- إعادة تفعيل RLS

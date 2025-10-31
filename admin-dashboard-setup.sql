@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS admin_users (
   id SERIAL PRIMARY KEY,
   email TEXT NOT NULL UNIQUE,
   username TEXT NOT NULL UNIQUE,
-  password_hash TEXT NOT NULL,
+  password TEXT NOT NULL,
   role TEXT NOT NULL DEFAULT 'admin',
   is_active BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMP DEFAULT NOW(),
@@ -28,7 +28,7 @@ CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at DESC);
 -- 4. إضافة مسؤول افتراضي (كلمة المرور: admin123)
 -- يجب تغيير كلمة المرور بعد تسجيل الدخول الأول
 -- كلمة المرور المشفرة باستخدام bcrypt
-INSERT INTO admin_users (email, username, password_hash, role)
+INSERT INTO admin_users (email, username, password, role)
 VALUES ('admin@electrofy.ly', 'admin', '$2a$10$rOvHPZQxlhXQH0KXLnU8l.xN3C/YJ7LrT8zGF0kYXzFW2k4UqvKSK', 'admin')
 ON CONFLICT (email) DO NOTHING;
 

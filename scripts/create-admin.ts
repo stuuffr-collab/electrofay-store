@@ -19,12 +19,12 @@ async function createAdmin() {
       process.exit(1);
     }
 
-    const passwordHash = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const [newAdmin] = await db.insert(adminUsers).values({
       username,
       email,
-      passwordHash,
+      password: hashedPassword,
       role: 'admin',
       isActive: true,
     }).returning();
