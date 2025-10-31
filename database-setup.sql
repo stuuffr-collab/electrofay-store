@@ -62,6 +62,18 @@ CREATE TABLE IF NOT EXISTS public.contact_messages (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
+-- Create admin_users table for dashboard access
+CREATE TABLE IF NOT EXISTS public.admin_users (
+    id SERIAL PRIMARY KEY,
+    email TEXT NOT NULL UNIQUE,
+    username TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'admin',
+    is_active BOOLEAN NOT NULL DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+    last_login TIMESTAMP WITH TIME ZONE
+);
+
 -- Create storage bucket for product images
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('product-images', 'product-images', true)
@@ -86,6 +98,9 @@ CREATE POLICY "Allow public insert to orders" ON public.orders
 ALTER TABLE public.contact_messages ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow public insert to contact messages" ON public.contact_messages
     FOR INSERT WITH CHECK (true);
+
+-- Enable RLS for admin_users (only admins can access)
+ALTER TABLE public.admin_users ENABLE ROW LEVEL SECURITY;
 
 -- Storage policy for product images
 CREATE POLICY "Public Access" ON storage.objects FOR SELECT USING (bucket_id = 'product-images');
@@ -117,6 +132,16 @@ INSERT INTO public.cities (name, name_en, delivery_fee, is_active) VALUES
 ('تاجوراء', 'Tajoura', 5, true),
 ('العزيزية', 'Al Aziziyah', 8, true)
 ON CONFLICT DO NOTHING;
+
+-- Insert default admin account
+-- Username: admin
+-- Password: admin123
+-- IMPORTANT: Change the password after first login
+INSERT INTO public.admin_users (email, username, password_hash, role, is_active) VALUES
+('admin@electrofy.ly', 'admin', '$2a$10$rOvHPZQxlhXQH0KXLnU8l.xN3C/YJ7LrT8zGF0kYXzFW2k4UqvKSK', 'admin', true)
+ON CONFLICT (username) DO UPDATE
+SET password_hash = EXCLUDED.password_hash,
+    is_active = true;
 
 -- Insert sample gaming products data
 INSERT INTO public.products (id, name, name_en, description, description_en, price, original_price, category, image, rating, badges, in_stock, stock_count, is_active) VALUES
