@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { Button } from '@/components/ui/button';
@@ -10,13 +10,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Plus, Pencil, Trash2, Search, Package } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, Package, Upload, Image as ImageIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { categories } from '@/lib/categories';
+import { uploadImageToSupabase } from '@/lib/imageUpload';
 
 const productSchema = z.object({
   id: z.string().min(1, 'معرف المنتج مطلوب'),
@@ -40,6 +41,9 @@ export default function AdminProducts() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const { data: products, isLoading } = useQuery({
@@ -75,6 +79,7 @@ export default function AdminProducts() {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/products'] });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
       setDialogOpen(false);
       form.reset();
       toast({ title: 'تم إضافة المنتج بنجاح' });
@@ -92,6 +97,7 @@ export default function AdminProducts() {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/products'] });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
       setDialogOpen(false);
       setEditingProduct(null);
       form.reset();
@@ -107,6 +113,7 @@ export default function AdminProducts() {
       apiRequest(`/api/admin/products/${id}`, { method: 'DELETE' }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/products'] });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
       toast({ title: 'تم حذف المنتج بنجاح' });
     },
     onError: () => {
@@ -144,6 +151,48 @@ export default function AdminProducts() {
   const handleDelete = (id: string) => {
     if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
       deleteMutation.mutate(id);
+    }
+  };
+
+  const handleImageUpload = async () => {
+    if (!selectedImage) {
+      toast({ title: 'الرجاء اختيار صورة أولاً', variant: 'destructive' });
+      return;
+    }
+
+    setUploadingImage(true);
+    try {
+      const result = await uploadImageToSupabase(selectedImage);
+      
+      if (result.success && result.url) {
+        form.setValue('image', result.url);
+        setSelectedImage(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        toast({ title: 'تم رفع الصورة بنجاح' });
+      } else {
+        toast({ 
+          title: 'فشل في رفع الصورة', 
+          description: result.error || 'حدث خطأ غير معروف',
+          variant: 'destructive' 
+        });
+      }
+    } catch (error) {
+      toast({ title: 'فشل في رفع الصورة', variant: 'destructive' });
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast({ title: 'حجم الصورة كبير جداً (الحد الأقصى 5MB)', variant: 'destructive' });
+        return;
+      }
+      setSelectedImage(file);
     }
   };
 
@@ -346,10 +395,61 @@ export default function AdminProducts() {
                     name="image"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="admin-text-secondary">رابط الصورة</FormLabel>
-                        <FormControl>
-                          <Input {...field} data-testid="input-image" placeholder="https://..." className="admin-input" />
-                        </FormControl>
+                        <FormLabel className="admin-text-secondary">صورة المنتج</FormLabel>
+                        <div className="space-y-3">
+                          <div className="flex gap-2">
+                            <input
+                              ref={fileInputRef}
+                              type="file"
+                              accept="image/*"
+                              onChange={handleFileSelect}
+                              className="hidden"
+                              data-testid="input-file"
+                            />
+                            <Button
+                              type="button"
+                              onClick={() => fileInputRef.current?.click()}
+                              className="gap-2"
+                              variant="outline"
+                              data-testid="button-select-image"
+                            >
+                              <ImageIcon className="w-4 h-4" />
+                              {selectedImage ? selectedImage.name : 'اختر صورة من الجهاز'}
+                            </Button>
+                            {selectedImage && (
+                              <Button
+                                type="button"
+                                onClick={handleImageUpload}
+                                disabled={uploadingImage}
+                                className="gap-2 admin-btn-primary"
+                                data-testid="button-upload-image"
+                              >
+                                <Upload className="w-4 h-4" />
+                                {uploadingImage ? 'جاري الرفع...' : 'رفع الصورة'}
+                              </Button>
+                            )}
+                          </div>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              data-testid="input-image" 
+                              placeholder="أو أدخل رابط الصورة مباشرة" 
+                              className="admin-input" 
+                            />
+                          </FormControl>
+                          {field.value && (
+                            <div className="mt-2">
+                              <img 
+                                src={field.value} 
+                                alt="معاينة" 
+                                className="max-w-xs h-32 object-cover rounded-lg border border-admin-border"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                }}
+                              />
+                            </div>
+                          )}
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}
