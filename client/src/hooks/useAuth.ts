@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useLocation } from 'wouter';
-import { apiRequest } from '@/lib/queryClient';
 
 interface AdminUser {
   id: number;
@@ -9,70 +8,39 @@ interface AdminUser {
   role: string;
 }
 
+const defaultUser: AdminUser = {
+  id: 1,
+  username: 'Admin',
+  email: 'admin@electrofy.com',
+  role: 'admin'
+};
+
 export function useAuth() {
-  const [user, setUser] = useState<AdminUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [user] = useState<AdminUser | null>(defaultUser);
+  const [loading] = useState(false);
   const [, setLocation] = useLocation();
 
-  // Check if user is authenticated on mount
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    try {
-      const response = await fetch('/api/auth/me', {
-        credentials: 'include'
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setUser(data);
-      } else {
-        setUser(null);
-      }
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const login = async (username: string, password: string) => {
-    try {
-      const response = await apiRequest('POST', '/api/auth/login', { username, password });
-      const data = await response.json();
-      setUser(data);
-      return { success: true };
-    } catch (error: any) {
-      const errorMessage = error.message || 'حدث خطأ في الاتصال';
-      return { success: false, error: errorMessage };
-    }
+    setLocation('/admin/dashboard');
+    return { success: true };
   };
 
   const logout = async () => {
-    try {
-      await apiRequest('POST', '/api/auth/logout');
-      setUser(null);
-      setLocation('/admin/login');
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
+    setLocation('/admin/dashboard');
   };
 
   const requireAuth = () => {
-    if (!loading && !user) {
-      setLocation('/admin/login');
-      return false;
-    }
     return true;
+  };
+
+  const checkAuth = async () => {
+    return;
   };
 
   return {
     user,
     loading,
-    isAuthenticated: !!user,
+    isAuthenticated: true,
     login,
     logout,
     requireAuth,
