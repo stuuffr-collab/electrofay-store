@@ -4,7 +4,6 @@ import { storage } from "./storage";
 import { db } from "./db";
 import { products, settings, orders, insertOrderSchema, insertProductSchema } from "@shared/schema";
 import { eq, desc, sql } from "drizzle-orm";
-import { requireAdmin } from "./api/auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Order management API
@@ -269,7 +268,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // ============= ADMIN API ROUTES =============
   
   // Admin: Get all products (including inactive)
-  app.get("/api/admin/products", requireAdmin, async (req, res) => {
+  app.get("/api/admin/products", async (req, res) => {
     try {
       const allProducts = await db.select().from(products).orderBy(desc(products.createdAt));
       
@@ -291,7 +290,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Admin: Create product
-  app.post("/api/admin/products", requireAdmin, async (req, res) => {
+  app.post("/api/admin/products", async (req, res) => {
     try {
       const productData = req.body;
       
@@ -319,7 +318,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Admin: Update product
-  app.put("/api/admin/products/:id", requireAdmin, async (req, res) => {
+  app.put("/api/admin/products/:id", async (req, res) => {
     try {
       const { id } = req.params;
       const productData = req.body;
@@ -355,7 +354,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Admin: Delete product
-  app.delete("/api/admin/products/:id", requireAdmin, async (req, res) => {
+  app.delete("/api/admin/products/:id", async (req, res) => {
     try {
       const { id } = req.params;
       
@@ -375,7 +374,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Admin: Get all orders
-  app.get("/api/admin/orders", requireAdmin, async (req, res) => {
+  app.get("/api/admin/orders", async (req, res) => {
     try {
       const allOrders = await db.select().from(orders).orderBy(desc(orders.createdAt));
       
@@ -394,7 +393,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Admin: Update order status
-  app.put("/api/admin/orders/:id/status", requireAdmin, async (req, res) => {
+  app.put("/api/admin/orders/:id/status", async (req, res) => {
     try {
       const { id } = req.params;
       const { status } = req.body;
@@ -420,7 +419,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Admin: Get all settings
-  app.get("/api/admin/settings", requireAdmin, async (req, res) => {
+  app.get("/api/admin/settings", async (req, res) => {
     try {
       const allSettings = await db.select().from(settings);
       res.json(allSettings);
@@ -431,7 +430,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Admin: Update settings
-  app.put("/api/admin/settings", requireAdmin, async (req, res) => {
+  app.put("/api/admin/settings", async (req, res) => {
     try {
       const { key, value } = req.body;
       
@@ -451,7 +450,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Admin: Get dashboard statistics
-  app.get("/api/admin/stats", requireAdmin, async (req, res) => {
+  app.get("/api/admin/stats", async (req, res) => {
     try {
       // Get total products
       const totalProducts = await db.select({ count: sql<number>`count(*)` })
