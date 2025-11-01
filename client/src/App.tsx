@@ -46,6 +46,7 @@ function Router() {
   return (
     <Switch>
       {/* Admin Routes - These are rendered WITHOUT the main Layout */}
+      <Route path="/admin" component={AdminDashboard} />
       <Route path="/admin/login" component={AdminLogin} />
       <Route path="/admin/dashboard" component={AdminDashboard} />
       <Route path="/admin/products" component={AdminProducts} />
