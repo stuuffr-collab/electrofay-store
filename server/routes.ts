@@ -395,17 +395,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Admin: Get all orders from database
+  // Admin: Get all orders from Supabase
   app.get("/api/admin/orders", async (req, res) => {
     try {
-      const allOrders = await db.select().from(orders).orderBy(desc(orders.createdAt));
+      const { data: allOrders, error: ordersError } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-      const ordersWithParsedItems = allOrders.map((order) => ({
+      if (ordersError) throw ordersError;
+
+      const ordersWithParsedItems = (allOrders || []).map((order: any) => ({
         ...order,
         items: JSON.parse(order.items),
-        totalAmount: parseFloat(String(order.totalAmount)),
-        deliveryFee: parseFloat(String(order.deliveryFee)),
-        usdToLydSnapshot: order.usdToLydSnapshot
+        totalAmount: parseFloat(String(order.total_amount)),
+        deliveryFee: parseFloat(String(order.delivery_fee)),
+        usdToLydSnapshot: order.usd_to_lyd_snapshot,
+        customerName: order.customer_name,
+        customerPhone: order.customer_phone,
+        customerCity: order.customer_city,
+        customerAddress: order.customer_address,
+        orderNotes: order.order_notes,
+        createdAt: order.created_at,
+        updatedAt: order.updated_at
       }));
       
       res.json(ordersWithParsedItems);
@@ -444,11 +456,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Admin: Get all settings from database
+  // Admin: Get all settings from Supabase
   app.get("/api/admin/settings", async (req, res) => {
     try {
-      const allSettings = await db.select().from(settings);
-      res.json(allSettings);
+      const { data: allSettings, error: settingsError } = await supabase
+        .from('settings')
+        .select('*');
+      
+      if (settingsError) throw settingsError;
+      
+      res.json(allSettings || []);
     } catch (error) {
       console.error('Error fetching settings:', error);
       res.status(500).json({ error: 'Failed to fetch settings' });
