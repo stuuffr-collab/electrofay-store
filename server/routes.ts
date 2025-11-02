@@ -413,16 +413,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (ordersError) throw ordersError;
 
       const ordersWithParsedItems = (allOrders || []).map((order: any) => ({
-        ...order,
-        items: JSON.parse(order.items),
-        totalAmount: parseFloat(String(order.total_amount)),
-        deliveryFee: parseFloat(String(order.delivery_fee)),
-        usdToLydSnapshot: order.usd_to_lyd_snapshot,
+        id: order.id,
         customerName: order.customer_name,
         customerPhone: order.customer_phone,
         customerCity: order.customer_city,
         customerAddress: order.customer_address,
         orderNotes: order.order_notes,
+        status: order.status,
+        totalAmount: parseFloat(String(order.total_amount)),
+        deliveryFee: parseFloat(String(order.delivery_fee)),
+        items: typeof order.items === 'string' ? JSON.parse(order.items) : order.items,
+        usdToLydSnapshot: order.usd_to_lyd_snapshot,
         createdAt: order.created_at,
         updatedAt: order.updated_at
       }));
@@ -574,7 +575,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           id: o.id,
           customerName: o.customer_name,
           status: o.status,
-          items: JSON.parse(o.items),
+          items: typeof o.items === 'string' ? JSON.parse(o.items) : o.items,
           totalAmount: parseFloat(String(o.total_amount)),
           createdAt: o.created_at
         })),
