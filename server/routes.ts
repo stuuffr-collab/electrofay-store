@@ -69,44 +69,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     return Math.round(value / step) * step;
   }
 
-  // Get products with dynamic pricing and smart categorization
+  // Get products with dynamic pricing and smart categorization from Supabase
   app.get("/api/products", async (req, res) => {
     try {
-      // Fetch products and exchange rate in parallel
+      // Fetch products and exchange rate in parallel from Supabase
       const [productsResult, settingsResult] = await Promise.all([
-        db.select().from(products).where(eq(products.isActive, true)),
-        db.select().from(settings).where(eq(settings.key, 'usd_to_lyd_rate'))
+        supabase.from('products').select('*').eq('is_active', true),
+        supabase.from('settings').select('*').eq('key', 'usd_to_lyd_rate').single()
       ]);
 
+      if (productsResult.error) throw productsResult.error;
+
       // Parse JSONB exchange rate setting
-      const exchangeRate = settingsResult[0] && settingsResult[0].value 
-        ? (settingsResult[0].value as { rate: number }).rate 
+      const exchangeRate = settingsResult.data && settingsResult.data.value 
+        ? (settingsResult.data.value as { rate: number }).rate 
         : 5.10;
 
       // Calculate LYD prices and add smart categorization
-      const productsWithPricing = productsResult.map(product => {
-        const basePriceUsd = parseFloat(String(product.basePriceUsd)) || 0;
+      const productsWithPricing = (productsResult.data || []).map((product: any) => {
+        const basePriceUsd = parseFloat(String(product.base_price_usd)) || 0;
         const rawLydPrice = basePriceUsd * exchangeRate;
         const displayPriceLyd = roundLYD(rawLydPrice);
 
         // Smart categorization using categorizeProduct from categories.ts
         // This is calculated dynamically based on product name and description
-        const categorization = categorizeProduct(product);
+        const categorization = categorizeProduct({
+          name: product.name,
+          nameEn: product.name_en,
+          description: product.description,
+          descriptionEn: product.description_en
+        });
 
         return {
           id: product.id,
           name: product.name,
-          nameEn: product.nameEn,
+          nameEn: product.name_en,
           description: product.description,
-          descriptionEn: product.descriptionEn,
+          descriptionEn: product.description_en,
           basePriceUsd,
           displayPriceLyd,
           category: product.category,
-          categoryId: product.categoryId || categorization.categoryId,
-          subcategoryId: product.subcategoryId || categorization.subcategoryId,
+          categoryId: product.category_id || categorization.categoryId,
+          subcategoryId: product.subcategory_id || categorization.subcategoryId,
           image: product.image,
-          inStock: product.inStock,
-          stockCount: product.stockCount,
+          inStock: product.in_stock,
+          stockCount: product.stock_count,
           usdToLydRate: exchangeRate
         };
       });
