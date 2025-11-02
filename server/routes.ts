@@ -1,7 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { supabase } from "./supabaseClient";
 import { db } from "./db";
 import { products, settings, orders, insertOrderSchema, insertProductSchema } from "@shared/schema";
 import { eq, desc, sql } from "drizzle-orm";
@@ -268,45 +267,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // ============= ADMIN API ROUTES =============
   
-  // Admin: Get all products (including inactive) from Supabase
+  // Admin: Get all products (including inactive) from database
   app.get("/api/admin/products", async (req, res) => {
     try {
-      const { data: allProducts, error: productsError } = await supabase
-        .from('products')
-        .select('*')
-        .order('created_at', { ascending: false });
+      const allProducts = await db.select().from(products).orderBy(desc(products.createdAt));
       
-      if (productsError) {
-        console.error('Supabase error fetching products:', productsError);
-        return res.status(500).json({ error: 'Failed to fetch products' });
-      }
-
-      const { data: settingsData, error: settingsError } = await supabase
-        .from('settings')
-        .select('value')
-        .eq('key', 'usd_to_lyd_rate')
-        .single();
+      const [settingsData] = await db.select().from(settings).where(eq(settings.key, 'usd_to_lyd_rate'));
+      const exchangeRate = settingsData ? (settingsData.value as { rate: number }).rate : 5.10;
       
-      const exchangeRate = settingsData?.value?.rate || 5.10;
-      
-      const productsWithPricing = (allProducts || []).map((product: any) => ({
+      const productsWithPricing = allProducts.map((product) => ({
         id: product.id,
         name: product.name,
-        nameEn: product.name_en,
+        nameEn: product.nameEn,
         description: product.description,
-        descriptionEn: product.description_en,
-        basePriceUsd: parseFloat(String(product.base_price_usd)) || 0,
-        categoryId: product.category_id,
-        subcategoryId: product.subcategory_id,
+        descriptionEn: product.descriptionEn,
+        basePriceUsd: parseFloat(String(product.basePriceUsd)) || 0,
+        categoryId: product.categoryId,
+        subcategoryId: product.subcategoryId,
         category: product.category,
         image: product.image,
-        inStock: product.in_stock,
-        stockCount: product.stock_count,
-        isActive: product.is_active,
-        displayPriceLyd: roundLYD((parseFloat(String(product.base_price_usd)) || 0) * exchangeRate),
+        inStock: product.inStock,
+        stockCount: product.stockCount,
+        isActive: product.isActive,
+        displayPriceLyd: roundLYD((parseFloat(String(product.basePriceUsd)) || 0) * exchangeRate),
         usdToLydRate: exchangeRate,
-        createdAt: product.created_at,
-        updatedAt: product.updated_at
+        createdAt: product.createdAt,
+        updatedAt: product.updatedAt
       }));
       
       res.json(productsWithPricing);
@@ -316,35 +302,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Admin: Create product in Supabase
+  // Admin: Create product in database
   app.post("/api/admin/products", async (req, res) => {
     try {
       const productData = req.body;
       
-      const { data: newProduct, error } = await supabase
-        .from('products')
-        .insert({
-          id: productData.id,
-          name: productData.name,
-          name_en: productData.nameEn,
-          description: productData.description,
-          description_en: productData.descriptionEn,
-          base_price_usd: String(productData.basePriceUsd),
-          category: productData.category || '',
-          category_id: productData.categoryId,
-          subcategory_id: productData.subcategoryId,
-          image: productData.image,
-          in_stock: productData.inStock !== false,
-          stock_count: productData.stockCount || 0,
-          is_active: productData.isActive !== false
-        })
-        .select()
-        .single();
-      
-      if (error) {
-        console.error('Supabase error creating product:', error);
-        return res.status(500).json({ error: 'Failed to create product' });
-      }
+      const [newProduct] = await db.insert(products).values({
+        id: productData.id,
+        name: productData.name,
+        nameEn: productData.nameEn,
+        description: productData.description,
+        descriptionEn: productData.descriptionEn,
+        basePriceUsd: String(productData.basePriceUsd),
+        category: productData.category || '',
+        categoryId: productData.categoryId,
+        subcategoryId: productData.subcategoryId,
+        image: productData.image,
+        inStock: productData.inStock !== false,
+        stockCount: productData.stockCount || 0,
+        isActive: productData.isActive !== false
+      }).returning();
       
       res.status(201).json(newProduct);
     } catch (error) {
@@ -353,35 +330,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Admin: Update product in Supabase
+  // Admin: Update product in database
   app.put("/api/admin/products/:id", async (req, res) => {
     try {
       const { id } = req.params;
       const productData = req.body;
       
-      const { data: updated, error } = await supabase
-        .from('products')
-        .update({
+      const [updated] = await db.update(products)
+        .set({
           name: productData.name,
-          name_en: productData.nameEn,
+          nameEn: productData.nameEn,
           description: productData.description,
-          description_en: productData.descriptionEn,
-          base_price_usd: String(productData.basePriceUsd),
+          descriptionEn: productData.descriptionEn,
+          basePriceUsd: String(productData.basePriceUsd),
           category: productData.category || '',
-          category_id: productData.categoryId,
-          subcategory_id: productData.subcategoryId,
+          categoryId: productData.categoryId,
+          subcategoryId: productData.subcategoryId,
           image: productData.image,
-          in_stock: productData.inStock,
-          stock_count: productData.stockCount,
-          is_active: productData.isActive,
-          updated_at: new Date().toISOString()
+          inStock: productData.inStock,
+          stockCount: productData.stockCount,
+          isActive: productData.isActive,
+          updatedAt: new Date()
         })
-        .eq('id', id)
-        .select()
-        .single();
+        .where(eq(products.id, id))
+        .returning();
       
-      if (error) {
-        console.error('Supabase error updating product:', error);
+      if (!updated) {
         return res.status(404).json({ error: 'Product not found' });
       }
       
@@ -392,18 +366,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Admin: Delete product from Supabase
+  // Admin: Delete product from database
   app.delete("/api/admin/products/:id", async (req, res) => {
     try {
       const { id } = req.params;
       
-      const { error } = await supabase
-        .from('products')
-        .delete()
-        .eq('id', id);
+      const result = await db.delete(products).where(eq(products.id, id)).returning();
       
-      if (error) {
-        console.error('Supabase error deleting product:', error);
+      if (result.length === 0) {
         return res.status(404).json({ error: 'Product not found' });
       }
       
@@ -414,32 +384,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Admin: Get all orders from Supabase
+  // Admin: Get all orders from database
   app.get("/api/admin/orders", async (req, res) => {
     try {
-      const { data: allOrders, error } = await supabase
-        .from('orders')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (error) {
-        console.error('Supabase error fetching orders:', error);
-        return res.status(500).json({ error: 'Failed to fetch orders' });
-      }
+      const allOrders = await db.select().from(orders).orderBy(desc(orders.createdAt));
 
-      const ordersWithParsedItems = (allOrders || []).map((order: any) => ({
+      const ordersWithParsedItems = allOrders.map((order) => ({
         ...order,
         items: JSON.parse(order.items),
-        totalAmount: parseFloat(String(order.total_amount)),
-        deliveryFee: parseFloat(String(order.delivery_fee)),
-        customerName: order.customer_name,
-        customerPhone: order.customer_phone,
-        customerCity: order.customer_city,
-        customerAddress: order.customer_address,
-        orderNotes: order.order_notes,
-        usdToLydSnapshot: order.usd_to_lyd_snapshot,
-        createdAt: order.created_at,
-        updatedAt: order.updated_at
+        totalAmount: parseFloat(String(order.totalAmount)),
+        deliveryFee: parseFloat(String(order.deliveryFee)),
+        usdToLydSnapshot: order.usdToLydSnapshot
       }));
       
       res.json(ordersWithParsedItems);
@@ -449,7 +404,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Admin: Update order status in Supabase
+  // Admin: Update order status in database
   app.put("/api/admin/orders/:id/status", async (req, res) => {
     try {
       const { id } = req.params;
@@ -459,18 +414,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Invalid status' });
       }
       
-      const { data: updated, error } = await supabase
-        .from('orders')
-        .update({ 
+      const [updated] = await db.update(orders)
+        .set({ 
           status, 
-          updated_at: new Date().toISOString() 
+          updatedAt: new Date() 
         })
-        .eq('id', parseInt(id))
-        .select()
-        .single();
+        .where(eq(orders.id, parseInt(id)))
+        .returning();
       
-      if (error) {
-        console.error('Supabase error updating order status:', error);
+      if (!updated) {
         return res.status(404).json({ error: 'Order not found' });
       }
       
@@ -481,46 +433,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Admin: Get all settings from Supabase
+  // Admin: Get all settings from database
   app.get("/api/admin/settings", async (req, res) => {
     try {
-      const { data: allSettings, error } = await supabase
-        .from('settings')
-        .select('*');
-      
-      if (error) {
-        console.error('Supabase error fetching settings:', error);
-        return res.status(500).json({ error: 'Failed to fetch settings' });
-      }
-
-      res.json(allSettings || []);
+      const allSettings = await db.select().from(settings);
+      res.json(allSettings);
     } catch (error) {
       console.error('Error fetching settings:', error);
       res.status(500).json({ error: 'Failed to fetch settings' });
     }
   });
   
-  // Admin: Update settings in Supabase
+  // Admin: Update settings in database
   app.put("/api/admin/settings", async (req, res) => {
     try {
       const { key, value } = req.body;
       
-      const { data: updated, error } = await supabase
-        .from('settings')
-        .upsert({ 
+      const [updated] = await db.insert(settings)
+        .values({ 
           key, 
           value, 
-          updated_at: new Date().toISOString() 
-        }, {
-          onConflict: 'key'
+          updatedAt: new Date() 
         })
-        .select()
-        .single();
-      
-      if (error) {
-        console.error('Supabase error updating settings:', error);
-        return res.status(500).json({ error: 'Failed to update settings' });
-      }
+        .onConflictDoUpdate({
+          target: settings.key,
+          set: { value, updatedAt: new Date() }
+        })
+        .returning();
 
       res.json(updated);
     } catch (error) {
@@ -529,50 +468,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Admin: Get dashboard statistics from Supabase
+  // Admin: Get dashboard statistics from database
   app.get("/api/admin/stats", async (req, res) => {
     try {
       // Get total products count
-      const { count: totalProducts } = await supabase
-        .from('products')
-        .select('*', { count: 'exact', head: true })
-        .eq('is_active', true);
+      const activeProducts = await db.select().from(products).where(eq(products.isActive, true));
+      const totalProducts = activeProducts.length;
       
-      // Get total orders count
-      const { count: totalOrders } = await supabase
-        .from('orders')
-        .select('*', { count: 'exact', head: true });
+      // Get all orders
+      const allOrders = await db.select().from(orders);
+      const totalOrders = allOrders.length;
       
       // Get delivered orders for total sales
-      const { data: deliveredOrders } = await supabase
-        .from('orders')
-        .select('total_amount')
-        .eq('status', 'delivered');
-      
-      const totalSales = (deliveredOrders || []).reduce((sum: number, order: any) => 
-        sum + parseFloat(String(order.total_amount || 0)), 0);
+      const deliveredOrders = allOrders.filter(o => o.status === 'delivered');
+      const totalSales = deliveredOrders.reduce((sum, order) => 
+        sum + parseFloat(String(order.totalAmount || 0)), 0);
       
       // Get low stock products (< 5 items)
-      const { data: lowStockProducts } = await supabase
-        .from('products')
-        .select('*')
-        .eq('is_active', true)
-        .lt('stock_count', 5)
+      const lowStockData = await db.select().from(products)
+        .where(sql`${products.isActive} = true AND ${products.stockCount} < 5`)
         .limit(10);
       
       // Get recent orders
-      const { data: recentOrders } = await supabase
-        .from('orders')
-        .select('*')
-        .order('created_at', { ascending: false })
+      const recentOrdersData = await db.select().from(orders)
+        .orderBy(desc(orders.createdAt))
         .limit(10);
       
-      // Get orders grouped by status (manual grouping)
-      const { data: allOrdersForStatus } = await supabase
-        .from('orders')
-        .select('status');
-      
-      const statusCounts = (allOrdersForStatus || []).reduce((acc: any, order: any) => {
+      // Get orders grouped by status
+      const statusCounts = allOrders.reduce((acc: any, order) => {
         acc[order.status] = (acc[order.status] || 0) + 1;
         return acc;
       }, {});
@@ -583,24 +506,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }));
       
       res.json({
-        totalProducts: totalProducts || 0,
-        totalOrders: totalOrders || 0,
+        totalProducts,
+        totalOrders,
         totalSales,
-        lowStockProducts: (lowStockProducts || []).map((p: any) => ({
+        lowStockProducts: lowStockData.map((p) => ({
           id: p.id,
           name: p.name,
-          nameEn: p.name_en,
-          basePriceUsd: parseFloat(String(p.base_price_usd)),
-          stockCount: p.stock_count,
+          nameEn: p.nameEn,
+          basePriceUsd: parseFloat(String(p.basePriceUsd)),
+          stockCount: p.stockCount,
           image: p.image
         })),
-        recentOrders: (recentOrders || []).map((o: any) => ({
+        recentOrders: recentOrdersData.map((o) => ({
           id: o.id,
-          customerName: o.customer_name,
+          customerName: o.customerName,
           status: o.status,
           items: JSON.parse(o.items),
-          totalAmount: parseFloat(String(o.total_amount)),
-          createdAt: o.created_at
+          totalAmount: parseFloat(String(o.totalAmount)),
+          createdAt: o.createdAt
         })),
         ordersByStatus
       });
