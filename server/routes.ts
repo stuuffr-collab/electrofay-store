@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { db } from "./db";
+import { supabase } from "./supabaseClient";
 import { products, settings, orders, insertOrderSchema, insertProductSchema } from "@shared/schema";
 import { eq, desc, sql } from "drizzle-orm";
 
@@ -267,32 +268,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // ============= ADMIN API ROUTES =============
   
-  // Admin: Get all products (including inactive) from database
+  // Admin: Get all products (including inactive) from Supabase
   app.get("/api/admin/products", async (req, res) => {
     try {
-      const allProducts = await db.select().from(products).orderBy(desc(products.createdAt));
+      const { data: allProducts, error: productsError } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
       
-      const [settingsData] = await db.select().from(settings).where(eq(settings.key, 'usd_to_lyd_rate'));
+      if (productsError) throw productsError;
+      
+      const { data: settingsData, error: settingsError } = await supabase
+        .from('settings')
+        .select('*')
+        .eq('key', 'usd_to_lyd_rate')
+        .single();
+      
       const exchangeRate = settingsData ? (settingsData.value as { rate: number }).rate : 5.10;
       
-      const productsWithPricing = allProducts.map((product) => ({
+      const productsWithPricing = (allProducts || []).map((product: any) => ({
         id: product.id,
         name: product.name,
-        nameEn: product.nameEn,
+        nameEn: product.name_en,
         description: product.description,
-        descriptionEn: product.descriptionEn,
-        basePriceUsd: parseFloat(String(product.basePriceUsd)) || 0,
-        categoryId: product.categoryId,
-        subcategoryId: product.subcategoryId,
+        descriptionEn: product.description_en,
+        basePriceUsd: parseFloat(String(product.base_price_usd)) || 0,
+        categoryId: product.category_id,
+        subcategoryId: product.subcategory_id,
         category: product.category,
         image: product.image,
-        inStock: product.inStock,
-        stockCount: product.stockCount,
-        isActive: product.isActive,
-        displayPriceLyd: roundLYD((parseFloat(String(product.basePriceUsd)) || 0) * exchangeRate),
+        inStock: product.in_stock,
+        stockCount: product.stock_count,
+        isActive: product.is_active,
+        displayPriceLyd: roundLYD((parseFloat(String(product.base_price_usd)) || 0) * exchangeRate),
         usdToLydRate: exchangeRate,
-        createdAt: product.createdAt,
-        updatedAt: product.updatedAt
+        createdAt: product.created_at,
+        updatedAt: product.updated_at
       }));
       
       res.json(productsWithPricing);
@@ -468,34 +479,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Admin: Get dashboard statistics from database
+  // Admin: Get dashboard statistics from Supabase
   app.get("/api/admin/stats", async (req, res) => {
     try {
-      // Get total products count
-      const activeProducts = await db.select().from(products).where(eq(products.isActive, true));
-      const totalProducts = activeProducts.length;
+      // Get total products count from Supabase
+      const { data: activeProducts, error: productsError } = await supabase
+        .from('products')
+        .select('*')
+        .eq('is_active', true);
       
-      // Get all orders
-      const allOrders = await db.select().from(orders);
-      const totalOrders = allOrders.length;
+      if (productsError) throw productsError;
+      const totalProducts = activeProducts?.length || 0;
+      
+      // Get all orders from Supabase
+      const { data: allOrders, error: ordersError } = await supabase
+        .from('orders')
+        .select('*');
+      
+      if (ordersError) throw ordersError;
+      const totalOrders = allOrders?.length || 0;
       
       // Get delivered orders for total sales
-      const deliveredOrders = allOrders.filter(o => o.status === 'delivered');
-      const totalSales = deliveredOrders.reduce((sum, order) => 
-        sum + parseFloat(String(order.totalAmount || 0)), 0);
+      const deliveredOrders = (allOrders || []).filter((o: any) => o.status === 'delivered');
+      const totalSales = deliveredOrders.reduce((sum, order: any) => 
+        sum + parseFloat(String(order.total_amount || 0)), 0);
       
-      // Get low stock products (< 5 items)
-      const lowStockData = await db.select().from(products)
-        .where(sql`${products.isActive} = true AND ${products.stockCount} < 5`)
+      // Get low stock products (< 5 items) from Supabase
+      const { data: lowStockData, error: lowStockError } = await supabase
+        .from('products')
+        .select('*')
+        .eq('is_active', true)
+        .lt('stock_count', 5)
         .limit(10);
       
-      // Get recent orders
-      const recentOrdersData = await db.select().from(orders)
-        .orderBy(desc(orders.createdAt))
+      if (lowStockError) throw lowStockError;
+      
+      // Get recent orders from Supabase
+      const { data: recentOrdersData, error: recentOrdersError } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false })
         .limit(10);
+      
+      if (recentOrdersError) throw recentOrdersError;
       
       // Get orders grouped by status
-      const statusCounts = allOrders.reduce((acc: any, order) => {
+      const statusCounts = (allOrders || []).reduce((acc: any, order: any) => {
         acc[order.status] = (acc[order.status] || 0) + 1;
         return acc;
       }, {});
@@ -509,21 +538,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         totalProducts,
         totalOrders,
         totalSales,
-        lowStockProducts: lowStockData.map((p) => ({
+        lowStockProducts: (lowStockData || []).map((p: any) => ({
           id: p.id,
           name: p.name,
-          nameEn: p.nameEn,
-          basePriceUsd: parseFloat(String(p.basePriceUsd)),
-          stockCount: p.stockCount,
+          nameEn: p.name_en,
+          basePriceUsd: parseFloat(String(p.base_price_usd)),
+          stockCount: p.stock_count,
           image: p.image
         })),
-        recentOrders: recentOrdersData.map((o) => ({
+        recentOrders: (recentOrdersData || []).map((o: any) => ({
           id: o.id,
-          customerName: o.customerName,
+          customerName: o.customer_name,
           status: o.status,
           items: JSON.parse(o.items),
-          totalAmount: parseFloat(String(o.totalAmount)),
-          createdAt: o.createdAt
+          totalAmount: parseFloat(String(o.total_amount)),
+          createdAt: o.created_at
         })),
         ordersByStatus
       });
