@@ -320,26 +320,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Admin: Create product in database
+  // Admin: Create product in Supabase database
   app.post("/api/admin/products", async (req, res) => {
     try {
       const productData = req.body;
       
-      const [newProduct] = await db.insert(products).values({
-        id: productData.id,
-        name: productData.name,
-        nameEn: productData.nameEn,
-        description: productData.description,
-        descriptionEn: productData.descriptionEn,
-        basePriceUsd: String(productData.basePriceUsd),
-        category: productData.category || '',
-        categoryId: productData.categoryId,
-        subcategoryId: productData.subcategoryId,
-        image: productData.image,
-        inStock: productData.inStock !== false,
-        stockCount: productData.stockCount || 0,
-        isActive: productData.isActive !== false
-      }).returning();
+      const { data: newProduct, error } = await supabase
+        .from('products')
+        .insert({
+          id: productData.id,
+          name: productData.name,
+          name_en: productData.nameEn,
+          description: productData.description,
+          description_en: productData.descriptionEn,
+          base_price_usd: String(productData.basePriceUsd),
+          category: productData.category || '',
+          category_id: productData.categoryId,
+          subcategory_id: productData.subcategoryId,
+          image: productData.image,
+          in_stock: productData.inStock !== false,
+          stock_count: productData.stockCount || 0,
+          is_active: productData.isActive !== false
+        })
+        .select()
+        .single();
+      
+      if (error) {
+        console.error('Supabase insert error:', error);
+        throw error;
+      }
       
       res.status(201).json(newProduct);
     } catch (error) {
@@ -348,33 +357,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Admin: Update product in database
+  // Admin: Update product in Supabase database
   app.put("/api/admin/products/:id", async (req, res) => {
     try {
       const { id } = req.params;
       const productData = req.body;
       
-      const [updated] = await db.update(products)
-        .set({
+      const { data: updated, error } = await supabase
+        .from('products')
+        .update({
           name: productData.name,
-          nameEn: productData.nameEn,
+          name_en: productData.nameEn,
           description: productData.description,
-          descriptionEn: productData.descriptionEn,
-          basePriceUsd: String(productData.basePriceUsd),
+          description_en: productData.descriptionEn,
+          base_price_usd: String(productData.basePriceUsd),
           category: productData.category || '',
-          categoryId: productData.categoryId,
-          subcategoryId: productData.subcategoryId,
+          category_id: productData.categoryId,
+          subcategory_id: productData.subcategoryId,
           image: productData.image,
-          inStock: productData.inStock,
-          stockCount: productData.stockCount,
-          isActive: productData.isActive,
-          updatedAt: new Date()
+          in_stock: productData.inStock,
+          stock_count: productData.stockCount,
+          is_active: productData.isActive,
+          updated_at: new Date().toISOString()
         })
-        .where(eq(products.id, id))
-        .returning();
+        .eq('id', id)
+        .select()
+        .single();
       
-      if (!updated) {
-        return res.status(404).json({ error: 'Product not found' });
+      if (error) {
+        console.error('Supabase update error:', error);
+        if (error.code === 'PGRST116') {
+          return res.status(404).json({ error: 'Product not found' });
+        }
+        throw error;
       }
       
       res.json(updated);
@@ -384,14 +399,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Admin: Delete product from database
+  // Admin: Delete product from Supabase database
   app.delete("/api/admin/products/:id", async (req, res) => {
     try {
       const { id } = req.params;
       
-      const result = await db.delete(products).where(eq(products.id, id)).returning();
+      const { error, count } = await supabase
+        .from('products')
+        .delete({ count: 'exact' })
+        .eq('id', id);
       
-      if (result.length === 0) {
+      if (error) {
+        console.error('Supabase delete error:', error);
+        throw error;
+      }
+      
+      if (count === 0) {
         return res.status(404).json({ error: 'Product not found' });
       }
       
