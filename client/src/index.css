@@ -485,13 +485,6 @@
   background: var(--admin-card-bg);
   border-radius: 12px;
   box-shadow: 0 4px 12px var(--admin-shadow);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.admin-card:hover {
-  background: var(--admin-card-hover-bg);
-  box-shadow: 0 6px 16px var(--admin-shadow);
-  transform: translateY(-2px);
 }
 
 /* Admin Typography */
@@ -519,13 +512,7 @@
   border-radius: 10px;
   font-weight: 500;
   font-size: 15px;
-  transition: all 0.3s ease;
   position: relative;
-}
-
-.admin-nav-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-  transform: translateX(-4px);
 }
 
 .admin-nav-item.active {
@@ -553,7 +540,6 @@
   border-radius: 10px;
   font-weight: 600;
   font-size: 14px;
-  transition: all 0.3s ease;
   cursor: pointer;
   border: none;
 }
@@ -563,20 +549,10 @@
   color: white;
 }
 
-.admin-btn-primary:hover {
-  transform: scale(1.03);
-  box-shadow: 0 6px 20px rgba(0, 188, 212, 0.4);
-}
-
 .admin-btn-secondary {
   background: var(--admin-card-bg);
   color: var(--admin-text-primary);
   border: 1px solid var(--admin-border);
-}
-
-.admin-btn-secondary:hover {
-  background: var(--admin-card-hover-bg);
-  border-color: var(--admin-accent-cyan);
 }
 
 /* Admin Header with Gradient */
@@ -596,13 +572,6 @@
   padding: 24px;
   box-shadow: 0 4px 12px var(--admin-shadow);
   border: 1px solid var(--admin-border);
-  transition: all 0.3s ease;
-}
-
-.admin-stat-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px var(--admin-shadow);
-  border-color: var(--admin-accent-cyan);
 }
 
 .admin-stat-icon {
@@ -645,11 +614,6 @@
 }
 
 .admin-table tbody tr {
-  transition: all 0.2s ease;
-}
-
-.admin-table tbody tr:hover {
-  background: rgba(255, 255, 255, 0.05);
 }
 
 /* Admin Animations */
@@ -720,7 +684,6 @@
   padding: 12px 16px;
   color: var(--admin-text-primary);
   font-weight: 500;
-  transition: all 0.3s ease;
 }
 
 .admin-input:focus {
