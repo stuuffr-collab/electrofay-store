@@ -46,7 +46,7 @@ export default function AdminProducts() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  const { data: products, isLoading } = useQuery({
+  const { data: products = [], isLoading } = useQuery<any[]>({
     queryKey: ['/api/admin/products'],
   });
 
@@ -73,10 +73,7 @@ export default function AdminProducts() {
 
   const createMutation = useMutation({
     mutationFn: (data: ProductFormData) =>
-      apiRequest('/api/admin/products', {
-        method: 'POST',
-        body: JSON.stringify(data),
-      }),
+      apiRequest('POST', '/api/admin/products', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/products'] });
       queryClient.invalidateQueries({ queryKey: ['products'] });
@@ -91,10 +88,7 @@ export default function AdminProducts() {
 
   const updateMutation = useMutation({
     mutationFn: (data: ProductFormData & { id: string }) =>
-      apiRequest(`/api/admin/products/${data.id}`, {
-        method: 'PUT',
-        body: JSON.stringify(data),
-      }),
+      apiRequest('PUT', `/api/admin/products/${data.id}`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/products'] });
       queryClient.invalidateQueries({ queryKey: ['products'] });
@@ -110,7 +104,7 @@ export default function AdminProducts() {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) =>
-      apiRequest(`/api/admin/products/${id}`, { method: 'DELETE' }),
+      apiRequest('DELETE', `/api/admin/products/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/products'] });
       queryClient.invalidateQueries({ queryKey: ['products'] });
@@ -196,12 +190,12 @@ export default function AdminProducts() {
     }
   };
 
-  const filteredProducts = products?.filter((p: any) => {
+  const filteredProducts = products.filter((p: any) => {
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.nameEn.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || p.categoryId === selectedCategory;
     return matchesSearch && matchesCategory;
-  }) || [];
+  });
 
   return (
     <AdminLayout>
