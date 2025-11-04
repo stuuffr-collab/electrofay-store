@@ -1,9 +1,14 @@
 import { motion } from 'framer-motion';
-import { categories } from '@/lib/categories';
+import { getIconFromString, type Category } from '@/lib/categories';
 import { Link } from 'wouter';
 import { ChevronLeft } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
 export default function CategoriesPage() {
+  const { data: categoriesData = [], isLoading: categoriesLoading } = useQuery<Category[]>({
+    queryKey: ['/api/categories'],
+  });
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 dark:from-black dark:via-gray-900 dark:to-black">
       {/* Header */}
@@ -28,12 +33,21 @@ export default function CategoriesPage() {
 
       {/* Categories Grid */}
       <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {categories.map((category, index) => {
-            const IconComponent = category.icon;
-            
-            return (
-              <motion.div
+        {categoriesLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[...Array(6)].map((_, index) => (
+              <div key={index} className="animate-pulse">
+                <div className="bg-gray-800 dark:bg-gray-900 rounded-2xl h-96"></div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {categoriesData.map((category, index) => {
+              const IconComponent = getIconFromString(category.icon);
+              
+              return (
+                <motion.div
                 key={category.id}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -97,9 +111,10 @@ export default function CategoriesPage() {
                   </div>
                 </Link>
               </motion.div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Bottom CTA */}

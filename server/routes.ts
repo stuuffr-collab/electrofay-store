@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { db } from "./db";
 import { supabase, adminSupabase } from "./supabaseClient";
-import { products, settings, orders, insertOrderSchema, insertProductSchema } from "@shared/schema";
+import { products, settings, orders, categories, subcategories, insertOrderSchema, insertProductSchema, insertCategorySchema, insertSubcategorySchema } from "@shared/schema";
 import { eq, desc, sql } from "drizzle-orm";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -250,6 +250,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     // Fallback to generic PC components
     return { categoryId: 'pc-components', subcategoryId: 'processors' };
   }
+
+  // Get categories with subcategories from database (public endpoint)
+  app.get("/api/categories", async (req, res) => {
+    try {
+      // Fetch categories and subcategories using Drizzle ORM
+      const [categoriesData, subcategoriesData] = await Promise.all([
+        db.select().from(categories).where(eq(categories.isActive, true)).orderBy(categories.sortOrder),
+        db.select().from(subcategories).where(eq(subcategories.isActive, true)).orderBy(subcategories.sortOrder)
+      ]);
+
+      // Map categories with their subcategories
+      const categoriesWithSubcategories = categoriesData.map((category) => {
+        const categorySubcategories = subcategoriesData
+          .filter((sub) => sub.categoryId === category.id)
+          .map((sub) => ({
+            id: sub.id,
+            name: sub.name,
+            nameEn: sub.nameEn,
+            icon: sub.icon,
+            description: sub.description,
+            descriptionEn: sub.descriptionEn
+          }));
+
+        return {
+          id: category.id,
+          name: category.name,
+          nameEn: category.nameEn,
+          icon: category.icon,
+          description: category.description,
+          descriptionEn: category.descriptionEn,
+          color: category.color,
+          gradient: category.gradient,
+          subcategories: categorySubcategories
+        };
+      });
+
+      console.log(`✅ API: Returning ${categoriesWithSubcategories.length} categories with subcategories`);
+      res.json(categoriesWithSubcategories);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      res.status(500).json({ error: 'Failed to fetch categories' });
+    }
+  });
 
   // Get exchange rate setting
   app.get("/api/settings/:key", async (req, res) => {
@@ -607,6 +650,362 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error fetching stats:', error);
       res.status(500).json({ error: 'Failed to fetch statistics' });
+    }
+  });
+
+  // ============= CATEGORY MANAGEMENT API ROUTES =============
+  
+  // Admin: Get all categories with subcategories from database
+  app.get("/api/admin/categories", async (req, res) => {
+    try {
+      const categoriesData = await db.select().from(categories);
+      const subcategoriesData = await db.select().from(subcategories);
+
+      const categoriesWithSubs = categoriesData.map((cat) => ({
+        id: cat.id,
+        name: cat.name,
+        nameEn: cat.nameEn,
+        icon: cat.icon,
+        description: cat.description,
+        descriptionEn: cat.descriptionEn,
+        color: cat.color,
+        gradient: cat.gradient,
+        sortOrder: cat.sortOrder,
+        isActive: cat.isActive,
+        createdAt: cat.createdAt,
+        updatedAt: cat.updatedAt,
+        subcategories: subcategoriesData
+          .filter((sub) => sub.categoryId === cat.id)
+          .map((sub) => ({
+            id: sub.id,
+            categoryId: sub.categoryId,
+            name: sub.name,
+            nameEn: sub.nameEn,
+            icon: sub.icon,
+            description: sub.description,
+            descriptionEn: sub.descriptionEn,
+            sortOrder: sub.sortOrder,
+            isActive: sub.isActive,
+            createdAt: sub.createdAt,
+            updatedAt: sub.updatedAt
+          }))
+      }));
+
+      res.json(categoriesWithSubs);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      res.status(500).json({ error: 'Failed to fetch categories' });
+    }
+  });
+
+  // Admin: Create new category in Supabase
+  app.post("/api/admin/categories", async (req, res) => {
+    try {
+      const categoryData = req.body;
+
+      const validation = insertCategorySchema.safeParse({
+        id: categoryData.id,
+        name: categoryData.name,
+        nameEn: categoryData.nameEn,
+        icon: categoryData.icon,
+        description: categoryData.description,
+        descriptionEn: categoryData.descriptionEn,
+        color: categoryData.color,
+        gradient: categoryData.gradient,
+        sortOrder: categoryData.sortOrder || 0,
+        isActive: categoryData.isActive !== false
+      });
+
+      if (!validation.success) {
+        return res.status(400).json({ 
+          error: 'Invalid category data', 
+          details: validation.error.errors 
+        });
+      }
+
+      const { data: newCategory, error } = await adminSupabase
+        .from('categories')
+        .insert({
+          id: categoryData.id,
+          name: categoryData.name,
+          name_en: categoryData.nameEn,
+          icon: categoryData.icon,
+          description: categoryData.description,
+          description_en: categoryData.descriptionEn,
+          color: categoryData.color,
+          gradient: categoryData.gradient,
+          sort_order: categoryData.sortOrder || 0,
+          is_active: categoryData.isActive !== false
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Supabase insert error:', error);
+        if (error.code === '23505') {
+          return res.status(409).json({ error: 'Category with this ID already exists' });
+        }
+        throw error;
+      }
+
+      res.status(201).json(newCategory);
+    } catch (error) {
+      console.error('Error creating category:', error);
+      res.status(500).json({ error: 'Failed to create category' });
+    }
+  });
+
+  // Admin: Update category in Supabase
+  app.put("/api/admin/categories/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const categoryData = req.body;
+
+      if (!categoryData.name || !categoryData.nameEn) {
+        return res.status(400).json({ error: 'Name and nameEn are required' });
+      }
+
+      const { data: updated, error } = await adminSupabase
+        .from('categories')
+        .update({
+          name: categoryData.name,
+          name_en: categoryData.nameEn,
+          icon: categoryData.icon,
+          description: categoryData.description,
+          description_en: categoryData.descriptionEn,
+          color: categoryData.color,
+          gradient: categoryData.gradient,
+          sort_order: categoryData.sortOrder,
+          is_active: categoryData.isActive,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Supabase update error:', error);
+        if (error.code === 'PGRST116') {
+          return res.status(404).json({ error: 'Category not found' });
+        }
+        throw error;
+      }
+
+      res.json(updated);
+    } catch (error) {
+      console.error('Error updating category:', error);
+      res.status(500).json({ error: 'Failed to update category' });
+    }
+  });
+
+  // Admin: Delete category from Supabase
+  app.delete("/api/admin/categories/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const { data: subcats } = await adminSupabase
+        .from('subcategories')
+        .select('id')
+        .eq('category_id', id);
+
+      if (subcats && subcats.length > 0) {
+        return res.status(400).json({ 
+          error: 'Cannot delete category with existing subcategories. Please delete subcategories first.' 
+        });
+      }
+
+      const { error, count } = await adminSupabase
+        .from('categories')
+        .delete({ count: 'exact' })
+        .eq('id', id);
+
+      if (error) {
+        console.error('Supabase delete error:', error);
+        throw error;
+      }
+
+      if (count === 0) {
+        return res.status(404).json({ error: 'Category not found' });
+      }
+
+      res.json({ message: 'Category deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      res.status(500).json({ error: 'Failed to delete category' });
+    }
+  });
+
+  // Admin: Create new subcategory in Supabase
+  app.post("/api/admin/subcategories", async (req, res) => {
+    try {
+      const subcategoryData = req.body;
+
+      const validation = insertSubcategorySchema.safeParse({
+        id: subcategoryData.id,
+        categoryId: subcategoryData.categoryId,
+        name: subcategoryData.name,
+        nameEn: subcategoryData.nameEn,
+        icon: subcategoryData.icon,
+        description: subcategoryData.description,
+        descriptionEn: subcategoryData.descriptionEn,
+        sortOrder: subcategoryData.sortOrder || 0,
+        isActive: subcategoryData.isActive !== false
+      });
+
+      if (!validation.success) {
+        return res.status(400).json({ 
+          error: 'Invalid subcategory data', 
+          details: validation.error.errors 
+        });
+      }
+
+      const { data: categoryExists } = await adminSupabase
+        .from('categories')
+        .select('id')
+        .eq('id', subcategoryData.categoryId)
+        .single();
+
+      if (!categoryExists) {
+        return res.status(400).json({ error: 'Parent category does not exist' });
+      }
+
+      const { data: newSubcategory, error } = await adminSupabase
+        .from('subcategories')
+        .insert({
+          id: subcategoryData.id,
+          category_id: subcategoryData.categoryId,
+          name: subcategoryData.name,
+          name_en: subcategoryData.nameEn,
+          icon: subcategoryData.icon,
+          description: subcategoryData.description,
+          description_en: subcategoryData.descriptionEn,
+          sort_order: subcategoryData.sortOrder || 0,
+          is_active: subcategoryData.isActive !== false
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Supabase insert error:', error);
+        if (error.code === '23505') {
+          return res.status(409).json({ error: 'Subcategory with this ID already exists' });
+        }
+        throw error;
+      }
+
+      res.status(201).json(newSubcategory);
+    } catch (error) {
+      console.error('Error creating subcategory:', error);
+      res.status(500).json({ error: 'Failed to create subcategory' });
+    }
+  });
+
+  // Admin: Update subcategory in Supabase
+  app.put("/api/admin/subcategories/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const subcategoryData = req.body;
+
+      if (!subcategoryData.name || !subcategoryData.nameEn) {
+        return res.status(400).json({ error: 'Name and nameEn are required' });
+      }
+
+      const { data: updated, error } = await adminSupabase
+        .from('subcategories')
+        .update({
+          name: subcategoryData.name,
+          name_en: subcategoryData.nameEn,
+          icon: subcategoryData.icon,
+          description: subcategoryData.description,
+          description_en: subcategoryData.descriptionEn,
+          sort_order: subcategoryData.sortOrder,
+          is_active: subcategoryData.isActive,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Supabase update error:', error);
+        if (error.code === 'PGRST116') {
+          return res.status(404).json({ error: 'Subcategory not found' });
+        }
+        throw error;
+      }
+
+      res.json(updated);
+    } catch (error) {
+      console.error('Error updating subcategory:', error);
+      res.status(500).json({ error: 'Failed to update subcategory' });
+    }
+  });
+
+  // Admin: Delete subcategory from Supabase
+  app.delete("/api/admin/subcategories/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const { error, count } = await adminSupabase
+        .from('subcategories')
+        .delete({ count: 'exact' })
+        .eq('id', id);
+
+      if (error) {
+        console.error('Supabase delete error:', error);
+        throw error;
+      }
+
+      if (count === 0) {
+        return res.status(404).json({ error: 'Subcategory not found' });
+      }
+
+      res.json({ message: 'Subcategory deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting subcategory:', error);
+      res.status(500).json({ error: 'Failed to delete subcategory' });
+    }
+  });
+
+  // Admin: Reorder categories in Supabase
+  app.put("/api/admin/categories/reorder", async (req, res) => {
+    try {
+      const reorderData = req.body;
+
+      if (!Array.isArray(reorderData)) {
+        return res.status(400).json({ error: 'Request body must be an array of {id, sortOrder}' });
+      }
+
+      for (const item of reorderData) {
+        if (!item.id || typeof item.sortOrder !== 'number') {
+          return res.status(400).json({ 
+            error: 'Each item must have id and sortOrder properties' 
+          });
+        }
+      }
+
+      const updatePromises = reorderData.map(item => 
+        adminSupabase
+          .from('categories')
+          .update({ 
+            sort_order: item.sortOrder,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', item.id)
+      );
+
+      const results = await Promise.all(updatePromises);
+
+      const errors = results.filter(result => result.error);
+      if (errors.length > 0) {
+        console.error('Supabase reorder errors:', errors);
+        throw new Error('Failed to update some categories');
+      }
+
+      res.json({ message: 'Categories reordered successfully', updated: reorderData.length });
+    } catch (error) {
+      console.error('Error reordering categories:', error);
+      res.status(500).json({ error: 'Failed to reorder categories' });
     }
   });
 

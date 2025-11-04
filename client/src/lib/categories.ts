@@ -1,5 +1,32 @@
 import { Monitor, Cpu, HardDrive, Keyboard, Mouse, Headphones, Gamepad2, Laptop, Camera, Mic, Fan, Power, CircuitBoard, SlidersHorizontal, Armchair, Box, LucideIcon, Lightbulb, Cable } from 'lucide-react';
 
+// Icon mapping to convert string icon names to LucideIcon components
+export const iconMap: Record<string, LucideIcon> = {
+  'Monitor': Monitor,
+  'Cpu': Cpu,
+  'HardDrive': HardDrive,
+  'Keyboard': Keyboard,
+  'Mouse': Mouse,
+  'Headphones': Headphones,
+  'Gamepad2': Gamepad2,
+  'Laptop': Laptop,
+  'Camera': Camera,
+  'Mic': Mic,
+  'Fan': Fan,
+  'Power': Power,
+  'CircuitBoard': CircuitBoard,
+  'SlidersHorizontal': SlidersHorizontal,
+  'Armchair': Armchair,
+  'Box': Box,
+  'Lightbulb': Lightbulb,
+  'Cable': Cable,
+};
+
+// Helper function to get icon from string name
+export function getIconFromString(iconName: string): LucideIcon {
+  return iconMap[iconName] || Box; // Default to Box if icon not found
+}
+
 export interface Subcategory {
   id: string;
   name: string;

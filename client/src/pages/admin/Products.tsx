@@ -16,7 +16,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { categories } from '@/lib/categories';
+import { type Category } from '@/lib/categories';
 import { uploadImageToSupabase } from '@/lib/imageUpload';
 
 const productSchema = z.object({
@@ -50,6 +50,10 @@ export default function AdminProducts() {
     queryKey: ['/api/admin/products'],
   });
 
+  const { data: categoriesData = [] } = useQuery<Category[]>({
+    queryKey: ['/api/categories'],
+  });
+
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
     defaultValues: {
@@ -69,7 +73,7 @@ export default function AdminProducts() {
   });
 
   const selectedCat = form.watch('categoryId');
-  const subcategories = categories.find(c => c.id === selectedCat)?.subcategories || [];
+  const subcategories = categoriesData.find(c => c.id === selectedCat)?.subcategories || [];
 
   const createMutation = useMutation({
     mutationFn: (data: ProductFormData) =>
@@ -346,7 +350,7 @@ export default function AdminProducts() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {categories.map(cat => (
+                              {categoriesData.map(cat => (
                                 <SelectItem key={cat.id} value={cat.id}>
                                   {cat.name}
                                 </SelectItem>
@@ -551,7 +555,7 @@ export default function AdminProducts() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">جميع الأقسام</SelectItem>
-              {categories.map(cat => (
+              {categoriesData.map(cat => (
                 <SelectItem key={cat.id} value={cat.id}>
                   {cat.name}
                 </SelectItem>

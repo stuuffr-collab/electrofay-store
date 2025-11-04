@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useParams, Link, useLocation } from 'wouter';
 import { motion } from 'framer-motion';
-import { categories, getCategoryById, categorizeProduct } from '@/lib/categories';
+import { getIconFromString, categorizeProduct, type Category } from '@/lib/categories';
 import { useProducts } from '@/hooks/useProducts';
 import { ChevronRight, SlidersHorizontal, X } from 'lucide-react';
 import { ProductCard, Product } from '@/components/ProductCard';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -19,7 +20,10 @@ import { Slider } from '@/components/ui/slider';
 export default function CategoryDetailPage() {
   const { categoryId } = useParams();
   const [, setLocation] = useLocation();
-  const category = getCategoryById(categoryId || '');
+  const { data: categoriesData = [], isLoading: categoriesLoading } = useQuery<Category[]>({
+    queryKey: ['/api/categories'],
+  });
+  const category = categoriesData.find(cat => cat.id === categoryId);
   const { data: allProducts = [], isLoading } = useProducts();
   
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
@@ -30,6 +34,17 @@ export default function CategoryDetailPage() {
   const handleOrderClick = (product: Product) => {
     setLocation(`/product/${product.id}`);
   };
+
+  if (categoriesLoading) {
+    return (
+      <div className="min-h-screen bg-gray-900 dark:bg-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="text-white">جاري التحميل...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!category) {
     return (
@@ -79,7 +94,7 @@ export default function CategoryDetailPage() {
     }
   });
 
-  const IconComponent = category.icon;
+  const IconComponent = getIconFromString(category.icon);
 
   const maxPrice = Math.max(...categoryProducts.map(p => p.price), 5000);
 
@@ -129,7 +144,7 @@ export default function CategoryDetailPage() {
               الكل ({categoryProducts.length})
             </button>
             {category.subcategories.map((sub) => {
-              const SubIcon = sub.icon;
+              const SubIcon = getIconFromString(sub.icon);
               const count = categoryProducts.filter(p => {
                 const { subcategoryId } = categorizeProduct(p);
                 return subcategoryId === sub.id;

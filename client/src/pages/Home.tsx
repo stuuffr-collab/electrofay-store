@@ -16,7 +16,8 @@ import { trackEvent } from "@/lib/analytics";
 import { useProducts } from "@/hooks/useProducts";
 import toast from "react-hot-toast";
 import { filterBySmartCategory, type SmartCategory, categoryLabels } from "@/lib/smartFilters";
-import { categories } from "@/lib/categories";
+import { getIconFromString, type Category } from "@/lib/categories";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Home() {
   const [, setLocation] = useLocation();
@@ -26,6 +27,9 @@ export default function Home() {
   const { toasts, showSuccess } = useToastManager();
   const cart = useCart();
   const { data: products = [], isLoading, error } = useProducts();
+  const { data: categoriesData = [], isLoading: categoriesLoading } = useQuery<Category[]>({
+    queryKey: ['/api/categories'],
+  });
 
   // Get offer end date (7 days from now)
   const offerEndDate = new Date();
@@ -119,41 +123,49 @@ export default function Home() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {categories.slice(0, 6).map((category, index) => {
-              const IconComponent = category.icon;
-              return (
-                <motion.div
-                  key={category.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
-                >
-                  <Link href={`/categories/${category.id}`}>
-                    <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 hover:border-gray-600 transition-all duration-300 cursor-pointer h-full p-6">
-                      <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
-                      
-                      <div className="relative flex items-start gap-4">
-                        <div className={`w-14 h-14 rounded-lg bg-gradient-to-br ${category.gradient} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                          <IconComponent className="w-7 h-7 text-white" />
-                        </div>
+            {categoriesLoading ? (
+              [...Array(6)].map((_, index) => (
+                <div key={index} className="animate-pulse">
+                  <div className="bg-gray-800 rounded-xl h-40"></div>
+                </div>
+              ))
+            ) : (
+              categoriesData.slice(0, 6).map((category, index) => {
+                const IconComponent = getIconFromString(category.icon);
+                return (
+                  <motion.div
+                    key={category.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                  >
+                    <Link href={`/categories/${category.id}`}>
+                      <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 hover:border-gray-600 transition-all duration-300 cursor-pointer h-full p-6">
+                        <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
                         
-                        <div className="flex-1">
-                          <h3 className="text-xl font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-purple-400 transition-all duration-300">
-                            {category.name}
-                          </h3>
-                          <p className="text-sm text-gray-400 mb-3">{category.description}</p>
+                        <div className="relative flex items-start gap-4">
+                          <div className={`w-14 h-14 rounded-lg bg-gradient-to-br ${category.gradient} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                            <IconComponent className="w-7 h-7 text-white" />
+                          </div>
                           
-                          <div className="flex items-center gap-2 text-sm text-gray-500">
-                            <span>{category.subcategories.length} فئة فرعية</span>
-                            <ChevronLeft className="w-4 h-4 group-hover:text-white group-hover:-translate-x-2 transition-all duration-300" />
+                          <div className="flex-1">
+                            <h3 className="text-xl font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-purple-400 transition-all duration-300">
+                              {category.name}
+                            </h3>
+                            <p className="text-sm text-gray-400 mb-3">{category.description}</p>
+                            
+                            <div className="flex items-center gap-2 text-sm text-gray-500">
+                              <span>{category.subcategories.length} فئة فرعية</span>
+                              <ChevronLeft className="w-4 h-4 group-hover:text-white group-hover:-translate-x-2 transition-all duration-300" />
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </Link>
-                </motion.div>
-              );
-            })}
+                    </Link>
+                  </motion.div>
+                );
+              })
+            )}
           </div>
 
           <div className="text-center">

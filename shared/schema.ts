@@ -79,6 +79,35 @@ export const settings = pgTable("settings", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const categories = pgTable("categories", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  nameEn: text("name_en").notNull(),
+  icon: text("icon").notNull(),
+  description: text("description").notNull(),
+  descriptionEn: text("description_en").notNull(),
+  color: text("color").notNull(),
+  gradient: text("gradient").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const subcategories = pgTable("subcategories", {
+  id: text("id").primaryKey(),
+  categoryId: text("category_id").notNull(),
+  name: text("name").notNull(),
+  nameEn: text("name_en").notNull(),
+  icon: text("icon").notNull(),
+  description: text("description").notNull(),
+  descriptionEn: text("description_en").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
@@ -116,6 +145,16 @@ export const insertSettingSchema = createInsertSchema(settings).omit({
   updatedAt: true,
 });
 
+export const insertCategorySchema = createInsertSchema(categories).omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertSubcategorySchema = createInsertSchema(subcategories).omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Select types
 export type User = typeof users.$inferSelect;
 export type AdminUser = typeof adminUsers.$inferSelect;
@@ -124,6 +163,8 @@ export type Order = typeof orders.$inferSelect;
 export type City = typeof cities.$inferSelect;
 export type ContactMessage = typeof contactMessages.$inferSelect;
 export type Setting = typeof settings.$inferSelect;
+export type Category = typeof categories.$inferSelect;
+export type Subcategory = typeof subcategories.$inferSelect;
 
 // Insert types
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -133,3 +174,5 @@ export type InsertOrder = z.infer<typeof insertOrderSchema>;
 export type InsertCity = z.infer<typeof insertCitySchema>;
 export type InsertContactMessage = z.infer<typeof insertContactMessageSchema>;
 export type InsertSetting = z.infer<typeof insertSettingSchema>;
+export type InsertCategory = z.infer<typeof insertCategorySchema>;
+export type InsertSubcategory = z.infer<typeof insertSubcategorySchema>;
