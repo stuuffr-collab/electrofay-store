@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { db } from "./db";
-import { supabase } from "./supabaseClient";
+import { supabase, adminSupabase } from "./supabaseClient";
 import { products, settings, orders, insertOrderSchema, insertProductSchema } from "@shared/schema";
 import { eq, desc, sql } from "drizzle-orm";
 
@@ -278,14 +278,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin: Get all products (including inactive) from Supabase
   app.get("/api/admin/products", async (req, res) => {
     try {
-      const { data: allProducts, error: productsError } = await supabase
+      const { data: allProducts, error: productsError } = await adminSupabase
         .from('products')
         .select('*')
         .order('created_at', { ascending: false });
       
       if (productsError) throw productsError;
       
-      const { data: settingsData, error: settingsError } = await supabase
+      const { data: settingsData, error: settingsError } = await adminSupabase
         .from('settings')
         .select('*')
         .eq('key', 'usd_to_lyd_rate')
@@ -325,7 +325,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const productData = req.body;
       
-      const { data: newProduct, error } = await supabase
+      const { data: newProduct, error } = await adminSupabase
         .from('products')
         .insert({
           id: productData.id,
@@ -363,7 +363,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { id } = req.params;
       const productData = req.body;
       
-      const { data: updated, error } = await supabase
+      const { data: updated, error } = await adminSupabase
         .from('products')
         .update({
           name: productData.name,
@@ -404,7 +404,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { id } = req.params;
       
-      const { error, count } = await supabase
+      const { error, count } = await adminSupabase
         .from('products')
         .delete({ count: 'exact' })
         .eq('id', id);
@@ -428,7 +428,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin: Get all orders from Supabase
   app.get("/api/admin/orders", async (req, res) => {
     try {
-      const { data: allOrders, error: ordersError } = await supabase
+      const { data: allOrders, error: ordersError } = await adminSupabase
         .from('orders')
         .select('*')
         .order('created_at', { ascending: false });
@@ -490,7 +490,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin: Get all settings from Supabase
   app.get("/api/admin/settings", async (req, res) => {
     try {
-      const { data: allSettings, error: settingsError } = await supabase
+      const { data: allSettings, error: settingsError } = await adminSupabase
         .from('settings')
         .select('*');
       
@@ -531,7 +531,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/stats", async (req, res) => {
     try {
       // Get total products count from Supabase
-      const { data: activeProducts, error: productsError } = await supabase
+      const { data: activeProducts, error: productsError } = await adminSupabase
         .from('products')
         .select('*')
         .eq('is_active', true);
@@ -540,7 +540,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const totalProducts = activeProducts?.length || 0;
       
       // Get all orders from Supabase
-      const { data: allOrders, error: ordersError } = await supabase
+      const { data: allOrders, error: ordersError } = await adminSupabase
         .from('orders')
         .select('*');
       
@@ -553,7 +553,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         sum + parseFloat(String(order.total_amount || 0)), 0);
       
       // Get low stock products (< 5 items) from Supabase
-      const { data: lowStockData, error: lowStockError } = await supabase
+      const { data: lowStockData, error: lowStockError } = await adminSupabase
         .from('products')
         .select('*')
         .eq('is_active', true)
@@ -563,7 +563,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (lowStockError) throw lowStockError;
       
       // Get recent orders from Supabase
-      const { data: recentOrdersData, error: recentOrdersError } = await supabase
+      const { data: recentOrdersData, error: recentOrdersError } = await adminSupabase
         .from('orders')
         .select('*')
         .order('created_at', { ascending: false })
