@@ -5,11 +5,10 @@ import ReactGA from 'react-ga4';
 export const initializeGA = () => {
   const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
   
+  // Google Analytics is optional - only initialize if measurement ID is provided
   if (measurementId) {
     ReactGA.initialize(measurementId);
     console.log('Google Analytics initialized');
-  } else {
-    console.warn('Google Analytics Measurement ID not found');
   }
 };
 

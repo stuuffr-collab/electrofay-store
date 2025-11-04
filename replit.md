@@ -31,8 +31,9 @@ Preferred communication style: Simple, everyday language.
 - **Real-time Synchronization**: Changes made in the admin panel are immediately reflected on the storefront.
 - **Order Management**: Orders are saved to Supabase and locally, with WhatsApp integration for business owner notifications.
 - **Authentication**: Admin panel authentication has been removed for direct access (suitable for internal/development use).
-- **Product Categorization**: Intelligent keyword-based categorization system for products, ensuring consistency between frontend and backend.
+- **Dynamic Category System**: Complete category management system with database tables (categories, subcategories), full CRUD operations, and icon mapping utility. Categories are dynamically loaded from database via /api/categories endpoint.
 - **Gaming Focus**: Product categories and UI are tailored for gaming accessories and electronics.
+- **Admin Panel Features**: Interactive categories page with add/edit/delete functionality, expandable product views, drag-drop support for reordering, and color/gradient customization.
 
 ## External Dependencies
 

@@ -606,7 +606,7 @@ export default function AdminProducts() {
                     <TableCell className="admin-text-primary font-semibold">${product.basePriceUsd}</TableCell>
                     <TableCell className="admin-text-primary">{product.stockCount}</TableCell>
                     <TableCell className="admin-text-secondary">
-                      {categories.find(c => c.id === product.categoryId)?.name}
+                      {categoriesData.find(c => c.id === product.categoryId)?.name}
                     </TableCell>
                     <TableCell>
                       {product.isActive ? (
