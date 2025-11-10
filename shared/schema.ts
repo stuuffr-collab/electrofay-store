@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, decimal, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, decimal, jsonb, uuid } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -80,7 +80,7 @@ export const settings = pgTable("settings", {
 });
 
 export const categories = pgTable("categories", {
-  id: text("id").primaryKey(),
+  id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
   nameEn: text("name_en").notNull(),
   icon: text("icon").notNull(),
@@ -95,8 +95,8 @@ export const categories = pgTable("categories", {
 });
 
 export const subcategories = pgTable("subcategories", {
-  id: text("id").primaryKey(),
-  categoryId: text("category_id").notNull(),
+  id: uuid("id").primaryKey().defaultRandom(),
+  categoryId: uuid("category_id").notNull(),
   name: text("name").notNull(),
   nameEn: text("name_en").notNull(),
   icon: text("icon").notNull(),
