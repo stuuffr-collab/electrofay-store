@@ -254,32 +254,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get categories with subcategories from database (public endpoint)
   app.get("/api/categories", async (req, res) => {
     try {
-      // Fetch categories and subcategories using Drizzle ORM
-      const [categoriesData, subcategoriesData] = await Promise.all([
-        db.select().from(categories).where(eq(categories.isActive, true)).orderBy(categories.sortOrder),
-        db.select().from(subcategories).where(eq(subcategories.isActive, true)).orderBy(subcategories.sortOrder)
+      // Fetch categories and subcategories using Supabase client
+      const [categoriesResult, subcategoriesResult] = await Promise.all([
+        supabase.from('categories').select('*').eq('is_active', true).order('sort_order', { ascending: true }),
+        supabase.from('subcategories').select('*').eq('is_active', true).order('sort_order', { ascending: true })
       ]);
 
-      // Map categories with their subcategories
-      const categoriesWithSubcategories = categoriesData.map((category) => {
+      if (categoriesResult.error) throw categoriesResult.error;
+      if (subcategoriesResult.error) throw subcategoriesResult.error;
+
+      const categoriesData = categoriesResult.data || [];
+      const subcategoriesData = subcategoriesResult.data || [];
+
+      // Map categories with their subcategories (convert snake_case to camelCase)
+      const categoriesWithSubcategories = categoriesData.map((category: any) => {
         const categorySubcategories = subcategoriesData
-          .filter((sub) => sub.categoryId === category.id)
-          .map((sub) => ({
+          .filter((sub: any) => sub.category_id === category.id)
+          .map((sub: any) => ({
             id: sub.id,
             name: sub.name,
-            nameEn: sub.nameEn,
+            nameEn: sub.name_en,
             icon: sub.icon,
             description: sub.description,
-            descriptionEn: sub.descriptionEn
+            descriptionEn: sub.description_en
           }));
 
         return {
           id: category.id,
           name: category.name,
-          nameEn: category.nameEn,
+          nameEn: category.name_en,
           icon: category.icon,
           description: category.description,
-          descriptionEn: category.descriptionEn,
+          descriptionEn: category.description_en,
           color: category.color,
           gradient: category.gradient,
           subcategories: categorySubcategories
@@ -658,36 +664,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin: Get all categories with subcategories from database
   app.get("/api/admin/categories", async (req, res) => {
     try {
-      const categoriesData = await db.select().from(categories);
-      const subcategoriesData = await db.select().from(subcategories);
+      // Fetch categories and subcategories using Supabase admin client
+      const [categoriesResult, subcategoriesResult] = await Promise.all([
+        adminSupabase.from('categories').select('*').order('sort_order', { ascending: true }),
+        adminSupabase.from('subcategories').select('*').order('sort_order', { ascending: true })
+      ]);
 
-      const categoriesWithSubs = categoriesData.map((cat) => ({
+      if (categoriesResult.error) throw categoriesResult.error;
+      if (subcategoriesResult.error) throw subcategoriesResult.error;
+
+      const categoriesData = categoriesResult.data || [];
+      const subcategoriesData = subcategoriesResult.data || [];
+
+      // Map categories with subcategories (convert snake_case to camelCase)
+      const categoriesWithSubs = categoriesData.map((cat: any) => ({
         id: cat.id,
         name: cat.name,
-        nameEn: cat.nameEn,
+        nameEn: cat.name_en,
         icon: cat.icon,
         description: cat.description,
-        descriptionEn: cat.descriptionEn,
+        descriptionEn: cat.description_en,
         color: cat.color,
         gradient: cat.gradient,
-        sortOrder: cat.sortOrder,
-        isActive: cat.isActive,
-        createdAt: cat.createdAt,
-        updatedAt: cat.updatedAt,
+        sortOrder: cat.sort_order,
+        isActive: cat.is_active,
+        createdAt: cat.created_at,
+        updatedAt: cat.updated_at,
         subcategories: subcategoriesData
-          .filter((sub) => sub.categoryId === cat.id)
-          .map((sub) => ({
+          .filter((sub: any) => sub.category_id === cat.id)
+          .map((sub: any) => ({
             id: sub.id,
-            categoryId: sub.categoryId,
+            categoryId: sub.category_id,
             name: sub.name,
-            nameEn: sub.nameEn,
+            nameEn: sub.name_en,
             icon: sub.icon,
             description: sub.description,
-            descriptionEn: sub.descriptionEn,
-            sortOrder: sub.sortOrder,
-            isActive: sub.isActive,
-            createdAt: sub.createdAt,
-            updatedAt: sub.updatedAt
+            descriptionEn: sub.description_en,
+            sortOrder: sub.sort_order,
+            isActive: sub.is_active,
+            createdAt: sub.created_at,
+            updatedAt: sub.updated_at
           }))
       }));
 
