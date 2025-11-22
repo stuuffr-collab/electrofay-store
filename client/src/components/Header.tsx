@@ -8,10 +8,11 @@ import { SmartSearch } from "@/components/SmartSearch";
 import { useDarkMode } from "@/hooks/use-dark-mode";
 import { useCart } from "@/hooks/use-cart";
 import { useProducts } from "@/hooks/useProducts";
+import { cn } from "@/lib/utils";
 
-interface HeaderProps {}
+interface HeaderProps { }
 
-export function Header({}: HeaderProps) {
+export function Header({ }: HeaderProps) {
   const [location] = useLocation();
   const { isDark, toggle } = useDarkMode();
   const cart = useCart();
@@ -29,12 +30,10 @@ export function Header({}: HeaderProps) {
   };
 
   const navigationItems = [
-    { href: "/", label: "الرئيسية" },
-    { href: "/categories", label: "الأقسام" },
-    { href: "/products", label: "المنتجات" },
-    { href: "/offers", label: "العروض" },
-    { href: "/about", label: "من نحن" },
-    { href: "/contact", label: "تواصل معنا" },
+    { nameAr: 'الرئيسية', nameEn: 'Home', path: '/' },
+    { nameAr: 'المنتجات', nameEn: 'Products', path: '/products' },
+    { nameAr: 'من نحن', nameEn: 'About', path: '/about' },
+    { nameAr: 'اتصل بنا', nameEn: 'Contact', path: '/contact' },
   ];
 
   return (
@@ -54,9 +53,9 @@ export function Header({}: HeaderProps) {
 
           {/* Smart Search */}
           <div className="hidden md:block flex-1 max-w-md mx-8">
-            <SmartSearch 
+            <SmartSearch
               products={products}
-              onSearchChange={() => {}}
+              onSearchChange={() => { }}
               placeholder="ابحث عن منتجات قيمنج، إكسسوارات، PC..."
             />
           </div>
@@ -65,13 +64,12 @@ export function Header({}: HeaderProps) {
           <nav className="hidden md:flex items-center space-x-8 space-x-reverse">
             {navigationItems.map((item) => (
               <Link
-                key={item.href}
-                href={item.href}
-                className={`text-gray-300 hover:text-electric-yellow transition-colors ${
-                  location === item.href ? "text-electric-yellow font-medium" : ""
-                }`}
+                key={item.path}
+                href={item.path}
+                className={`text-gray-300 hover:text-electric-yellow transition-colors ${location === item.path ? "text-electric-yellow font-medium" : ""
+                  }`}
               >
-                {item.label}
+                {item.nameAr}
               </Link>
             ))}
           </nav>
@@ -119,29 +117,32 @@ export function Header({}: HeaderProps) {
                 <div className="flex flex-col space-y-4 mt-8">
                   {/* Mobile Smart Search */}
                   <div className="md:hidden">
-                    <SmartSearch 
+                    <SmartSearch
                       products={products}
-                      onSearchChange={() => {}}
+                      onSearchChange={() => { }}
                       placeholder="ابحث عن منتجات قيمنج، إكسسوارات، PC..."
                     />
                   </div>
 
                   {/* Mobile Navigation */}
-                  {navigationItems.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={`text-lg py-2 px-4 rounded-lg transition-colors ${
-                        location === item.href
-                          ? "bg-electric-yellow text-black font-medium"
-                          : "text-gray-300 hover:bg-gray-700"
-                      }`}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
+                  {navigationItems.map((item) => {
+                    const isActive = location === item.path;
+                    return (
+                      <Link
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={cn(
+                          "block px-4 py-3 rounded-lg transition-colors",
+                          isActive
+                            ? "text-black bg-electric-yellow font-semibold"
+                            : "text-gray-300 hover:text-white hover:bg-dark-bg"
+                        )}
+                        key={item.path}
+                        href={item.path}
+                      >
+                        {item.nameAr}
+                      </Link>
+                    );
+                  })}    </div>
               </SheetContent>
             </Sheet>
           </div>

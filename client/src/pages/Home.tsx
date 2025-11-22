@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation, Link } from "wouter";
-import { Gamepad2, Smartphone, ArrowLeft, Percent, Truck, ChevronLeft } from "lucide-react";
+import { Gamepad2, Smartphone, ArrowLeft, Percent, Truck, ChevronLeft, Monitor, Cpu, Headphones, Keyboard, Mouse, CircuitBoard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductCard, type Product } from "@/components/ProductCard";
 import { OrderModal } from "@/components/OrderModal";
@@ -14,149 +14,172 @@ import { useCart } from "@/hooks/use-cart";
 import { type OrderData } from "@/lib/whatsapp";
 import { trackEvent } from "@/lib/analytics";
 import { useProducts } from "@/hooks/useProducts";
-import toast from "react-hot-toast";
-import { filterBySmartCategory, type SmartCategory, categoryLabels } from "@/lib/smartFilters";
-import { getIconFromString, type Category } from "@/lib/categories";
+import { getIconFromString } from "@/lib/categories";
 import { useQuery } from "@tanstack/react-query";
 
+interface CategoryData {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  gradient: string;
+}
+
+
 export default function Home() {
-  const [, setLocation] = useLocation();
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
-  const [filter, setFilter] = useState<SmartCategory>("all");
-  const { toasts, showSuccess } = useToastManager();
-  const cart = useCart();
+  const [location, setLocation] = useLocation();
   const { data: products = [], isLoading, error } = useProducts();
-  const { data: categoriesData = [], isLoading: categoriesLoading } = useQuery<Category[]>({
-    queryKey: ['/api/categories'],
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const { addItem, totalItems, setIsOpen: setCartOpen } = useCart();
+  const { toasts, showSuccess } = useToastManager();
+
+  // Fetch categories dynamically
+  const { data: categories = [], isLoading: categoriesLoading } = useQuery<CategoryData[]>({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const response = await fetch('/api/categories');
+      if (!response.ok) {
+        throw new Error('Failed to fetch categories');
+      }
+      return response.json();
+    }
   });
 
-  // Get offer end date (7 days from now)
-  const offerEndDate = new Date();
-  offerEndDate.setDate(offerEndDate.getDate() + 7);
-
-  const filteredProducts = filterBySmartCategory(products, filter).slice(0, 8); // Show first 8 products
-
+  // Sort products by creation date (newest first) and take top 8
+  const recentProducts = [...products]
+    .sort((a, b) => {
+      if (!a.createdAt) return 1;
+      if (!b.createdAt) return -1;
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    })
+    .slice(0, 8);
 
   const handleOrderClick = (product: Product) => {
     setSelectedProduct(product);
     setIsOrderModalOpen(true);
-    trackEvent('order_modal_open', 'engagement', product.name);
-  };
-
-  const handleOrderSubmit = (orderData: OrderData) => {
-    showSuccess("📦 تم استلام طلبك - سنتواصل معك خلال دقائق");
-    trackEvent('order_submitted', 'conversion', orderData.product.name, orderData.product.price);
+    trackEvent('initiate_checkout', 'engagement', product.name, product.price);
   };
 
   const handleAddToCart = (product: Product) => {
-    cart.addItem(product);
-    toast.success(`✅ تمت إضافة ${product.name} للسلة`);
+    addItem(product);
+    showSuccess(`${product.name} أضيف للسلة`);
     trackEvent('add_to_cart', 'engagement', product.name, product.price);
   };
 
-
+  const handleConfirmOrder = async (orderData: OrderData) => {
+    setIsOrderModalOpen(false);
+    showSuccess('تم استلام طلبك بنجاح!');
+  };
 
   const scrollToProducts = () => {
-    document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' });
+    const element = document.getElementById('products-section');
+    element?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <>
-      {/* Announcement Banner */}
+    <div className="min-h-screen bg-dark-bg text-white pb-20">
       <AnnouncementBanner />
-      
+      <FloatingWhatsApp />
+      <MobileCartButton
+        itemCount={totalItems}
+        onClick={() => setCartOpen(true)}
+      />
+
+      {toasts.map((toast) => (
+        <Toast key={toast.id} {...toast} />
+      ))}
+
+      <OrderModal
+        isOpen={isOrderModalOpen}
+        onClose={() => setIsOrderModalOpen(false)}
+        product={selectedProduct!}
+        onOrderSubmit={handleConfirmOrder}
+      />
+
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white py-20 overflow-hidden" style={{ background: 'var(--hero-gradient)' }}>
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(250,255,0,0.1) 2px, rgba(250,255,0,0.1) 4px)' }}></div>
-        </div>
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="text-center md:text-right">
-              <h1 className="text-4xl md:text-6xl font-tajawal-extrabold mb-6 animate-fade-in">
-                إلكتروفاي قيمنج
-                <span className="text-electric-yellow drop-shadow-glow"> الوجهة الأولى</span>
-                <br />لعالم الألعاب في ليبيا
-              </h1>
-              <p className="text-xl mb-8 text-gray-200 animate-slide-up animation-delay-200">
-                متجرك المتخصص في أجهزة القيمنج الاحترافية وأدوات الستريمر مع توصيل سريع لجميع أنحاء ليبيا
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start animate-slide-up animation-delay-400">
-                <Button 
-                  onClick={scrollToProducts}
-                  className="bg-electric-yellow hover:bg-yellow-300 text-black px-8 py-4 font-bold text-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 animate-pulse-glow"
-                >
-                  تسوق الآن
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={() => window.open('https://wa.me/218922569912', '_blank')}
-                  className="border-2 border-electric-yellow text-electric-yellow hover:bg-electric-yellow hover:text-black px-8 py-3 font-semibold"
-                >
-                  تواصل معنا
-                </Button>
-              </div>
-            </div>
-            
-            <div className="relative">
-              <img 
-                src="/Gaming_setup_hero_image_8e63dbf5.png" 
-                alt="إعداد قيمنج احترافي مع إضاءة RGB وإكسسوارات متقدمة" 
-                className="rounded-xl shadow-2xl w-full h-auto animate-pulse-electric"
-                loading="eager"
-              />
-              <div className="absolute inset-0 bg-gradient-to-tr from-electric-yellow/20 to-blue-500/20 rounded-xl"></div>
-            </div>
-          </div>
+      <section className="relative h-[500px] overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-900/90 to-blue-900/90 z-10" />
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: 'url("/Gaming_setup_hero_image_8e63dbf5.png")' }}
+        />
+        <div className="relative z-20 container mx-auto px-4 h-full flex flex-col justify-center items-center text-center">
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-electric-yellow to-electric-blue"
+          >
+            إلكتروفاي
+            <br />
+            <span className="text-white text-2xl md:text-4xl mt-4 block">وجهتك الأولى للقيمنج في ليبيا</span>
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-xl text-gray-300 mb-8 max-w-2xl"
+          >
+            أفضل تجميعات PC، لابتوبات، وإكسسوارات الألعاب بأسعار منافسة وتوصيل لجميع المدن
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="flex gap-4"
+          >
+            <Button
+              size="lg"
+              className="bg-electric-yellow text-black hover:bg-yellow-400 font-bold text-lg px-8"
+              onClick={scrollToProducts}
+            >
+              تصفح المنتجات
+            </Button>
+          </motion.div>
         </div>
       </section>
 
       {/* Categories Section */}
-      <section className="py-16 bg-gradient-to-b from-gray-900 to-black">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-16 bg-dark-card/50">
+        <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-white mb-4">تصفح حسب الأقسام</h2>
-            <p className="text-gray-400 text-lg">اكتشف مجموعتنا المتنوعة من المنتجات التقنية المنظمة في أقسام متخصصة</p>
+            <h2 className="text-3xl font-bold mb-4">تصفح حسب الأقسام</h2>
+            <p className="text-gray-400">اكتشف مجموعتنا المتنوعة من المنتجات التقنية المنظمة في أقسام متخصصة</p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {categoriesLoading ? (
-              [...Array(6)].map((_, index) => (
-                <div key={index} className="animate-pulse">
-                  <div className="bg-gray-800 rounded-xl h-40"></div>
-                </div>
-              ))
-            ) : (
-              categoriesData.slice(0, 6).map((category, index) => {
+
+          {categoriesLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, index) => (
+                <div key={index} className="h-32 bg-dark-card rounded-2xl animate-pulse border border-dark-border" />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {categories.map((category, index) => {
                 const IconComponent = getIconFromString(category.icon);
                 return (
                   <motion.div
                     key={category.id}
                     initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
                   >
                     <Link href={`/categories/${category.id}`}>
-                      <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 hover:border-gray-600 transition-all duration-300 cursor-pointer h-full p-6">
-                        <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
-                        
-                        <div className="relative flex items-start gap-4">
-                          <div className={`w-14 h-14 rounded-lg bg-gradient-to-br ${category.gradient} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                            <IconComponent className="w-7 h-7 text-white" />
+                      <div className="group relative overflow-hidden rounded-2xl bg-dark-card border border-dark-border hover:border-electric-blue transition-all duration-300 cursor-pointer h-full">
+                        <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
+
+                        <div className="p-6 flex items-center gap-4">
+                          <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${category.gradient} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300`}>
+                            <IconComponent className="w-8 h-8 text-white" />
                           </div>
-                          
+
                           <div className="flex-1">
-                            <h3 className="text-xl font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-purple-400 transition-all duration-300">
-                              {category.name}
-                            </h3>
-                            <p className="text-sm text-gray-400 mb-3">{category.description}</p>
-                            
-                            <div className="flex items-center gap-2 text-sm text-gray-500">
-                              <span>{category.subcategories.length} فئة فرعية</span>
-                              <ChevronLeft className="w-4 h-4 group-hover:text-white group-hover:-translate-x-2 transition-all duration-300" />
+                            <h3 className="text-xl font-bold mb-1 group-hover:text-electric-blue transition-colors">{category.name}</h3>
+                            <p className="text-sm text-gray-400 mb-3 line-clamp-1">{category.description}</p>
+                            <div className="flex items-center gap-2 text-sm text-gray-500 group-hover:text-electric-blue transition-colors">
+                              <span>تصفح المنتجات</span>
+                              <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                             </div>
                           </div>
                         </div>
@@ -164,78 +187,30 @@ export default function Home() {
                     </Link>
                   </motion.div>
                 );
-              })
-            )}
-          </div>
+              })}
+            </div>
+          )}
 
-          <div className="text-center">
+          <div className="mt-10 text-center">
             <Link href="/categories">
-              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-6 text-lg font-bold rounded-xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
+              <Button
+                variant="outline"
+                size="lg"
+                className="border-electric-blue text-electric-blue hover:bg-electric-blue hover:text-white transition-all duration-300"
+              >
                 عرض جميع الأقسام
-                <ChevronLeft className="w-5 h-5 mr-2" />
               </Button>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Featured Products */}
-      <section id="products" className="py-16 bg-dark-card transition-colors duration-300" style={{ background: 'var(--dark-card)' }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <h3 className="text-3xl font-bold mb-2 text-white">المنتجات المميزة</h3>
-            <p className="text-gray-300">أحدث منتجات القيمنج وأكثرها مبيعاً</p>
-          </div>
-
-
-          <div className="flex justify-between items-center mb-8">
-            <div className="text-sm text-gray-300">
-              "اختر فئة لعرض المنتجات"
-            </div>
-            
-            {/* Filter Buttons */}
-            <div className="hidden md:flex bg-dark-bg rounded-lg p-1 border border-dark-border" style={{ background: 'var(--dark-bg)' }}>
-              <Button
-                variant={filter === "all" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setFilter("all")}
-                className={filter === "all" ? "bg-electric-yellow text-black" : ""}
-              >
-                {categoryLabels.all.ar}
-              </Button>
-              <Button
-                variant={filter === "pc_components" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setFilter("pc_components")}
-                className={filter === "pc_components" ? "bg-electric-yellow text-black" : ""}
-              >
-                {categoryLabels.pc_components.ar}
-              </Button>
-              <Button
-                variant={filter === "gaming_peripherals" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setFilter("gaming_peripherals")}
-                className={filter === "gaming_peripherals" ? "bg-electric-yellow text-black" : ""}
-              >
-                {categoryLabels.gaming_peripherals.ar}
-              </Button>
-              <Button
-                variant={filter === "setup_equipment" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setFilter("setup_equipment")}
-                className={filter === "setup_equipment" ? "bg-electric-yellow text-black" : ""}
-              >
-                {categoryLabels.setup_equipment.ar}
-              </Button>
-              <Button
-                variant={filter === "accessories" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setFilter("accessories")}
-                className={filter === "accessories" ? "bg-electric-yellow text-black" : ""}
-              >
-                {categoryLabels.accessories.ar}
-              </Button>
-            </div>
+      {/* Products Section */}
+      <section className="py-12 px-4" id="products-section">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl font-bold mb-2 text-white">أحدث المنتجات المضافة</h3>
+            <p className="text-gray-300">تصفح أحدث ما وصلنا من منتجات القيمنج الاحترافية</p>
           </div>
 
           {/* Products Grid */}
@@ -256,8 +231,8 @@ export default function Home() {
             </div>
           ) : (
             <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {filteredProducts.map((product, index) => (
-                <div 
+              {recentProducts.map((product, index) => (
+                <div
                   key={product.id}
                   style={{ animationDelay: `${index * 0.1}s` }}
                   className="animate-zoom-in transform hover:scale-105 transition-all duration-300"
@@ -274,7 +249,7 @@ export default function Home() {
 
           {/* Load More Button */}
           <div className="text-center mt-12">
-            <Button 
+            <Button
               variant="outline"
               onClick={() => {
                 window.scrollTo(0, 0);
@@ -282,90 +257,11 @@ export default function Home() {
               }}
               className="border-2 border-electric-yellow text-electric-yellow hover:bg-electric-yellow hover:text-black font-semibold py-3 px-8"
             >
-              عرض المزيد من المنتجات
+              عرض جميع المنتجات
             </Button>
           </div>
         </div>
       </section>
-
-      {/* Special Offers Section */}
-      <section className="py-16 bg-gradient-to-r from-purple-600 to-blue-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold mb-4">عروض خاصة لفترة محدودة</h3>
-            <p className="text-purple-100">احصل على أفضل العروض قبل انتهاء المدة المحدودة</p>
-          </div>
-
-          {/* Countdown Timer */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 mb-8 text-center">
-            <h4 className="text-xl font-bold mb-4">العرض ينتهي خلال:</h4>
-            <CountdownTimer targetDate={offerEndDate} />
-          </div>
-
-          {/* Offer Cards */}
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
-              <div className="flex items-center mb-4">
-                <div className="bg-electric-yellow text-black rounded-full p-3 ml-4">
-                  <Percent className="w-6 h-6" />
-                </div>
-                <div>
-                  <h5 className="text-xl font-bold">خصم 50% على إكسسوارات القيمنج</h5>
-                  <p className="text-purple-100">فقط لهذا الأسبوع</p>
-                </div>
-              </div>
-              <Button 
-                onClick={scrollToProducts}
-                className="bg-electric-yellow text-black hover:bg-yellow-300"
-              >
-                تسوق الآن
-              </Button>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
-              <div className="flex items-center mb-4">
-                <div className="bg-electric-yellow text-black rounded-full p-3 ml-4">
-                  <Truck className="w-6 h-6" />
-                </div>
-                <div>
-                  <h5 className="text-xl font-bold">توصيل مجاني</h5>
-                  <p className="text-purple-100">للطلبات أكثر من 200 دينار</p>
-                </div>
-              </div>
-              <Button 
-                onClick={scrollToProducts}
-                className="bg-electric-yellow text-black hover:bg-yellow-300"
-              >
-                اطلب الآن
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-
-
-      {/* Order Modal */}
-      <OrderModal
-        isOpen={isOrderModalOpen}
-        product={selectedProduct}
-        onClose={() => setIsOrderModalOpen(false)}
-        onOrderSubmit={handleOrderSubmit}
-      />
-
-      {/* Floating WhatsApp Button */}
-      <FloatingWhatsApp />
-
-      {/* Mobile Cart Button */}
-      <MobileCartButton 
-        itemCount={cart.totalItems}
-        onClick={() => cart.setIsOpen(true)}
-      />
-
-      {/* Toast Notifications */}
-      {toasts.map((toast) => (
-        <Toast key={toast.id} {...toast} />
-      ))}
-    </>
+    </div>
   );
 }

@@ -1,8 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Get environment variables with validation
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim();
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim();
+// Try to read from env first, then fallback to file
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim() || 'https://igeavikwgmkmicwyknkk.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim() || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlnZWF2aWt3Z21rbWljd3lrbmtrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQxNzEzODEsImV4cCI6MjA2OTc0NzM4MX0.PJxjxtrgthAMUIU4Gs1IP2E1sKw4zN_b20JHzjo2p8Q';
 
 // Create fallback client for development environment
 const createFallbackClient = () => ({

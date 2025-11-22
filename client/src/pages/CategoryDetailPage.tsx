@@ -59,15 +59,25 @@ export default function CategoryDetailPage() {
     );
   }
 
-  // Filter products by category
+  // Filter products by category - use categoryId directly if available, otherwise fallback to categorizeProduct
   const categoryProducts = allProducts.filter(product => {
+    // First try to use the categoryId from the product (set in admin panel)
+    if (product.categoryId) {
+      return product.categoryId === categoryId;
+    }
+    // Fallback to categorizeProduct for products without categoryId
     const { categoryId: prodCategoryId } = categorizeProduct(product);
     return prodCategoryId === categoryId;
   });
 
-  // Filter by subcategory if selected
+  // Filter by subcategory if selected - use subcategoryId directly if available
   const filteredProducts = selectedSubcategory
     ? categoryProducts.filter(product => {
+        // First try to use the subcategoryId from the product (set in admin panel)
+        if (product.subcategoryId) {
+          return product.subcategoryId === selectedSubcategory;
+        }
+        // Fallback to categorizeProduct for products without subcategoryId
         const { subcategoryId } = categorizeProduct(product);
         return subcategoryId === selectedSubcategory;
       })
@@ -146,6 +156,11 @@ export default function CategoryDetailPage() {
             {category.subcategories.map((sub) => {
               const SubIcon = getIconFromString(sub.icon);
               const count = categoryProducts.filter(p => {
+                // First try to use the subcategoryId from the product (set in admin panel)
+                if (p.subcategoryId) {
+                  return p.subcategoryId === sub.id;
+                }
+                // Fallback to categorizeProduct for products without subcategoryId
                 const { subcategoryId } = categorizeProduct(p);
                 return subcategoryId === sub.id;
               }).length;

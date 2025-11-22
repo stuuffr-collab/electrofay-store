@@ -4,10 +4,12 @@ import { setupVite, serveStatic, log } from "./vite";
 import authRouter from "./api/auth";
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
+import MemoryStore from "memorystore";
 import { pool } from "./db";
 import cors from "cors";
 
 const PgSession = connectPgSimple(session);
+const MemorySessionStore = MemoryStore(session);
 
 const app = express();
 
@@ -19,13 +21,20 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Use PostgreSQL session store if DATABASE_URL is set, otherwise use memory store
+const sessionStore = pool
+  ? new PgSession({
+    pool,
+    tableName: 'session',
+    createTableIfMissing: true,
+  })
+  : new MemorySessionStore({
+    checkPeriod: 86400000, // prune expired entries every 24h
+  });
+
 app.use(
   session({
-    store: new PgSession({
-      pool,
-      tableName: 'session',
-      createTableIfMissing: true,
-    }),
+    store: sessionStore,
     secret: process.env.SESSION_SECRET || 'electrofy-secret-key-change-in-production',
     resave: false,
     saveUninitialized: false,
@@ -95,11 +104,13 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = parseInt(process.env.PORT || '5000', 10);
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
+
+  // On Windows, use localhost instead of 0.0.0.0 and remove reusePort
+  const isWindows = process.platform === 'win32';
+  const host = isWindows ? 'localhost' : '0.0.0.0';
+
+  server.listen(port, host, () => {
+    log(`serving on http://${host}:${port}`);
+    log('Server restarted with debug endpoint enabled.');
   });
 })();

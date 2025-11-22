@@ -148,11 +148,15 @@ export const insertSettingSchema = createInsertSchema(settings).omit({
 export const insertCategorySchema = createInsertSchema(categories).omit({
   createdAt: true,
   updatedAt: true,
+}).extend({
+  id: z.string().optional(),
 });
 
 export const insertSubcategorySchema = createInsertSchema(subcategories).omit({
   createdAt: true,
   updatedAt: true,
+}).extend({
+  id: z.string().optional(),
 });
 
 // Select types

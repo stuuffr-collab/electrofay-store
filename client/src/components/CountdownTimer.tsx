@@ -65,21 +65,3 @@ export function CountdownTimer({ targetDate, className = "" }: CountdownTimerPro
     </div>
   );
 }
-
-interface OfferCountdownProps {
-  className?: string;
-}
-
-export function OfferCountdown({ className = "" }: OfferCountdownProps) {
-  // Set target to 24 hours from now
-  const targetDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
-  
-  return (
-    <div className={`bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-2 rounded-lg ${className}`}>
-      <div className="flex items-center justify-between">
-        <span className="text-sm font-semibold">⚡ عرض محدود ⚡</span>
-        <CountdownTimer targetDate={targetDate} className="text-white" />
-      </div>
-    </div>
-  );
-}

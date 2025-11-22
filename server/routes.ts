@@ -11,11 +11,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/orders", async (req, res) => {
     try {
       const orderData = req.body;
-      
+
       // Validate required fields structure
       if (!orderData.customerName || !orderData.customerPhone || !orderData.items?.length) {
-        return res.status(400).json({ 
-          error: 'Missing required fields: customerName, customerPhone, items' 
+        return res.status(400).json({
+          error: 'Missing required fields: customerName, customerPhone, items'
         });
       }
 
@@ -57,8 +57,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     } catch (error) {
       console.error('Error saving order:', error);
-      res.status(500).json({ 
-        error: 'Internal server error' 
+      res.status(500).json({
+        error: 'Internal server error'
       });
     }
   });
@@ -81,8 +81,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (productsResult.error) throw productsResult.error;
 
       // Parse JSONB exchange rate setting
-      const exchangeRate = settingsResult.data && settingsResult.data.value 
-        ? (settingsResult.data.value as { rate: number }).rate 
+      const exchangeRate = settingsResult.data && settingsResult.data.value
+        ? (settingsResult.data.value as { rate: number }).rate
         : 5.10;
 
       // Calculate LYD prices and add smart categorization
@@ -125,128 +125,128 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: 'Failed to fetch products' });
     }
   });
-  
+
   // Helper function for smart categorization (imported logic from client)
   function categorizeProduct(product: any): { categoryId: string; subcategoryId: string } {
     const name = (product.name?.toLowerCase() || product.nameEn?.toLowerCase() || '');
     const desc = (product.description?.toLowerCase() || product.descriptionEn?.toLowerCase() || '');
     const combined = `${name} ${desc}`;
-    
+
     // Displays - ملحقات شاشة (monitor accessories like light bars) - check first
     if (combined.match(/colorpanda|monitor light|لايت بار/) && combined.match(/monitor|شاشة/)) {
       return { categoryId: 'displays', subcategoryId: 'monitor-accessories' };
     }
-    
+
     // Displays - الشاشات (all monitors - check before other categories)
     if (combined.match(/\bشاشة\b|شاشات|\bmonitor\b|\bdisplay\b|screen|gaming monitor|hz\b|fps\b|curved|ultrawide|ips panel/)) {
       return { categoryId: 'displays', subcategoryId: 'gaming-monitors' };
     }
-    
+
     // PC Components - اللوحات الأم (check before processors)
     if (combined.match(/لوحة أم|motherboard|mainboard/)) {
       return { categoryId: 'pc-components', subcategoryId: 'motherboards' };
     }
-    
+
     // PC Components - المعالجات
     if (combined.match(/معالج|processor|cpu|ryzen|i[3579]|ryzen [3579]/) && !combined.match(/motherboard|لوحة أم/)) {
       return { categoryId: 'pc-components', subcategoryId: 'processors' };
     }
-    
+
     // PC Components - كروت الشاشة
     if (combined.match(/كرت شاشة|graphics|gpu|rtx|gtx|vga|rx [4567]|nvidia|radeon/) && !combined.match(/\bشاشة\b|\bmonitor\b/)) {
       return { categoryId: 'pc-components', subcategoryId: 'graphics-cards' };
     }
-    
+
     // PC Components - الرامات
     if (combined.match(/رام|ذاكرة|ram|ddr[345]|memory|16gb|32gb|8gb/) && !combined.match(/ssd|nvme|hdd|storage/)) {
       return { categoryId: 'pc-components', subcategoryId: 'memory' };
     }
-    
+
     // PC Components - التخزين
     if (combined.match(/تخزين|ssd|nvme|hdd|m\.2|storage|hard disk|500gb|1tb|2tb/)) {
       return { categoryId: 'pc-components', subcategoryId: 'storage' };
     }
-    
+
     // PC Components - مزودات الطاقة
     if (combined.match(/مزود طاقة|power supply|psu|watt|bronze|gold|platinum|[567][05]0w/)) {
       return { categoryId: 'pc-components', subcategoryId: 'power-supply' };
     }
-    
+
     // PC Components - كيس الكمبيوتر
     if (combined.match(/كيس|case|chassis|tower/)) {
       return { categoryId: 'pc-components', subcategoryId: 'cases' };
     }
-    
+
     // PC Components - المبردات (cooling fans)
     if (combined.match(/مبرد|تبريد|مروحة|مراوح|cooler|cooling|fan|liquid|airflow|aio/) && !combined.match(/كيس|case/)) {
       return { categoryId: 'pc-components', subcategoryId: 'cooling' };
     }
-    
+
     // Peripherals - لوحات المفاتيح
     if (combined.match(/كيبورد|لوحة مفاتيح|keyboard|mechanical|rgb keyboard|keychron/)) {
       return { categoryId: 'peripherals', subcategoryId: 'keyboards' };
     }
-    
+
     // Peripherals - الماوس
     if (combined.match(/ماوس(?! باد)|mouse(?! pad)|dpi|wireless mouse|gaming mouse/) && !combined.includes('pad')) {
       return { categoryId: 'peripherals', subcategoryId: 'mice' };
     }
-    
+
     // Peripherals - السماعات
     if (combined.match(/سماعة|سماعات|headset|headphone|hyperx|razer|gaming headset/)) {
       return { categoryId: 'peripherals', subcategoryId: 'headsets' };
     }
-    
+
     // Peripherals - Mouse Pads
     if (combined.match(/ماوس باد|mouse ?pad|mousepad/)) {
       return { categoryId: 'peripherals', subcategoryId: 'mouse-pads' };
     }
-    
+
     // Streaming Gear - الكاميرات
     if (combined.match(/كاميرا|webcam|camera|streaming cam|logitech.*c[97]/)) {
       return { categoryId: 'streaming-gear', subcategoryId: 'cameras' };
     }
-    
+
     // Streaming Gear - المايكروفونات
     if (combined.match(/مايك|ميكروفون|microphone|mic|condenser|blue yeti|usb mic/)) {
       return { categoryId: 'streaming-gear', subcategoryId: 'microphones' };
     }
-    
+
     // Setup Accessories - الكراسي (moved from peripherals)
     if (combined.match(/كرسي|chair|gaming chair|ergonomic|مقعد/)) {
       return { categoryId: 'setup-accessories', subcategoryId: 'chairs' };
     }
-    
+
     // Setup Accessories - الإضاءة (moved from streaming-gear)
     if (combined.match(/led|rgb|إضاءة|light bar|strip|govee|نيون/)) {
       return { categoryId: 'setup-accessories', subcategoryId: 'lighting' };
     }
-    
+
     // Setup Accessories - Controllers (moved from ready-builds)
     if (combined.match(/تحكم|controller|gamepad|joystick|xbox|ps[45]/)) {
       return { categoryId: 'setup-accessories', subcategoryId: 'controllers' };
     }
-    
+
     // Setup Accessories - Stands
     if (combined.match(/حامل|stand|mount|arm|قاعدة/)) {
       return { categoryId: 'setup-accessories', subcategoryId: 'stands' };
     }
-    
+
     // Setup Accessories - Adapters (renamed from hubs-adapters)
     if (combined.match(/hub|adapter|محول|bluetooth|wi-?fi|usb.*hub|شبكة|network/)) {
       return { categoryId: 'setup-accessories', subcategoryId: 'adapters' };
     }
-    
+
     // Setup Accessories - Smart Accessories
     if (combined.match(/sensor|مستشعر|smart|ذكي|iot/)) {
       return { categoryId: 'setup-accessories', subcategoryId: 'smart-accessories' };
     }
-    
+
     // Ready Builds - التجميعات (only PC builds now)
     if (combined.match(/تجميعة|pc build|bundle|pre.?built/)) {
       return { categoryId: 'ready-builds', subcategoryId: 'pc-builds' };
     }
-    
+
     // Fallback to generic PC components
     return { categoryId: 'pc-components', subcategoryId: 'processors' };
   }
@@ -305,11 +305,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { key } = req.params;
       const [setting] = await db.select().from(settings).where(eq(settings.key, key));
-      
+
       if (!setting) {
         return res.status(404).json({ error: 'Setting not found' });
       }
-      
+
       // Return the setting with proper JSONB structure
       res.json({
         key: setting.key,
@@ -323,7 +323,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // ============= ADMIN API ROUTES =============
-  
+
   // Admin: Get all products (including inactive) from Supabase
   app.get("/api/admin/products", async (req, res) => {
     try {
@@ -331,17 +331,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .from('products')
         .select('*')
         .order('created_at', { ascending: false });
-      
+
       if (productsError) throw productsError;
-      
+
       const { data: settingsData, error: settingsError } = await adminSupabase
         .from('settings')
         .select('*')
         .eq('key', 'usd_to_lyd_rate')
         .single();
-      
+
       const exchangeRate = settingsData ? (settingsData.value as { rate: number }).rate : 5.10;
-      
+
       const productsWithPricing = (allProducts || []).map((product: any) => ({
         id: product.id,
         name: product.name,
@@ -361,19 +361,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         createdAt: product.created_at,
         updatedAt: product.updated_at
       }));
-      
+
       res.json(productsWithPricing);
     } catch (error) {
       console.error('Error fetching admin products:', error);
       res.status(500).json({ error: 'Failed to fetch products' });
     }
   });
-  
+
   // Admin: Create product in Supabase database
   app.post("/api/admin/products", async (req, res) => {
     try {
       const productData = req.body;
-      
+
       const { data: newProduct, error } = await adminSupabase
         .from('products')
         .insert({
@@ -393,25 +393,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         })
         .select()
         .single();
-      
+
       if (error) {
         console.error('Supabase insert error:', error);
         throw error;
       }
-      
+
       res.status(201).json(newProduct);
     } catch (error) {
       console.error('Error creating product:', error);
       res.status(500).json({ error: 'Failed to create product' });
     }
   });
-  
+
   // Admin: Update product in Supabase database
   app.put("/api/admin/products/:id", async (req, res) => {
     try {
       const { id } = req.params;
       const productData = req.body;
-      
+
       const { data: updated, error } = await adminSupabase
         .from('products')
         .update({
@@ -432,7 +432,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .eq('id', id)
         .select()
         .single();
-      
+
       if (error) {
         console.error('Supabase update error:', error);
         if (error.code === 'PGRST116') {
@@ -440,40 +440,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
         throw error;
       }
-      
+
       res.json(updated);
     } catch (error) {
       console.error('Error updating product:', error);
       res.status(500).json({ error: 'Failed to update product' });
     }
   });
-  
+
   // Admin: Delete product from Supabase database
   app.delete("/api/admin/products/:id", async (req, res) => {
     try {
       const { id } = req.params;
-      
+
       const { error, count } = await adminSupabase
         .from('products')
         .delete({ count: 'exact' })
         .eq('id', id);
-      
+
       if (error) {
         console.error('Supabase delete error:', error);
         throw error;
       }
-      
+
       if (count === 0) {
         return res.status(404).json({ error: 'Product not found' });
       }
-      
+
       res.json({ message: 'Product deleted successfully' });
     } catch (error) {
       console.error('Error deleting product:', error);
       res.status(500).json({ error: 'Failed to delete product' });
     }
   });
-  
+
   // Admin: Get all orders from Supabase
   app.get("/api/admin/orders", async (req, res) => {
     try {
@@ -499,69 +499,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
         createdAt: order.created_at,
         updatedAt: order.updated_at
       }));
-      
+
       res.json(ordersWithParsedItems);
     } catch (error) {
       console.error('Error fetching orders:', error);
       res.status(500).json({ error: 'Failed to fetch orders' });
     }
   });
-  
+
   // Admin: Update order status in database
   app.put("/api/admin/orders/:id/status", async (req, res) => {
     try {
       const { id } = req.params;
       const { status } = req.body;
-      
+
       if (!['pending', 'confirmed', 'delivered', 'cancelled'].includes(status)) {
         return res.status(400).json({ error: 'Invalid status' });
       }
-      
+
       const [updated] = await db.update(orders)
-        .set({ 
-          status, 
-          updatedAt: new Date() 
+        .set({
+          status,
+          updatedAt: new Date()
         })
         .where(eq(orders.id, parseInt(id)))
         .returning();
-      
+
       if (!updated) {
         return res.status(404).json({ error: 'Order not found' });
       }
-      
+
       res.json(updated);
     } catch (error) {
       console.error('Error updating order status:', error);
       res.status(500).json({ error: 'Failed to update order status' });
     }
   });
-  
+
   // Admin: Get all settings from Supabase
   app.get("/api/admin/settings", async (req, res) => {
     try {
       const { data: allSettings, error: settingsError } = await adminSupabase
         .from('settings')
         .select('*');
-      
+
       if (settingsError) throw settingsError;
-      
+
       res.json(allSettings || []);
     } catch (error) {
       console.error('Error fetching settings:', error);
       res.status(500).json({ error: 'Failed to fetch settings' });
     }
   });
-  
+
   // Admin: Update settings in database
   app.put("/api/admin/settings", async (req, res) => {
     try {
       const { key, value } = req.body;
-      
+
       const [updated] = await db.insert(settings)
-        .values({ 
-          key, 
-          value, 
-          updatedAt: new Date() 
+        .values({
+          key,
+          value,
+          updatedAt: new Date()
         })
         .onConflictDoUpdate({
           target: settings.key,
@@ -575,7 +575,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: 'Failed to update settings' });
     }
   });
-  
+
   // Admin: Get dashboard statistics from Supabase
   app.get("/api/admin/stats", async (req, res) => {
     try {
@@ -584,23 +584,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .from('products')
         .select('*')
         .eq('is_active', true);
-      
+
       if (productsError) throw productsError;
       const totalProducts = activeProducts?.length || 0;
-      
+
       // Get all orders from Supabase
       const { data: allOrders, error: ordersError } = await adminSupabase
         .from('orders')
         .select('*');
-      
+
       if (ordersError) throw ordersError;
       const totalOrders = allOrders?.length || 0;
-      
+
       // Get delivered orders for total sales
       const deliveredOrders = (allOrders || []).filter((o: any) => o.status === 'delivered');
-      const totalSales = deliveredOrders.reduce((sum, order: any) => 
+      const totalSales = deliveredOrders.reduce((sum, order: any) =>
         sum + parseFloat(String(order.total_amount || 0)), 0);
-      
+
       // Get low stock products (< 5 items) from Supabase
       const { data: lowStockData, error: lowStockError } = await adminSupabase
         .from('products')
@@ -608,29 +608,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .eq('is_active', true)
         .lt('stock_count', 5)
         .limit(10);
-      
+
       if (lowStockError) throw lowStockError;
-      
+
       // Get recent orders from Supabase
       const { data: recentOrdersData, error: recentOrdersError } = await adminSupabase
         .from('orders')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(10);
-      
+
       if (recentOrdersError) throw recentOrdersError;
-      
+
       // Get orders grouped by status
       const statusCounts = (allOrders || []).reduce((acc: any, order: any) => {
         acc[order.status] = (acc[order.status] || 0) + 1;
         return acc;
       }, {});
-      
+
       const ordersByStatus = Object.entries(statusCounts).map(([status, count]) => ({
         status,
         count: count as number
       }));
-      
+
       res.json({
         totalProducts,
         totalOrders,
@@ -660,7 +660,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // ============= CATEGORY MANAGEMENT API ROUTES =============
-  
+
   // Admin: Get all categories with subcategories from database
   app.get("/api/admin/categories", async (req, res) => {
     try {
@@ -719,8 +719,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const categoryData = req.body;
 
-      const validation = insertCategorySchema.safeParse({
-        id: categoryData.id,
+      // Prepare data for validation - ID is optional for creation
+      const validationData: any = {
         name: categoryData.name,
         nameEn: categoryData.nameEn,
         icon: categoryData.icon,
@@ -730,29 +730,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
         gradient: categoryData.gradient,
         sortOrder: categoryData.sortOrder || 0,
         isActive: categoryData.isActive !== false
-      });
+      };
+
+      // Only include ID if provided and not empty
+      if (categoryData.id && categoryData.id.trim() !== '') {
+        validationData.id = categoryData.id;
+      }
+
+      const validation = insertCategorySchema.safeParse(validationData);
 
       if (!validation.success) {
-        return res.status(400).json({ 
-          error: 'Invalid category data', 
-          details: validation.error.errors 
+        return res.status(400).json({
+          error: 'Invalid category data',
+          details: validation.error.errors
         });
+      }
+
+      // Prepare insert data - let database generate ID if not provided
+      const insertData: any = {
+        name: categoryData.name,
+        name_en: categoryData.nameEn,
+        icon: categoryData.icon,
+        description: categoryData.description,
+        description_en: categoryData.descriptionEn,
+        color: categoryData.color,
+        gradient: categoryData.gradient,
+        sort_order: categoryData.sortOrder || 0,
+        is_active: categoryData.isActive !== false
+      };
+
+      // Only include ID if provided and not empty
+      if (categoryData.id && categoryData.id.trim() !== '') {
+        insertData.id = categoryData.id;
       }
 
       const { data: newCategory, error } = await adminSupabase
         .from('categories')
-        .insert({
-          id: categoryData.id,
-          name: categoryData.name,
-          name_en: categoryData.nameEn,
-          icon: categoryData.icon,
-          description: categoryData.description,
-          description_en: categoryData.descriptionEn,
-          color: categoryData.color,
-          gradient: categoryData.gradient,
-          sort_order: categoryData.sortOrder || 0,
-          is_active: categoryData.isActive !== false
-        })
+        .insert(insertData)
         .select()
         .single();
 
@@ -819,17 +833,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { id } = req.params;
 
-      const { data: subcats } = await adminSupabase
+      // First, delete all subcategories associated with this category
+      const { error: subcatsDeleteError } = await adminSupabase
         .from('subcategories')
-        .select('id')
+        .delete()
         .eq('category_id', id);
 
-      if (subcats && subcats.length > 0) {
-        return res.status(400).json({ 
-          error: 'Cannot delete category with existing subcategories. Please delete subcategories first.' 
+      if (subcatsDeleteError) {
+        console.error('Error deleting subcategories:', subcatsDeleteError);
+        return res.status(500).json({
+          error: 'Failed to delete subcategories associated with this category'
         });
       }
 
+      // Then delete the category itself
       const { error, count } = await adminSupabase
         .from('categories')
         .delete({ count: 'exact' })
@@ -844,7 +861,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: 'Category not found' });
       }
 
-      res.json({ message: 'Category deleted successfully' });
+      res.json({ message: 'Category and its subcategories deleted successfully' });
     } catch (error) {
       console.error('Error deleting category:', error);
       res.status(500).json({ error: 'Failed to delete category' });
@@ -856,8 +873,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const subcategoryData = req.body;
 
-      const validation = insertSubcategorySchema.safeParse({
-        id: subcategoryData.id,
+      // Prepare data for validation - ID is optional for creation
+      const validationData: any = {
         categoryId: subcategoryData.categoryId,
         name: subcategoryData.name,
         nameEn: subcategoryData.nameEn,
@@ -866,12 +883,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         descriptionEn: subcategoryData.descriptionEn,
         sortOrder: subcategoryData.sortOrder || 0,
         isActive: subcategoryData.isActive !== false
-      });
+      };
+
+      // Only include ID if provided and not empty
+      if (subcategoryData.id && subcategoryData.id.trim() !== '') {
+        validationData.id = subcategoryData.id;
+      }
+
+      const validation = insertSubcategorySchema.safeParse(validationData);
 
       if (!validation.success) {
-        return res.status(400).json({ 
-          error: 'Invalid subcategory data', 
-          details: validation.error.errors 
+        return res.status(400).json({
+          error: 'Invalid subcategory data',
+          details: validation.error.errors
         });
       }
 
@@ -885,19 +909,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Parent category does not exist' });
       }
 
+      // Prepare insert data - let database generate ID if not provided
+      const insertData: any = {
+        category_id: subcategoryData.categoryId,
+        name: subcategoryData.name,
+        name_en: subcategoryData.nameEn,
+        icon: subcategoryData.icon,
+        description: subcategoryData.description,
+        description_en: subcategoryData.descriptionEn,
+        sort_order: subcategoryData.sortOrder || 0,
+        is_active: subcategoryData.isActive !== false
+      };
+
+      // Only include ID if provided and not empty
+      if (subcategoryData.id && subcategoryData.id.trim() !== '') {
+        insertData.id = subcategoryData.id;
+      }
+
       const { data: newSubcategory, error } = await adminSupabase
         .from('subcategories')
-        .insert({
-          id: subcategoryData.id,
-          category_id: subcategoryData.categoryId,
-          name: subcategoryData.name,
-          name_en: subcategoryData.nameEn,
-          icon: subcategoryData.icon,
-          description: subcategoryData.description,
-          description_en: subcategoryData.descriptionEn,
-          sort_order: subcategoryData.sortOrder || 0,
-          is_active: subcategoryData.isActive !== false
-        })
+        .insert(insertData)
         .select()
         .single();
 
@@ -994,16 +1025,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       for (const item of reorderData) {
         if (!item.id || typeof item.sortOrder !== 'number') {
-          return res.status(400).json({ 
-            error: 'Each item must have id and sortOrder properties' 
+          return res.status(400).json({
+            error: 'Each item must have id and sortOrder properties'
           });
         }
       }
 
-      const updatePromises = reorderData.map(item => 
+      const updatePromises = reorderData.map(item =>
         adminSupabase
           .from('categories')
-          .update({ 
+          .update({
             sort_order: item.sortOrder,
             updated_at: new Date().toISOString()
           })
@@ -1025,10 +1056,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ============================================================================
   // Health check endpoint
   app.get("/api/health", (req, res) => {
-    res.json({ 
-      status: "healthy", 
+    res.json({
+      status: "healthy",
       timestamp: new Date().toISOString(),
       version: "1.0.0"
     });

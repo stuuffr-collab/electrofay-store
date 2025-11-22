@@ -1,9 +1,9 @@
 import { Link, useLocation } from 'wouter';
-import { 
-  LayoutDashboard, 
-  Package, 
-  FolderTree, 
-  ShoppingCart, 
+import {
+  LayoutDashboard,
+  Package,
+  FolderTree,
+  ShoppingCart,
   Settings,
   LogOut,
   Menu,
@@ -49,10 +49,10 @@ export function Sidebar({ onLogout, username }: SidebarProps) {
         {menuItems.map((item, index) => {
           const Icon = item.icon;
           const isActive = location === item.path;
-          
+
           return (
             <div key={item.path}>
-              <Link 
+              <Link
                 href={item.path}
                 onClick={() => setMobileOpen(false)}
               >
@@ -82,13 +82,13 @@ export function Sidebar({ onLogout, username }: SidebarProps) {
                     }
                   }}
                 >
-                  <Icon 
-                    className="w-6 h-6" 
+                  <Icon
+                    className="w-6 h-6"
                     style={{ color: isActive ? 'var(--admin-accent-cyan)' : 'var(--admin-text-secondary)' }}
                   />
                   <span className="text-[15px]">{item.label}</span>
                   {isActive && (
-                    <div 
+                    <div
                       className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-3/4 rounded-r-md"
                       style={{ background: 'var(--admin-gradient-header)' }}
                     />

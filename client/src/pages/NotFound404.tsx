@@ -54,8 +54,8 @@ export default function NotFound404() {
               روابط مفيدة:
             </p>
             <div className="grid grid-cols-2 gap-4 text-sm">
-              <Link href="/offers" className="text-blue-600 dark:text-blue-400 hover:underline">
-                العروض الخاصة
+              <Link href="/products" className="text-blue-600 dark:text-blue-400 hover:underline">
+                المنتجات
               </Link>
               <Link href="/about" className="text-blue-600 dark:text-blue-400 hover:underline">
                 من نحن
@@ -63,8 +63,8 @@ export default function NotFound404() {
               <Link href="/contact" className="text-blue-600 dark:text-blue-400 hover:underline">
                 تواصل معنا
               </Link>
-              <Link href="/testimonials" className="text-blue-600 dark:text-blue-400 hover:underline">
-                آراء العملاء
+              <Link href="/categories" className="text-blue-600 dark:text-blue-400 hover:underline">
+                الأقسام
               </Link>
             </div>
           </div>

@@ -5,13 +5,13 @@ import { Product } from '@/components/ProductCard';
 export async function fetchProducts(): Promise<Product[]> {
   try {
     console.log('🔍 Fetching products from Supabase with dynamic pricing...');
-    
+
     // Try to fetch products from Supabase with dynamic pricing
     const pricedProducts = await fetchPricedProducts();
 
     if (pricedProducts && pricedProducts.length > 0) {
       console.log(`✅ تم تحميل ${pricedProducts.length} منتج من Supabase مع التسعير الديناميكي!`);
-      
+
       // Transform PricedProduct to Product interface
       const transformedProducts: Product[] = pricedProducts.map(item => ({
         id: item.id,
@@ -22,9 +22,12 @@ export async function fetchProducts(): Promise<Product[]> {
         price: item.displayPriceLyd, // Use dynamically calculated LYD price
         originalPrice: null, // No longer using original price
         category: item.category as Product['category'],
+        categoryId: item.categoryId,
+        subcategoryId: item.subcategoryId,
         image: item.image,
         inStock: item.inStock,
-        stockCount: item.stockCount
+        stockCount: item.stockCount,
+        createdAt: item.createdAt
       }));
 
       return transformedProducts;
@@ -33,7 +36,7 @@ export async function fetchProducts(): Promise<Product[]> {
     // No products found in Supabase
     console.log('⚠️ لا توجد منتجات في قاعدة البيانات');
     return [];
-    
+
   } catch (error) {
     console.error('❌ حدث خطأ أثناء تحميل المنتجات من Supabase:', error);
     return [];

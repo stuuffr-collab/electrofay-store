@@ -45,7 +45,7 @@ const availableIcons = [
 
 // Category form schema
 const categoryFormSchema = z.object({
-  id: z.string().min(1, 'ID مطلوب'),
+  id: z.string().optional(),
   name: z.string().min(1, 'الاسم بالعربية مطلوب'),
   nameEn: z.string().min(1, 'الاسم بالإنجليزية مطلوب'),
   icon: z.string().min(1, 'الأيقونة مطلوبة'),
@@ -57,7 +57,7 @@ const categoryFormSchema = z.object({
 
 // Subcategory form schema
 const subcategoryFormSchema = z.object({
-  id: z.string().min(1, 'ID مطلوب'),
+  id: z.string().optional(),
   name: z.string().min(1, 'الاسم بالعربية مطلوب'),
   nameEn: z.string().min(1, 'الاسم بالإنجليزية مطلوب'),
   icon: z.string().min(1, 'الأيقونة مطلوبة'),
@@ -571,24 +571,26 @@ export default function AdminCategories() {
           </DialogHeader>
           <Form {...categoryForm}>
             <form onSubmit={categoryForm.handleSubmit(handleCategorySubmit)} className="space-y-4">
-              <FormField
-                control={categoryForm.control}
-                name="id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>المعرف (ID)</FormLabel>
-                    <FormControl>
-                      <Input 
-                        {...field} 
-                        placeholder="pc-components" 
-                        disabled={!!editingCategory}
-                        data-testid="input-category-id"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {editingCategory && (
+                <FormField
+                  control={categoryForm.control}
+                  name="id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>المعرف (ID)</FormLabel>
+                      <FormControl>
+                        <Input 
+                          {...field} 
+                          placeholder="pc-components" 
+                          disabled={true}
+                          data-testid="input-category-id"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
               
               <div className="grid grid-cols-2 gap-4">
                 <FormField
@@ -747,24 +749,26 @@ export default function AdminCategories() {
           </DialogHeader>
           <Form {...subcategoryForm}>
             <form onSubmit={subcategoryForm.handleSubmit(handleSubcategorySubmit)} className="space-y-4">
-              <FormField
-                control={subcategoryForm.control}
-                name="id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>المعرف (ID)</FormLabel>
-                    <FormControl>
-                      <Input 
-                        {...field} 
-                        placeholder="processors" 
-                        disabled={!!editingSubcategory}
-                        data-testid="input-subcategory-id"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {editingSubcategory && (
+                <FormField
+                  control={subcategoryForm.control}
+                  name="id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>المعرف (ID)</FormLabel>
+                      <FormControl>
+                        <Input 
+                          {...field} 
+                          placeholder="processors" 
+                          disabled={true}
+                          data-testid="input-subcategory-id"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
               
               <div className="grid grid-cols-2 gap-4">
                 <FormField

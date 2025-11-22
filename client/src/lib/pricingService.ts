@@ -9,10 +9,13 @@ export interface PricedProduct {
   basePriceUsd: number;
   displayPriceLyd: number;
   category: string;
+  categoryId?: string | null;
+  subcategoryId?: string | null;
   image: string;
   inStock: boolean;
   stockCount: number;
   usdToLydRate: number;
+  createdAt: string;
 }
 
 // Round LYD prices to nearest whole number (no decimals)
@@ -28,12 +31,12 @@ export async function fetchExchangeRate(): Promise<number> {
       .select('value')
       .eq('key', 'usd_to_lyd_rate')
       .single();
-    
+
     if (error) {
       console.error('Failed to fetch exchange rate:', error);
       return 5.0; // Fallback rate
     }
-    
+
     // Parse JSON object format: { rate: number }
     let rate = 5.0;
     try {
@@ -48,7 +51,7 @@ export async function fetchExchangeRate(): Promise<number> {
     } catch (parseError) {
       console.warn('⚠️ Error parsing exchange rate JSON:', parseError);
     }
-    
+
     return rate > 0 ? rate : 5.0; // Ensure valid rate
   } catch (error) {
     console.error('Error fetching exchange rate:', error);
@@ -60,18 +63,19 @@ export async function fetchExchangeRate(): Promise<number> {
 export async function fetchPricedProducts(): Promise<PricedProduct[]> {
   try {
     console.log('📊 Fetching products and exchange rate from Supabase...');
-    
+
     // Fetch products and exchange rate in parallel
     const [productsResult, rate] = await Promise.all([
       supabase
         .from('products')
-        .select('id, name, name_en, description, description_en, base_price_usd, category, image, in_stock, stock_count')
-        .eq('is_active', true),
+        .select('id, name, name_en, description, description_en, base_price_usd, category, category_id, subcategory_id, image, in_stock, stock_count, created_at')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false }),
       fetchExchangeRate()
     ]) as [any, number];
 
     const { data: products, error } = productsResult;
-    
+
     if (error) {
       console.error('❌ Supabase error fetching products:', error);
       return [];
@@ -89,7 +93,7 @@ export async function fetchPricedProducts(): Promise<PricedProduct[]> {
       const basePriceUsd = Number(product.base_price_usd || 0);
       const rawLydPrice = basePriceUsd * rate;
       const displayPriceLyd = roundLYD(rawLydPrice);
-      
+
       return {
         id: product.id,
         name: product.name,
@@ -99,10 +103,13 @@ export async function fetchPricedProducts(): Promise<PricedProduct[]> {
         basePriceUsd,
         displayPriceLyd,
         category: product.category,
+        categoryId: product.category_id,
+        subcategoryId: product.subcategory_id,
         image: product.image,
         inStock: product.in_stock,
         stockCount: product.stock_count,
-        usdToLydRate: rate
+        usdToLydRate: rate,
+        createdAt: product.created_at
       };
     });
   } catch (error) {
@@ -120,12 +127,12 @@ export async function updateExchangeRate(newRate: number): Promise<boolean> {
         key: 'usd_to_lyd_rate',
         value: { rate: newRate } // Store as JSON object
       });
-    
+
     if (error) {
       console.error('Failed to update exchange rate:', error);
       return false;
     }
-    
+
     console.log(`✅ Updated exchange rate to ${newRate}`);
     return true;
   } catch (error) {

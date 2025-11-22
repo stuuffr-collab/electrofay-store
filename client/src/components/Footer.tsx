@@ -20,7 +20,7 @@ export function Footer() {
             <p className="text-gray-300 mb-4">
               أفضل متجر لإكسسوارات القيمنج والمنتجات الكهرومنزلية في ليبيا
             </p>
-            
+
             {/* Payment Methods */}
             <div className="mb-4">
               <h4 className="text-white font-semibold mb-2">طرق الدفع المتاحة:</h4>
@@ -57,34 +57,21 @@ export function Footer() {
           {/* Quick Links */}
           <div>
             <h5 className="font-bold mb-4">روابط سريعة</h5>
-            <ul className="space-y-2">
+            <ul className="space-y-2 text-gray-300">
               <li>
-                <Link href="/" className="text-gray-300 hover:text-electric-yellow transition-colors">
-                  الرئيسية
-                </Link>
+                <a href="/" className="hover:text-electric-yellow transition-colors">الرئيسية</a>
               </li>
               <li>
-                <Link href="/products" className="text-gray-300 hover:text-electric-yellow transition-colors">
-                  المنتجات
-                </Link>
+                <a href="/products" className="hover:text-electric-yellow transition-colors">المنتجات</a>
               </li>
               <li>
-                <Link href="/offers" className="text-gray-300 hover:text-electric-yellow transition-colors">
-                  العروض
-                </Link>
+                <a href="/about" className="hover:text-electric-yellow transition-colors">من نحن</a>
               </li>
               <li>
-                <Link href="/about" className="text-gray-300 hover:text-electric-yellow transition-colors">
-                  من نحن
-                </Link>
+                <a href="/contact" className="hover:text-electric-yellow transition-colors">اتصل بنا</a>
               </li>
               <li>
-                <Link href="/contact" className="text-gray-300 hover:text-electric-yellow transition-colors">
-                  تواصل معنا
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy" className="text-gray-300 hover:text-electric-yellow transition-colors">
+                <Link href="/privacy" className="hover:text-electric-yellow transition-colors">
                   سياسة الخصوصية
                 </Link>
               </li>

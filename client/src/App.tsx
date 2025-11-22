@@ -15,7 +15,6 @@ import Home from "@/pages/Home";
 import Products from "@/pages/Products";
 import ProductDetail from "@/pages/ProductDetail";
 import Checkout from "@/pages/Checkout";
-import Offers from "@/pages/Offers";
 import About from "@/pages/About";
 import Contact from "@/pages/Contact";
 import CategoriesPage from "@/pages/CategoriesPage";
@@ -37,12 +36,12 @@ import NotFound404 from "@/pages/NotFound404";
 function Router() {
   // Track page views when routes change
   useAnalytics();
-  
+
   // Scroll to top on route changes
   useEffect(() => {
     window.scrollTo(0, 0);
   });
-  
+
   return (
     <Switch>
       {/* Admin Routes - These are rendered WITHOUT the main Layout */}
@@ -53,13 +52,12 @@ function Router() {
       <Route path="/admin/categories" component={AdminCategories} />
       <Route path="/admin/orders" component={AdminOrdersPage} />
       <Route path="/admin/settings" component={AdminSettings} />
-      
+
       {/* Public Routes - These are rendered WITH the main Layout */}
       <Route path="/" component={Home} />
       <Route path="/products" component={Products} />
       <Route path="/product/:id" component={ProductDetail} />
       <Route path="/checkout" component={Checkout} />
-      <Route path="/offers" component={Offers} />
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
       <Route path="/categories" component={CategoriesPage} />
@@ -74,12 +72,12 @@ function Router() {
 function PublicRouter() {
   const [location] = useLocation();
   const isAdminRoute = location.startsWith('/admin');
-  
+
   // Don't wrap admin routes with Layout
   if (isAdminRoute) {
     return <Router />;
   }
-  
+
   // Wrap public routes with Layout
   return (
     <Layout>
@@ -103,7 +101,7 @@ function App() {
         <CartProvider>
           <PublicRouter />
           <Toaster />
-          <HotToaster 
+          <HotToaster
             position="top-center"
             toastOptions={{
               duration: 4000,
